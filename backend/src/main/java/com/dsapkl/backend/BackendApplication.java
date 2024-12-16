@@ -11,3 +11,7 @@ public class BackendApplication {
     }
 
 }
+
+class Hello{
+	int a = 11;
+}
