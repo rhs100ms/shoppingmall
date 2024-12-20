@@ -2,6 +2,7 @@ package com.dsapkl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
@@ -20,7 +21,7 @@ public class Member {
     private String password;
 
     @Embedded
-    private RabbitConnectionDetails.Address address;
+    private Address address;
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
@@ -32,6 +33,14 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public void changeRole(String role) {
+        if (role.equals("admin")) {
+            this.role = Role.Admin;
+        } else {
+            this.role = Role.User;
+        }
     }
 
 
