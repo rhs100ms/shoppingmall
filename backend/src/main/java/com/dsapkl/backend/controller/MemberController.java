@@ -6,6 +6,7 @@ import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import lombok.*;
@@ -103,6 +104,7 @@ public class MemberController {
             log.info("error={}", bindingResult);
             return "members/loginForm";
         }
+
         Member loginMember = memberService.login(form.getEmail(), form.getPassword());
         log.info("login? {}", loginMember);
 
@@ -113,10 +115,10 @@ public class MemberController {
     /*
     세션
     */
-//        HttpSession session = request.getSession();  //만약 세션이 있으면 기존 세션을 반환하고, 없으면 신규 세션 생성
-//        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);  //세션에 회원 정보 보관
+        HttpSession session = request.getSession();  //만약 세션이 있으면 기존 세션을 반환하고, 없으면 신규 세션 생성
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);  //세션에 회원 정보 보관
 
-        return "redirect:/userHome";
+        return "redirect:/";
     }
 }
 
