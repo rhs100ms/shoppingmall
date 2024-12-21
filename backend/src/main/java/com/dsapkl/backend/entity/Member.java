@@ -13,8 +13,8 @@ import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 public class Member {
 
     @Id
-    @GeneratedValue
     @Column(name = "member_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -37,9 +37,9 @@ public class Member {
 
     public void changeRole(String role) {
         if (role.equals("admin")) {
-            this.role = Role.Admin;
+            this.role = Role.ADMIN;
         } else {
-            this.role = Role.User;
+            this.role = Role.USER;
         }
     }
 

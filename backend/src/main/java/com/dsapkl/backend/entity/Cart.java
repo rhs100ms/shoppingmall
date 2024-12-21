@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 public class Cart {
 
     @Id
-    @GeneratedValue
     @Column(name = "cart_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)

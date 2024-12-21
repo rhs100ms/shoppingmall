@@ -15,6 +15,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     //회원가입
+    @Transactional(readOnly = false)
     public Long join(Member member) {
         validateDuplicateMember(member);
         Member savedMember = memberRepository.save(member);
@@ -27,6 +28,13 @@ public class MemberService {
         if (findMember != null) {
             throw new IllegalStateException("이미 존재하는 회원");
         }
+    }
+
+    //로그인 체크
+    public Member login(String email, String password) {
+        return memberRepository.findByEmail(email)
+                .filter(m -> m.getPassword().equals(password))
+                .orElse(null);
     }
 
     public Member findMember(Long id) {

@@ -10,14 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "`order`")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id
-    @GeneratedValue
     @Column(name = "order_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
 
     @Enumerated(value = EnumType.STRING)

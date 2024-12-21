@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/base}">
+      layout:decorate="~{layout/base}" lang="EN">
 <head>
     <th:block layout:fragment="script">
         <script th:inline="javascript">
-            var error = [[${errorMessage}]];
-            if(error != null){
+            var error =/*[[${errorMessage}]]*/ '';
+            if(error !== ''){
                 alert(error);
             }
         </script>

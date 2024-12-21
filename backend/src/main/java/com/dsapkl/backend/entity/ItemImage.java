@@ -1,16 +1,19 @@
 package com.dsapkl.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "item_image")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemImage {
     @Id
-    @GeneratedValue
     @Column(name = "item_image_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String originalName; //원본 파일명
     private String storeName; //서버에 저장될 경로명
@@ -26,6 +29,9 @@ public class ItemImage {
         this.storeName = storeName;
         this.deleteYN = "N";
     }
+
+
+
     public void changeItem(Item item) {
         this.item = item;
     }
