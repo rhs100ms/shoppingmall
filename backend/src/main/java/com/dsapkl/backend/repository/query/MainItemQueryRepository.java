@@ -1,12 +1,16 @@
 package com.dsapkl.backend.repository.query;
 
 import com.dsapkl.backend.controller.dto.ItemSearchCondition;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -61,5 +65,7 @@ public class MainItemQueryRepository {
          * ON I.ITEM_ID = IM.ITEM_ID;
          */
     }
-
+    private BooleanExpression itemNameContain(String itemName) {
+        return StringUtils.hasText(itemName) ? item.name.contains(itemName) : null;
+    }
 }
