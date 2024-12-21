@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,9 +24,21 @@ public class FileHandler {
         return fileDir + filename;
     }
 
+
+    private String createStoreImageName(String oriImageName) {
+        String ext = extractExt(oriImageName);  //jpeg
+        String uuid = UUID.randomUUID().toString();
+        return uuid + "." + ext;
+    }
+
     //파일 경로명(스토리지)에 사진 저장
     public List<ItemImage> storeImages(List<MultipartFile> multipartFiles) throws IOException {
         List<ItemImage> storeResult = new ArrayList<>();
+
+//        if (multipartFiles == null || multipartFiles.isEmpty()) {
+//            throw new IllegalArgumentException("업로드된 파일이 없습니다.");
+//        }
+
         for (MultipartFile multipartfile : multipartFiles) {
             storeResult.add(storeImage(multipartfile));
         }
@@ -45,17 +59,27 @@ public class FileHandler {
         //스토리지에 저장
         multipartFile.transferTo(new File(getFullPath(storeImageName)));
 
+        // 파일을 static/images로 복사
+        File staticImagesDir = new File("backend/src/main/resources/static/images");
+        if (!staticImagesDir.exists()) {
+            staticImagesDir.mkdirs();
+        }
+
+        File storedFile = new File(getFullPath(storeImageName));
+        File staticImageFile = new File(staticImagesDir, storeImageName);
+        Files.copy(storedFile.toPath(), staticImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         return ItemImage.builder()
                 .originalName(oriImageName)
                 .storeName(storeImageName)
                 .build();
     }
 
-    private String createStoreImageName(String oriImageName) {
-        String ext = extractExt(oriImageName);  //jpeg
-        String uuid = UUID.randomUUID().toString();
-        return uuid + "." + ext;
-    }
+
+
+
+
+
+
 
     //확장자 추출
     private String extractExt(String oriImageName) {

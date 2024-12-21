@@ -29,7 +29,8 @@ public class ItemService {
 
     //상품 정보 저장
     public Long saveItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
-        Item item = Item.createItem(itemServiceDTO.getName(),
+        Item item = Item.createItem(
+                itemServiceDTO.getName(),
                 itemServiceDTO.getPrice(),
                 itemServiceDTO.getStockQuantity(),
                 itemServiceDTO.getDescription());
@@ -37,13 +38,18 @@ public class ItemService {
         List<ItemImage> itemImages = filehandler.storeImages(multipartFileList);
 
         //대표 상품 이미지 설정
-        itemImages.get(0).isFirstImage("Y");
 
-        for (ItemImage itemImage : itemImages) {
-            item.addItemImage(itemImageRepository.save(itemImage));
+        if (!itemImages.isEmpty()) {
+            itemImages.get(0).isFirstImage("Y");  // 첫 번째 이미지를 대표 이미지로 설정
         }
 
-        return itemRepository.save(item).getId();
+        for (ItemImage itemImage : itemImages) {
+            item.addItemImage(itemImage);  // 연관 관계 설정
+        }
+
+        itemRepository.save(item);
+
+        return item.getId();
     }
 
     //상품 정보 업데이트 (Dirty Checking, 변경감지)

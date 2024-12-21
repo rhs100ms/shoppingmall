@@ -23,7 +23,7 @@ public class Item {
     private int stockQuantity;
     private String description;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImageList = new ArrayList<>();
 
     //== 연관 관계 편의 메소드 ==//

@@ -120,6 +120,20 @@ public class MemberController {
 
         return "redirect:/";
     }
+
+    /*
+    로그아웃
+    */
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/";
+    }
+
 }
 
 

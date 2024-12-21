@@ -2,6 +2,7 @@ package com.dsapkl.backend.controller.dto;
 
 import com.dsapkl.backend.service.dto.ItemServiceDTO;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +22,10 @@ public class ItemForm {
     @NotEmpty(message = "상품 이름은 필수입니다.")
     private String name;
 
-    @NotEmpty(message = "상품 가격은 필수입니다.")
+    @NotNull(message = "상품 가격은 필수입니다.")
     private int price;
 
-    @NotEmpty(message = "상품 재고 수량은 필수입니다.")
+    @NotNull(message = "상품 재고 수량은 필수입니다.")
     private int stockQuantity;
 
     private String description;
@@ -40,4 +41,5 @@ public class ItemForm {
                 .description(description)
                 .build();
     }
+
 }

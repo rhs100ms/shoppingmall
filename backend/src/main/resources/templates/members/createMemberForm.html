@@ -5,8 +5,8 @@
 <head>
     <th:block layout:fragment="script">
         <script th:inline="javascript">
-            var error =/*[[${errorMessage}]]*/ '';
-            if(error !== ''){
+            var error =[[${errorMessage}]];
+            if(error != null){
                 alert(error);
             }
         </script>
