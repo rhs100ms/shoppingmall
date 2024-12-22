@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@Slf4j
+//@Slf4j
 @RequiredArgsConstructor
 public class HomeController {
     private final ItemService itemService;
@@ -69,12 +69,13 @@ public class HomeController {
 
         //비로그인 사용자
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
-            log.info("home controller");
+//            log.info("home controller");
             return "home";
         }
 
         //로그인된 사용자
-        log.info("userHome Controller");
+//        log.info("userHome Controller");
+
         return "userHome";
 
 

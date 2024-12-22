@@ -1,6 +1,9 @@
 package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.ItemForm;
+import com.dsapkl.backend.controller.dto.ItemImageDto;
+import com.dsapkl.backend.entity.Item;
+import com.dsapkl.backend.entity.ItemImage;
 import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
 import jakarta.validation.Valid;
@@ -9,17 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
-@Slf4j
+//@Slf4j
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
@@ -49,6 +50,34 @@ public class ItemController {
         itemService.saveItem(itemForm.toServiceDTO(), multipartFiles);
 
         return "redirect:/";
+    }
+
+    /**
+     * 상품 상세 조회
+     */
+    @GetMapping("items/{itemId}")
+    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model) {
+        Item item = itemService.findItem(itemId);
+        List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
+
+        //엔티티 -> DTO
+        List<ItemImageDto> itemImageDtoList = itemImageList.stream()
+                .map(ItemImageDto::new)
+                .collect(Collectors.toList());
+
+        ItemForm itemform = new ItemForm(
+                item.getId(),
+                item.getName(),
+                item.getPrice(),
+                item.getStockQuantity(),
+                item.getDescription(),
+                itemImageDtoList
+        );
+
+        model.addAttribute("item", itemform);
+
+        return "item/itemView";
+
     }
 
 

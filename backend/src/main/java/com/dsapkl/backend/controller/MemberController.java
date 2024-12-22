@@ -4,6 +4,7 @@ import com.dsapkl.backend.controller.dto.LoginForm;
 import com.dsapkl.backend.controller.dto.MemberForm;
 import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -99,6 +100,21 @@ public class MemberController {
     public String login(@Valid @ModelAttribute LoginForm form
             , BindingResult bindingResult
             , HttpServletRequest request){
+        //로그인 할 때 세션 다 가져오제?
+
+        Member member = getMember(request);
+
+        List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+
+        int cartItemCount = cartItemListForm.size();
+
+        model.addAttribute("cartItemListForm", cartItemListForm);
+        model.addAttribute("cartItemCount", cartItemCount);
+
+        System.out.println(cartItemListForm);
+        System.out.println("장바구니 항목 수: " + cartItemCount);
+
+        
         //이메일 또는 비밀번호를 누락시
         if (bindingResult.hasErrors()) {
             log.info("error={}", bindingResult);
@@ -117,6 +133,8 @@ public class MemberController {
     */
         HttpSession session = request.getSession();  //만약 세션이 있으면 기존 세션을 반환하고, 없으면 신규 세션 생성
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);  //세션에 회원 정보 보관
+
+
 
         return "redirect:/";
     }

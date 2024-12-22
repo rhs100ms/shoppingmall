@@ -59,26 +59,11 @@ public class FileHandler {
         //스토리지에 저장
         multipartFile.transferTo(new File(getFullPath(storeImageName)));
 
-        // 파일을 static/images로 복사
-        File staticImagesDir = new File("backend/src/main/resources/static/images");
-        if (!staticImagesDir.exists()) {
-            staticImagesDir.mkdirs();
-        }
-
-        File storedFile = new File(getFullPath(storeImageName));
-        File staticImageFile = new File(staticImagesDir, storeImageName);
-        Files.copy(storedFile.toPath(), staticImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         return ItemImage.builder()
                 .originalName(oriImageName)
                 .storeName(storeImageName)
                 .build();
     }
-
-
-
-
-
-
 
 
     //확장자 추출
