@@ -109,7 +109,7 @@ public class MemberController {
         log.info("login? {}", loginMember);
 
         if (loginMember == null) {
-            bindingResult.reject("loginfail", "이메일 또는 비밀번호가 맞지 않슴.");
+            bindingResult.reject("loginfail", "이메일 또는 비밀번호가 맞지 않습니다.");
             return "members/loginForm";
         }
     /*

@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 public class LoginForm {
 
-    @NotEmpty(message = "이메일 주소는 필수")
+    @NotEmpty(message = "이메일 주소는 필수 입니다.")
     @Email
     private String email;
 
-    @NotEmpty(message = "비밀번호는 필수")
+    @NotEmpty(message = "비밀번호는 필수 입니다.")
     private String password;
 }
