@@ -4,8 +4,12 @@ import com.dsapkl.backend.controller.dto.ItemForm;
 import com.dsapkl.backend.controller.dto.ItemImageDto;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.ItemImage;
+import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.repository.query.CartQueryDto;
+import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +23,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.dsapkl.backend.controller.CartController.getMember;
+
 @Controller
 //@Slf4j
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
     private final ItemImageService itemImageService;
+    private final CartService cartService;
 
     @GetMapping("/items/new")
     public String createItemForm(Model model) {
@@ -56,7 +63,7 @@ public class ItemController {
      * 상품 상세 조회
      */
     @GetMapping("items/{itemId}")
-    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model) {
+    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
         Item item = itemService.findItem(itemId);
         List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
 
@@ -76,8 +83,18 @@ public class ItemController {
 
         model.addAttribute("item", itemform);
 
-        return "item/itemView";
+        // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
+
+        Member member = getMember(request);
+        if(member != null) {
+            List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+            int cartItemCount = cartItemListForm.size();
+            model.addAttribute("cartItemListForm", cartItemListForm);
+            model.addAttribute("cartItemCount", cartItemCount);
+        }
+
+        return "item/itemView";
     }
 
 

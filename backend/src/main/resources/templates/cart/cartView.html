@@ -21,11 +21,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 </head>
-
-
 <script th:inline="javascript">
 
-    <!-- 처음 웹페이지 로딩시 호출 -->
+    // <!-- 처음 웹페이지 로딩시 호출 -->
     $(document).ready(function(){
 
         // <!-- count 값이 변경될때마다 호출 -->
@@ -118,7 +116,7 @@
             var obj = new Object();
             obj.itemId = id;
             obj.count = count;
-            
+
             list.push(obj);
         })
 
@@ -142,8 +140,6 @@
                 location.href = "/cart";
             }
         })
-
-
     }
 
 </script>

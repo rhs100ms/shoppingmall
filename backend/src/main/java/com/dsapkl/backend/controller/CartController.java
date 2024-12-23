@@ -35,15 +35,14 @@ public class CartController {
 
         Member member = getMember(request);
 
+        if (member == null) {
+            return "redirect:/members";
+        }
+
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
 
-        int cartItemCount = cartItemListForm.size();
-
         model.addAttribute("cartItemListForm", cartItemListForm);
-        model.addAttribute("cartItemCount", cartItemCount);
 
-        System.out.println(cartItemListForm);
-        System.out.println("장바구니 항목 수: " + cartItemCount);
         return "cart/cartView";
     }
 

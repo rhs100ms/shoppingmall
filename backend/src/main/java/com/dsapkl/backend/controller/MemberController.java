@@ -5,6 +5,7 @@ import com.dsapkl.backend.controller.dto.MemberForm;
 import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.repository.query.CartQueryDto;
+import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +30,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CartService cartService;
 
     /*
     회원가입
@@ -102,19 +104,8 @@ public class MemberController {
             , HttpServletRequest request){
         //로그인 할 때 세션 다 가져오제?
 
-        Member member = getMember(request);
 
-        List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
 
-        int cartItemCount = cartItemListForm.size();
-
-        model.addAttribute("cartItemListForm", cartItemListForm);
-        model.addAttribute("cartItemCount", cartItemCount);
-
-        System.out.println(cartItemListForm);
-        System.out.println("장바구니 항목 수: " + cartItemCount);
-
-        
         //이메일 또는 비밀번호를 누락시
         if (bindingResult.hasErrors()) {
             log.info("error={}", bindingResult);
