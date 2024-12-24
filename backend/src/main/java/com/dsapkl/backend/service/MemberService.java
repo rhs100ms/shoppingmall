@@ -1,6 +1,8 @@
 package com.dsapkl.backend.service;
 
+import com.dsapkl.backend.entity.Cart;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.repository.CartRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +15,18 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
 
     //회원가입
     @Transactional(readOnly = false)
     public Long join(Member member) {
         validateDuplicateMember(member);
         Member savedMember = memberRepository.save(member);
+
+        Cart cart = Cart.createCart(savedMember);
+        cartRepository.save(cart);
+
+
         return savedMember.getId();
     }
 

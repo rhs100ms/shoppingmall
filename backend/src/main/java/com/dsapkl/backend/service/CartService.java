@@ -59,15 +59,18 @@ public class CartService {
         Cart cart = cartRepository.findByMemberId(memberId).orElseGet(() -> null);
         Item item = itemRepository.findById(itemId).get();
 
-        //장바구니 없으면 생성
-        if (cart == null) {
-            log.info("장바구니 신규 생성 - memberId={}", memberId);
-            cart = Cart.createCart(member);
-            cartRepository.save(cart);
-        }
+        //장바구니 없으면 생성  --> 회원가입 할 때 장바구니 생성되어야 함 장바구니 눌렀을 때 생기는게 아니라
+//        if (cart == null) {
+//            log.info("장바구니 신규 생성 - memberId={}", memberId);
+//            cart = Cart.createCart(member);
+//            cartRepository.save(cart);
+//        }
 
         //장바구니안에 장바구니 상품 조회
         CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId()).orElse(null);
+//        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId())
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        "CartItem not found for cartId: " + cart.getId() + " and itemId: " + item.getId()));
 
         //장바구니 상품이 없으면 생성
         if (cartItem == null) {
@@ -82,4 +85,14 @@ public class CartService {
         return cartItem.getId();
 
     }
+
+    /**
+     * 장바구니 삭제
+     */
+    public void deleteCartItem(Long itemId) {
+        CartItem findCartItem = cartItemRepository.findById(itemId).orElse(null);
+        cartItemRepository.delete(findCartItem);
+    }
+
+
 }

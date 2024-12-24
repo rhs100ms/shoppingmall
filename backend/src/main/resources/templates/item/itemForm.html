@@ -20,7 +20,7 @@
     <div class="py-5 text-center">
         <h2>상품 등록</h2>
     </div>
-
+    <!-- th:action 생략 => items/new 현재 URL-->
     <form th:action th:object="${itemForm}" method="post" enctype="multipart/form-data">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"

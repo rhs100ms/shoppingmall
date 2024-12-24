@@ -36,7 +36,19 @@ public class OrderItem {
         this.order = order;
     }
 
+//    public static OrderItem createOrderItem(int count, int orderPrice, Item item) {
+//        return new OrderItem(count, orderPrice, item);
+//    }
+
     public static OrderItem createOrderItem(int count, int orderPrice, Item item) {
+        item.minStock(count);
         return new OrderItem(count, orderPrice, item);
     }
+
+    //== 비즈니스 메서드 ==//
+    public void cancel() {
+        item.addStock(count);
+    }
+
+
 }

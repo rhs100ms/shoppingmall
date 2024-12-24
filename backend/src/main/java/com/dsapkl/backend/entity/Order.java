@@ -20,6 +20,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int totalPrice;
+
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
@@ -45,11 +47,37 @@ public class Order {
         orderItem.changeOrder(this);
     }
 
-    public static Order createOrder(OrderStatus status, Member member, OrderItem... orderItems) {  //List<OrderItem> list??
+    public static Order createOrder(OrderStatus status, Member member, List<OrderItem> orderItems) {  //List<OrderItem> list?? OrderItem... orderItems
         Order order = new Order(status, member);
         for (OrderItem orderItem : orderItems) {
             order.addOrderItem(orderItem);
         }
+
+        //총 주문 가격 추가
+        order.totalPrice = order.getTotalPrice();
+
         return order;
     }
+
+
+    //== 전체 주문 가격 조회 ==/
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getOrderPrice();
+        }
+        return totalPrice;
+    }
+
+    //주문 취소
+    public void cancelOrder() {
+        this.status = OrderStatus.CANCEL;
+
+        //상품 재고 수량 복귀
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
+    }
+
+
 }
