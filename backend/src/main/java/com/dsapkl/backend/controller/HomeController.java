@@ -32,8 +32,6 @@ public class HomeController {
     private final ItemService itemService;
     private final CartService cartService;
 //    private final MainItemQueryRepository mainItemQueryRepository;
-
-
 //    private final ItemService itemService;
 //    private final ItemImageService itemImageService;
 //    private final MainItemQueryRepository mainItemQueryRepository;
@@ -53,9 +51,6 @@ public class HomeController {
 //        return "home";
 //}
 
-
-
-
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
 
@@ -70,7 +65,6 @@ public class HomeController {
 //                .map(ItemListDto::new)
 //                .collect(Collectors.toList());
         model.addAttribute("items", items);
-
         HttpSession session = request.getSession(false);
 
         //비로그인 사용자
@@ -78,7 +72,6 @@ public class HomeController {
 //            log.info("home controller");
             return "home";
         }
-
         //로그인된 사용자
 //        log.info("userHome Controller");
         // th:text="${cartItemCount}" 쓰기 위함
@@ -88,10 +81,6 @@ public class HomeController {
         model.addAttribute("cartItemListForm", cartItemListForm);
         model.addAttribute("cartItemCount", cartItemCount);
 
-        return "userHome";
-
-
+        return "index";
     }
-
-
 }
