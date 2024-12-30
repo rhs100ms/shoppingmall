@@ -71,4 +71,16 @@ public class FileHandler {
         int pos = oriImageName.lastIndexOf(".");
         return oriImageName.substring(pos + 1);
     }
+
+    public void deleteImage(String fileName) {
+        String filePath = fileDir + fileName;
+        File file = new File(filePath);
+
+        if (file.exists()) {
+            boolean deleted = file.delete();
+            if (!deleted) {
+                throw new RuntimeException("Failed to delete file: " + filePath);
+            }
+        }
+    }
 }

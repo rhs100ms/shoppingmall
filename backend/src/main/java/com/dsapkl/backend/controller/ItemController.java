@@ -87,7 +87,7 @@ public class ItemController {
 
 
         Member member = getMember(request);
-        if(member != null) {
+        if (member != null) {
             List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
             int cartItemCount = cartItemListForm.size();
             model.addAttribute("cartItemListForm", cartItemListForm);
@@ -97,5 +97,13 @@ public class ItemController {
         return "item/itemView";
     }
 
+    /**
+     *  상품 삭제
+     */
+    @PostMapping("/items/{itemId}/delete")
+    public String deleteItem(@PathVariable(name = "itemId") Long itemId) {
+        itemService.deleteItem(itemId);
+        return "redirect:/";
+    }
 
 }

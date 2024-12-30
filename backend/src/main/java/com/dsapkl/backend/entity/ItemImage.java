@@ -45,4 +45,9 @@ public class ItemImage {
     public void deleteSet(String deleteYN) {
         this.deleteYN = deleteYN;
     }
+
+    // storeName Getter (추가)
+    public String getStoreFileName() {
+        return this.storeName;
+    }
 }

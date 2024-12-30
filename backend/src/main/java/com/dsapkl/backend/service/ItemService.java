@@ -86,4 +86,23 @@ public class ItemService {
 
         return itemRepository.findById(ItemId).orElse(null);
     }
+
+    /**
+     * 상품 삭제
+     */
+    public void deleteItem(Long itemId) {
+        // 삭제 전 존재 여부 확인
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found with ID: " + itemId));
+
+        // 관련 이미지 삭제 처리
+        List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(itemId,"N");
+
+        for (ItemImage image : itemImages) {
+            filehandler.deleteImage(image.getStoreFileName()); // 실제 파일 삭제 (FileHandler 활용)
+            itemImageRepository.delete(image); // DB에서 이미지 삭제
+        }
+
+        // 상품 삭제
+        itemRepository.delete(item);
+    }
 }
