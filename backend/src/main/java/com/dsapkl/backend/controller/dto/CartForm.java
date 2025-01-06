@@ -1,5 +1,8 @@
 package com.dsapkl.backend.controller.dto;
 
+
+import com.dsapkl.backend.entity.Item;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +11,9 @@ import lombok.Setter;
 public class CartForm {
 
     private Long itemId;
+
+
+
+
     private int count;
 }

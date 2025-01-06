@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class OrderService {
@@ -64,9 +65,16 @@ public class OrderService {
     public Long orders(Long memberId, CartOrderDto cartOrderDto) {
 
         List<OrderItem> orderItemList = new ArrayList<>();
-        Member findMember = memberRepository.findById(memberId).orElse(null);
+
+
+        Member findMember = memberRepository.findById(memberId)
+            .orElseThrow(() -> new
+                    NoSuchElementException("Member with ID " + memberId + " not found"));
+
+
 
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
+
         for (CartForm cartForm : cartOrderDtoList) {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
             int orderPrice = findItem.getPrice() * cartForm.getCount();

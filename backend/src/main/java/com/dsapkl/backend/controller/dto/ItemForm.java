@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.dto;
 
+import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.service.dto.ItemServiceDTO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,9 @@ public class ItemForm {
 
     @NotEmpty(message = "상품 이름은 필수입니다.")
     private String name;
+    
+    @NotNull(message = "카테고리 정보 입력 필수")
+    private Category category;
 
     @NotNull(message = "상품 가격은 필수입니다.")
     private int price;
@@ -36,6 +40,7 @@ public class ItemForm {
         return ItemServiceDTO.builder()
                 .id(itemId)
                 .name(name)
+                .category(category)
                 .price(price)
                 .stockQuantity(stockQuantity)
                 .description(description)
