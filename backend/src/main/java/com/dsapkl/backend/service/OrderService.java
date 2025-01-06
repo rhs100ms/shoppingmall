@@ -68,6 +68,7 @@ public class OrderService {
 
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
         for (CartForm cartForm : cartOrderDtoList) {
+
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
             int orderPrice = findItem.getPrice() * cartForm.getCount();
 

@@ -110,9 +110,9 @@
         var list = new Array();
 
         $("input[name=cartItemCheck]:checked").each(function() {
-            var id = $(this).val();
+            var id = $(this).val();          //cart_item_id
             var count = $("#count_" + id).val();
-
+            console.log(id);                    //cart_item_id
             var obj = new Object();
             obj.itemId = id;
             obj.count = count;
@@ -177,7 +177,7 @@
                     <div class="card-body p-4">
                         <div class="row align-items-center">
                             <div class="col-md-1 col-lg-1 col-xl-1">
-                                <input type="checkbox" th:id="'cartItemCheck_' + ${cartItem.cartItemId}" name="cartItemCheck" th:value="${cartItem.cartItemId}" class="form-check-input">
+                                <input type="checkbox" th:id="'cartItemCheck_' + ${cartItem.cartItemId}" name="cartItemCheck" th:value="${cartItem.itemId}" class="form-check-input">
                             </div>
                             <div class="col-md-2 col-lg-2 col-xl-2">
                                 <img th:src="|/images/${cartItem.getImgUrl()}|" class="img-fluid rounded-3" alt="CartItem">
