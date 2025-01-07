@@ -67,8 +67,8 @@ public class OrderService {
         Member findMember = memberRepository.findById(memberId).orElse(null);
 
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
-        for (CartForm cartForm : cartOrderDtoList) {
 
+        for (CartForm cartForm : cartOrderDtoList) {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
             int orderPrice = findItem.getPrice() * cartForm.getCount();
 
@@ -92,7 +92,7 @@ public class OrderService {
     private void deleteCartItem(CartOrderDto cartOrderDto) {
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
         for (CartForm cartForm : cartOrderDtoList) {
-            cartService.deleteCartItem(cartForm.getItemId());
+            cartService.deleteCartItem(cartForm.getCartItemId());
         }
     }
 

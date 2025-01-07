@@ -1,6 +1,7 @@
 package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.CartForm;
+import com.dsapkl.backend.controller.dto.CartItemForm;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
@@ -12,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -63,7 +61,20 @@ public class CartController {
         return ResponseEntity.ok("success");
     }
 
+    @DeleteMapping("/cart")
+    @ResponseBody
+    public ResponseEntity<String> deleteCartItem(@RequestBody CartItemForm form) {
 
+//        log.info("itemId={}", form.getCartItemId());
+
+        if (cartService.findCartItem(form.getCartItemId()) == null) {
+            return new ResponseEntity<String>("다시 시도해주세요.", HttpStatus.NOT_FOUND);
+        }
+
+        cartService.deleteCartItem(form.getCartItemId());
+
+        return ResponseEntity.ok("success");
+    }
 
     //다른 컨트롤러에서도 사용하기 위해 static
     public static Member getMember(HttpServletRequest request) {
@@ -79,4 +90,6 @@ public class CartController {
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         return member;
     }
+
+
 }

@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CartForm {
+public class CartItemForm {
 
-    private Long itemId;
     private Long cartItemId;
-    private int count;
 }
