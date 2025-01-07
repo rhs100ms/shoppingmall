@@ -34,6 +34,16 @@
         </div>
         <br>
         <div>
+            <label for="category">카테고리</label>
+            <select name="category" id="category" class="formcontrol">
+                <option value="">카테고리 선택</option>
+                <option th:each="categoryCode : ${categoryCode}"
+                        th:value="${categoryCode.code}"
+                        th:text="${categoryCode.displayName}" />
+            </select>
+        </div>
+        <br>
+        <div>
             <label for="price">가격</label>
             <input type="number" id="price" th:field="*{price}" class="form-control" placeholder="가격을 입력해주세요"
                    th:errorclass="field-error">
@@ -63,6 +73,29 @@
             <label for="formFileMultiple" class="form-label">파일업로드</label>
             <input class="form-control" type="file" id="formFileMultiple" name="itemImages" multiple>
         </div>
+
+        <script>
+            document.getElementById("formFileMultiple").addEventListener("change", function(event) {
+                const fileInput = event.target;
+                const previewContainer = document.querySelector(".preview-images");
+                previewContainer.innerHTML = ""; // 이전 미리보기 초기화
+
+                Array.from(fileInput.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.style.width = "100px";
+                        img.style.height = "100px";
+                        img.style.marginRight = "10px";
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        </script>
+
+        <div class="preview-images"></div>
 
 <!--        <div class="mb-3">-->
 <!--            <label for="itemImages" class="form-label">파일업로드</label>-->

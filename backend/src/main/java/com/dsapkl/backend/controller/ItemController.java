@@ -11,6 +11,8 @@ import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,18 +36,44 @@ public class ItemController {
     private final ItemImageService itemImageService;
     private final CartService cartService;
 
+//    APPAREL, ELECTRONICS, BOOKS, HOME_AND_KITCHEN, HEALTH_AND_BEAUTY
+
     @GetMapping("/items/new")
     public String createItemForm(Model model) {
+        List<CategoryCode> categoryCode = new ArrayList<>();
+        categoryCode.add(new CategoryCode("APPAREL", "의류"));
+        categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
+        categoryCode.add(new CategoryCode("BOOKS", "서적"));
+        categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
+        categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+        model.addAttribute("categoryCode", categoryCode);
         model.addAttribute("itemForm", new ItemForm());
         return "item/itemForm";
     }
 
+    @Data
+    @AllArgsConstructor
+    static class CategoryCode {
+        private String code;
+        private String displayName;
+    }
+
     @PostMapping("/items/new")
     public String createItem(@Valid @ModelAttribute ItemForm itemForm, BindingResult bindingResult, Model model,
+                             @RequestParam("category") String category,
                              @RequestPart(name = "itemImages") List<MultipartFile> multipartFiles
     ) throws IOException {
 
-        if (bindingResult.hasErrors()) return "item/itemForm";
+        if (bindingResult.hasErrors()) {
+            List<CategoryCode> categoryCode = new ArrayList<>();
+            categoryCode.add(new CategoryCode("APPAREL", "의류"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
+            categoryCode.add(new CategoryCode("BOOKS", "서적"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            model.addAttribute("categoryCode", categoryCode);
+            return "item/itemForm";
+        }
 
         //상품 이미지를 등록안하면
         if (multipartFiles.get(0).isEmpty()) {
@@ -75,6 +104,7 @@ public class ItemController {
         ItemForm itemform = new ItemForm(
                 item.getId(),
                 item.getName(),
+                item.getCategory(),
                 item.getPrice(),
                 item.getStockQuantity(),
                 item.getDescription(),
@@ -98,12 +128,14 @@ public class ItemController {
     }
 
     /**
-     *  상품 삭제
+     * 상품 삭제
      */
     @PostMapping("/items/{itemId}/delete")
-    public String deleteItem(@PathVariable(name = "itemId") Long itemId) {
+    public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
-        return "redirect:/";
+        return "redirect:/"; // 삭제 후 메인 페이지로 이동
+
+
     }
 
 }

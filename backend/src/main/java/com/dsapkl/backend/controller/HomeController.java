@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,9 +53,14 @@ public class HomeController {
 //}
 
     @GetMapping("/")
-    public String home(Model model, HttpServletRequest request) {
+    public String home( @RequestParam(value = "query", required = false) String query,
+                        Model model, HttpServletRequest request) {
 
-        List<Item> items = itemService.findItems();
+        //List<Item> items = itemService.findItems();
+
+        List<Item> items = (query != null && !query.isEmpty())
+                ? itemService.searchItemsByNames(query)
+                : itemService.findItems();
 //        List<ItemImage> itemImages = itemImageService.findAllByDeleteYN("N");
         //queryDSL TODO
         //패치 조인 일반 조인 비교 TODO

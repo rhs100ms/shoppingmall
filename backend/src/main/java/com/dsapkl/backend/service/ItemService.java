@@ -1,5 +1,6 @@
 package com.dsapkl.backend.service;
 
+import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.ItemImage;
 import com.dsapkl.backend.repository.ItemImageRepository;
@@ -33,7 +34,8 @@ public class ItemService {
                 itemServiceDTO.getName(),
                 itemServiceDTO.getPrice(),
                 itemServiceDTO.getStockQuantity(),
-                itemServiceDTO.getDescription());
+                itemServiceDTO.getDescription(),
+                itemServiceDTO.getCategory());
 
         List<ItemImage> itemImages = filehandler.storeImages(multipartFileList);
 
@@ -57,7 +59,7 @@ public class ItemService {
 
         Item findItem = itemRepository.findById(itemServiceDTO.getId()).orElse(null);  //DB에서 찾아옴 -> 영속 상태
 
-        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getDescription(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity());
+        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getDescription(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity(), itemServiceDTO.getCategory());
 
         //상품 이미지를 수정(삭제, 추가) 하지 않으면 실행 x
         if(!multipartFileList.get(0).isEmpty()) {
@@ -74,6 +76,23 @@ public class ItemService {
         return itemRepository.findAll();
 
     }
+
+    // 검색 기능
+    @Transactional(readOnly = true)
+    public List<Item> searchItemsByNames(String name) {
+        return itemRepository.findByNameContainingIgnoreCase(name);
+    }
+    // 카테고리 분류 기능
+    @Transactional(readOnly = true)
+    public List<Item> searchItemsByCategory(Category category) {
+        return itemRepository.findByCategory(category);
+    }
+    // 카테고리 + 검색어 기반 상품 조회
+    @Transactional(readOnly = true)
+    public List<Item> searchItemsByCategoryAndName(Category category, String name) {
+        return itemRepository.findByCategoryAndNameContainingIgnoreCase(category, name);
+    }
+
     @Transactional(readOnly=true)
     public List<Item> findItemsPaging() {
         Page<Item> result = itemRepository.findAll(PageRequest.of(0, 3));
