@@ -34,6 +34,16 @@
         </div>
         <br>
         <div>
+            <label for="category">카테고리</label>
+            <select name="category" id="category" class="formcontrol">
+                <option value="">카테고리 선택</option>
+                <option th:each="categoryCode : ${categoryCode}"
+                        th:value="${categoryCode.code}"
+                        th:text="${categoryCode.displayName}" />
+            </select>
+        </div>
+        <br>
+        <div>
             <label for="price">가격</label>
             <input type="number" id="price" th:field="*{price}" class="form-control" placeholder="가격을 입력해주세요"
                    th:errorclass="field-error">

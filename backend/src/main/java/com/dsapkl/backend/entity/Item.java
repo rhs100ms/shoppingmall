@@ -24,6 +24,9 @@ public class Item {
     private int stockQuantity;
     private String description;
 
+    @Enumerated(value = EnumType.STRING)
+    private Category category;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImageList = new ArrayList<>();
 
@@ -35,24 +38,31 @@ public class Item {
 
 
     @Builder
-    private Item(String name, int price, int stockQuantity, String description) {
+    private Item(String name, int price, int stockQuantity, String description, Category category) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.description = description;
+        this.category = category;
     }
 
 
 
-    public static Item createItem(String name, int price, int stockQuantity, String description) {
-        return new Item(name, price, stockQuantity, description);
+    public static Item createItem(String name, int price, int stockQuantity, String description, Category category) {
+        return new Item(name, price, stockQuantity, description, category);
     }
 
-    public void updateItem(String name, String description, int price, int stockQuantity) {
+    public void updateItem(String name, String description, int price, int stockQuantity, Category category) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.category = category;
+    }
+
+    // 카테고리 변경
+    public void changeCategory(Category category) {
+        this.category = category;
     }
 
 
