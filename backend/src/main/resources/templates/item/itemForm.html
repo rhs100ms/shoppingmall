@@ -64,6 +64,29 @@
             <input class="form-control" type="file" id="formFileMultiple" name="itemImages" multiple>
         </div>
 
+        <script>
+            document.getElementById("formFileMultiple").addEventListener("change", function(event) {
+                const fileInput = event.target;
+                const previewContainer = document.querySelector(".preview-images");
+                previewContainer.innerHTML = ""; // 이전 미리보기 초기화
+
+                Array.from(fileInput.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.style.width = "100px";
+                        img.style.height = "100px";
+                        img.style.marginRight = "10px";
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        </script>
+
+        <div class="preview-images"></div>
+
 <!--        <div class="mb-3">-->
 <!--            <label for="itemImages" class="form-label">파일업로드</label>-->
 <!--            <input class="form-control" type="file" id="itemImages" name="itemImages" multiple>-->

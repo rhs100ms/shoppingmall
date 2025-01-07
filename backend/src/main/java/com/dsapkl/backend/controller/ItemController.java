@@ -98,12 +98,14 @@ public class ItemController {
     }
 
     /**
-     *  상품 삭제
+     * 상품 삭제
      */
     @PostMapping("/items/{itemId}/delete")
-    public String deleteItem(@PathVariable(name = "itemId") Long itemId) {
+    public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
-        return "redirect:/";
+        return "redirect:/"; // 삭제 후 메인 페이지로 이동
+
+
     }
 
 }

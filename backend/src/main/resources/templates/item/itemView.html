@@ -221,7 +221,7 @@
     <hr class="my-4">
     <div class="container px-4 px-lg-5 mt-5">
         <div th:each="itemImage : ${item.getItemImageListDto()}" class="text-center">
-            <img class="card-img-top rounded mb-5 mb-md-0" style="padding-bottom: 50px; width: 550px; height:700px"
+            <img class="card-img-top rounded mb-5 mb-md-0" style="padding-bottom: 50px; max-width: 100%; height: auto;"
                  th:src="|/images/${itemImage.getStoreName()}|">
             <!--            class="rounded mgb-15" width="800"-->
         </div>
