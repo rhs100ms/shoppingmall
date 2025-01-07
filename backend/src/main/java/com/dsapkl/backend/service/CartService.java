@@ -29,15 +29,15 @@ public class CartService {
     private final ItemRepository itemRepository;
     private final CartItemRepository cartItemRepository;
 
-//    private final CartRepository cartRepository;
-//    private final CartQueryRepository cartQueryRepository;
-//    private final CartItemRepository cartItemRepository;
-//    private final MemberRepository memberRepository;
-//    private final ItemRepository itemRepository;
-//
-//    public Cart findCart(Long memberId) {
-//        return cartRepository.findByMemberId(memberId).orElse(null);
-//    }
+    @Transactional(readOnly = true)
+    public Cart findCart(Long memberId) {
+        return cartRepository.findByMemberId(memberId).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public CartItem findCartItem(Long cartItemId) {
+        return cartItemRepository.findById(cartItemId).orElse(null);
+    }
 
     /**
      * 장바구니 조회
@@ -48,6 +48,7 @@ public class CartService {
         List<CartQueryDto> cartQueryDtos = cartQueryRepository.findCartQueryDtos(cart.getId());
         return cartQueryDtos;
     }
+
 
     /**
      * 장바구니 담기(추가)
@@ -91,8 +92,10 @@ public class CartService {
      */
     public void deleteCartItem(Long itemId) {
         CartItem findCartItem = cartItemRepository.findById(itemId).orElse(null);
+        if (findCartItem == null) {
+            throw new IllegalArgumentException("Cart item not found with id: " + itemId);
+        }
         cartItemRepository.delete(findCartItem);
     }
-
 
 }

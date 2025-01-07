@@ -99,7 +99,7 @@ public class OrderService {
     private void deleteCartItem(CartOrderDto cartOrderDto) {
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
         for (CartForm cartForm : cartOrderDtoList) {
-            cartService.deleteCartItem(cartForm.getItemId());
+            cartService.deleteCartItem(cartForm.getCartItemId());
         }
     }
 

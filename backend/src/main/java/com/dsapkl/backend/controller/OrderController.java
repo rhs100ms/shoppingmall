@@ -9,6 +9,7 @@ import com.dsapkl.backend.exception.NotEnoughStockException;
 import com.dsapkl.backend.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.bridge.ISourceLocation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,8 @@ public class OrderController {
     @PostMapping("/order")
     @ResponseBody
     public ResponseEntity<String> order(@ModelAttribute CartForm cartForm, HttpServletRequest request) {
+
+
 
         //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
         Member member = CartController.getMember(request);
@@ -51,6 +54,8 @@ public class OrderController {
      */
     @GetMapping("/orders")
     public String findOrder(OrderStatus status, Model model, HttpServletRequest request) {
+
+
 
         Member member = CartController.getMember(request);
 
@@ -82,6 +87,8 @@ public class OrderController {
     @PostMapping("/orders")
     @ResponseBody
     public ResponseEntity<String> orders(@RequestBody CartOrderDto cartOrderDto, HttpServletRequest request) {
+
+        System.out.println("cartOrderDto 내용: " + cartOrderDto);
 
         //장바구니에서 아무 상품도 체크하지 않을 경우
         if (cartOrderDto.getCartOrderDtoList().isEmpty()) {
