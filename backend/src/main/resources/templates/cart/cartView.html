@@ -6,6 +6,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>PKLshop</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -22,7 +23,6 @@
 
 </head>
 <script th:inline="javascript">
-
     // <!-- 처음 웹페이지 로딩시 호출 -->
     $(document).ready(function(){
 
@@ -106,7 +106,6 @@
     <!-- 체크된 상품들 주문 -->
     function order() {
 
-
         var list = new Array();
 
         $("input[name=cartItemCheck]:checked").each(function() {
@@ -117,14 +116,11 @@
             obj.cartItemId = id;
             obj.itemId = itemId;
             obj.count = count;
-
-            console.log("Cart Item: ", obj);
             list.push(obj);
         })
 
         var dataDto = new Object();
         dataDto.cartOrderDtoList = list;
-        console.table(dataDto.cartOrderDtoList);
 
         $.ajax({
             url: "/orders",
@@ -145,6 +141,40 @@
         })
     }
 
+    // 주문 버튼 클릭 시 Stripe Checkout 시작
+    function initiateCheckout() {
+
+        // order();
+        const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
+        fetch('http://localhost:8888/api/checkout/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productName: 'Dample Product',
+                amount: 2000 // 금액 (단위: cents, $10.00)
+            }),
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (session) {
+                // Stripe Checkout 페이지로 리디렉트
+                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            })
+            .then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                } else {
+                    // 결제가 성공했을 때 주문 함수 호출
+                    order();
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+    }
 </script>
 
 <body>
@@ -217,7 +247,7 @@
                     <div class="card-body d-flex flex-column justify-content-center align-items-center">
                         <h5 class="mb-0" style="font-size: 18px;">총 주문 금액 : <span th:id="orderPrice" th:text='0원' style="font-size: 24px; font-weight: bold;">$499.00</span></h5>
                         <br>
-                        <button type="button" th:onclick="order()" class="btn btn-warning btn-lg">주문 하기</button>
+                        <button type="button" th:onclick="initiateCheckout()" class="btn btn-warning btn-lg">주문 하기</button>
                     </div>
                 </div>
 

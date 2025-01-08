@@ -15,7 +15,6 @@ public class CartQueryDto {
     private int count;  //주문 수량
     private int price; //상품 가격
     private String imgUrl; // 대표 상품 이미지 경로
-//    private Long itemId;
 
     public CartQueryDto(Long cartItemId, String itemName, int itemStockQuantity,  int count, int price, String imgUrl) {
         this.cartItemId = cartItemId;

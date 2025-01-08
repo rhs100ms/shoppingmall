@@ -92,9 +92,6 @@ public class CartService {
      */
     public void deleteCartItem(Long itemId) {
         CartItem findCartItem = cartItemRepository.findById(itemId).orElse(null);
-        if (findCartItem == null) {
-            throw new IllegalArgumentException("Cart item not found with id: " + itemId);
-        }
         cartItemRepository.delete(findCartItem);
     }
 

@@ -26,6 +26,14 @@ public class CartController {
 //    private final ItemImageService itemImageService;
 
     /**
+     *  checkout 임시
+     */
+    @GetMapping("/checkout")
+    public String checkout(Model model) {
+        return "checkout/checkoutdemo";
+    }
+
+    /**
      *  장바구니 조회
      */
     @GetMapping("/cart")
