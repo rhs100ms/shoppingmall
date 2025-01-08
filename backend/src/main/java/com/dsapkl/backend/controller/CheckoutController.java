@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,6 @@ public class CheckoutController {
 
         List<CartQueryDto> cartOrderList = request.getCartQueryDto();
 
-        System.out.println(cartOrderList);
-
         long totalAmount = cartOrderList.stream()
                                         .mapToLong(item -> item.getCount() * item.getPrice())
                                         .sum();
@@ -44,27 +43,34 @@ public class CheckoutController {
         // Stripe 비밀키 설정
         Stripe.apiKey = secretKey;
 
-        // Line Item 설정 (결제할 상품 정보)
-        SessionCreateParams.LineItem lineItem =
-                SessionCreateParams.LineItem.builder()
-                        .setPriceData(
-                                SessionCreateParams.LineItem.PriceData.builder()
-                                        .setCurrency("krw") // 통화 설정
-                                        .setUnitAmount(totalAmount) // 금액 설정 (단위: cents)
-                                        .setProductData(
-                                                SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                        .setName("Selected Products") // 상품명
-                                                        .build()
-                                        )
-                                        .build()
-                        )
-                        .setQuantity(1L)
-                        .build();
+
+        List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();
+        for(CartQueryDto item : cartOrderList) {
+            SessionCreateParams.LineItem lineItem =
+                    SessionCreateParams.LineItem.builder()
+                            .setPriceData(
+                                    SessionCreateParams.LineItem.PriceData.builder()
+                                            .setCurrency("krw") // 통화 설정
+                                            .setUnitAmount((long)item.getPrice()) // 금액 설정 (단위: cents)
+                                            .setProductData(
+                                                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                            .setName(item.getItemName()) // 상품명
+                                                            .build()
+                                            )
+                                            .build()
+                            )
+                            .setQuantity((long)item.getCount())
+                            .build();
+
+            lineItems.add(lineItem);
+        }
+        //
+
 
         // Checkout 세션 생성
         SessionCreateParams params =
                 SessionCreateParams.builder()
-                        .addLineItem(lineItem)
+                        .addAllLineItem(lineItems)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
                         .setSuccessUrl("http://localhost:8888/cart") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
