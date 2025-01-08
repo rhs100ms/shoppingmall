@@ -2,12 +2,15 @@ package com.dsapkl.backend.repository.query;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Data
+@NoArgsConstructor
 public class CartQueryDto {
+
     private Long cartItemId;
     private Long itemId;
     private String itemName;  //상품명
@@ -23,6 +26,14 @@ public class CartQueryDto {
         this.count = count;
         this.price = price;
         this.imgUrl = imgUrl;
+    }
+
+    public CartQueryDto(Long cartItemId, Long itemId, int count, int price, String itemName) {
+        this.cartItemId = cartItemId;
+        this.itemId = itemId;
+        this.count = count;
+        this.price = price;
+        this.itemName = itemName;
     }
 
     public CartQueryDto(Long cartItemId, Long itemId, String itemName, int itemStockQuantity,  int count, int price, String imgUrl) {

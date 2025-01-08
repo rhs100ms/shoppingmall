@@ -10,4 +10,5 @@ public class CartForm {
     private Long itemId;
     private Long cartItemId;
     private int count;
+
 }

@@ -1,6 +1,10 @@
 package com.dsapkl.backend.controller;
 
+import com.dsapkl.backend.controller.dto.CartForm;
+import com.dsapkl.backend.controller.dto.CartOrderServiceDto;
+import com.dsapkl.backend.controller.dto.DataDto;
 import com.dsapkl.backend.dto.CheckoutRequest;
+import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -16,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,7 +31,16 @@ public class CheckoutController {
     private String secretKey;
 
     @PostMapping("/checkout/create-checkout-session")
-    public Map<String, String> createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException {
+    public Map<String, String> createCheckoutSession(@RequestBody DataDto request) throws StripeException {
+
+        List<CartQueryDto> cartOrderList = request.getCartQueryDto();
+
+        System.out.println(cartOrderList);
+
+        long totalAmount = cartOrderList.stream()
+                                        .mapToLong(item -> item.getCount() * item.getPrice())
+                                        .sum();
+
         // Stripe 비밀키 설정
         Stripe.apiKey = secretKey;
 
@@ -36,10 +50,10 @@ public class CheckoutController {
                         .setPriceData(
                                 SessionCreateParams.LineItem.PriceData.builder()
                                         .setCurrency("krw") // 통화 설정
-                                        .setUnitAmount(request.getAmount()) // 금액 설정 (단위: cents)
+                                        .setUnitAmount(totalAmount) // 금액 설정 (단위: cents)
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                        .setName(request.getProductName()) // 상품명
+                                                        .setName("Selected Products") // 상품명
                                                         .build()
                                         )
                                         .build()
