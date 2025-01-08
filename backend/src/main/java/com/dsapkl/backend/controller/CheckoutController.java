@@ -5,6 +5,8 @@ import com.dsapkl.backend.controller.dto.CartOrderServiceDto;
 import com.dsapkl.backend.controller.dto.DataDto;
 import com.dsapkl.backend.dto.CheckoutRequest;
 import com.dsapkl.backend.repository.query.CartQueryDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -32,7 +34,7 @@ public class CheckoutController {
     private String secretKey;
 
     @PostMapping("/checkout/create-checkout-session")
-    public Map<String, String> createCheckoutSession(@RequestBody DataDto request) throws StripeException {
+    public Map<String, String> createCheckoutSession(@RequestBody DataDto request) throws StripeException, JsonProcessingException {
 
         List<CartQueryDto> cartOrderList = request.getCartQueryDto();
 
@@ -64,15 +66,14 @@ public class CheckoutController {
 
             lineItems.add(lineItem);
         }
-        //
-
 
         // Checkout 세션 생성
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .addAllLineItem(lineItems)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
-                        .setSuccessUrl("http://localhost:8888/cart") // 성공 시 리다이렉트 URL
+                        .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(cartOrderList))
+                        .setSuccessUrl("http://localhost:8888/cart?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
                         .build();
 
