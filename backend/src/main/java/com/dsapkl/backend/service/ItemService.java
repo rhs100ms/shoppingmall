@@ -57,7 +57,7 @@ public class ItemService {
 
         Item findItem = itemRepository.findById(itemServiceDTO.getId()).orElse(null);  //DB에서 찾아옴 -> 영속 상태
 
-        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getDescription(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity());
+        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity(), itemServiceDTO.getDescription());
 
         //상품 이미지를 수정(삭제, 추가) 하지 않으면 실행 x
         if(!multipartFileList.get(0).isEmpty()) {
@@ -83,8 +83,8 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public Item findItem(Long ItemId) {
-
-        return itemRepository.findById(ItemId).orElse(null);
+        return itemRepository.findById(ItemId)
+            .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다. ID: " + ItemId));
     }
 
     /**
@@ -104,5 +104,13 @@ public class ItemService {
 
         // 상품 삭제
         itemRepository.delete(item);
+    }
+
+    @Transactional
+    public void updateItem(Long itemId, String name, int price, int stockQuantity, String description) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        
+        item.updateItem(name, price, stockQuantity, description);
     }
 }

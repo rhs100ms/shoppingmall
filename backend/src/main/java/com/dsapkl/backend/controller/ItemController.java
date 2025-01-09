@@ -65,6 +65,10 @@ public class ItemController {
     @GetMapping("items/{itemId}")
     public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
         Item item = itemService.findItem(itemId);
+        if (item == null) {
+            return "redirect:/";  // 또는 에러 페이지로 리다이렉트
+        }
+
         List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
 
         //엔티티 -> DTO
@@ -72,16 +76,9 @@ public class ItemController {
                 .map(ItemImageDto::new)
                 .collect(Collectors.toList());
 
-        ItemForm itemform = new ItemForm(
-                item.getId(),
-                item.getName(),
-                item.getPrice(),
-                item.getStockQuantity(),
-                item.getDescription(),
-                itemImageDtoList
-        );
-
-        model.addAttribute("item", itemform);
+        ItemForm itemForm = ItemForm.from(item);
+        itemForm.setItemImageListDto(itemImageDtoList);
+        model.addAttribute("item", itemForm);
 
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
@@ -93,6 +90,8 @@ public class ItemController {
             model.addAttribute("cartItemListForm", cartItemListForm);
             model.addAttribute("cartItemCount", cartItemCount);
         }
+
+        model.addAttribute("currentMemberId", member != null ? member.getId() : null);
 
         return "item/itemView";
     }
@@ -106,6 +105,25 @@ public class ItemController {
         return "redirect:/"; // 삭제 후 메인 페이지로 이동
 
 
+    }
+
+    @PostMapping("/items/{itemId}/edit")
+    public String updateItem(@PathVariable("itemId") Long itemId,
+                             @RequestParam("name") String name,
+                             @RequestParam("price") int price,
+                             @RequestParam("stockQuantity") int stockQuantity,
+                             @RequestParam("description") String description,
+                             @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages) throws IOException {
+        
+        // 상품 수정 로직
+        itemService.updateItem(itemId, name, price, stockQuantity, description);
+        
+        // 이미지가 있다면 이미지도 수정
+        if (itemImages != null && !itemImages.isEmpty() && !itemImages.get(0).isEmpty()) {
+            itemImageService.updateItemImages(itemId, itemImages);
+        }
+        
+        return "redirect:/items/" + itemId;
     }
 
 }

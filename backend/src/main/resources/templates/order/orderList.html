@@ -26,25 +26,24 @@
 
     <!-- 주문 취소 -->
     function cancel(orderId) {
+        if (!confirm('주문을 취소하시겠습니까?')) {
+            return;
+        }
+        
         var url = "/order/" + orderId + "/cancel"
-
         $.ajax({
             url : url,
             type: 'POST',
-
-            <!-- 성공시 -->
+            contentType: 'application/json',
             success: function (result) {
                 alert("주문이 취소되었습니다.");
                 location.href="/orders"
             },
-            <!-- 실패시 -->
             error: function (jqXHR) {
                 alert(jqXHR.responseText);
                 location.href = "/orders";
             }
-
         })
-
     }
 
 </script>
@@ -94,7 +93,8 @@
                                                 <p class="text-muted mb-0 small" th:field="${orderItem.count}" th:text="'주문 수량 : ' + ${orderItem.count}">주문 수량: 1</p>
                                             </div>
                                             <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                                <p class="text-muted mb-0 small" th:field="${orderItem.orderPrice}" th:text=|${orderItem.orderPrice}원|>$399</p>
+                                                <p class="text-muted mb-0 small" th:field="${orderItem.orderPrice}" 
+                                                   th:text="|${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')}원|">$399</p>
                                             </div>
                                         </div>
                                         <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
@@ -121,8 +121,8 @@
                             <div class="card-footer border-0 px-4 py-5"
                                  style=" border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="text-uppercase mb-0">총 주문
-                                        가격: <span th:text=|${order.totalPrice}원| class="h2 mb-0 ms-2">$1040</span>
+                                    <h6 class="text-uppercase mb-0">총 주문 가격: 
+                                        <span th:text="|${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}원|" class="h2 mb-0 ms-2">$1040</span>
                                     </h6>
 
                                     <th:block th:if="${order.orderStatus.name() == 'ORDER'}">

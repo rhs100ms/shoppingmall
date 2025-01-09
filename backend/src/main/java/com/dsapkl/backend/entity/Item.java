@@ -27,6 +27,9 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImageList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<Review> reviews = new ArrayList<>();
+
     //== 연관 관계 편의 메소드 ==//
     public void addItemImage(ItemImage itemImage) {
         itemImageList.add(itemImage);
@@ -48,11 +51,11 @@ public class Item {
         return new Item(name, price, stockQuantity, description);
     }
 
-    public void updateItem(String name, String description, int price, int stockQuantity) {
+    public void updateItem(String name, int price, int stockQuantity, String description) {
         this.name = name;
-        this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.description = description;
     }
 
 
@@ -70,6 +73,20 @@ public class Item {
     //주문 취소시 상품 재고 증가
     public void addStock(int quantity) {
         stockQuantity += quantity;
+    }
+
+    // 평균 평점 계산 메서드
+    public double getAverageRating() {
+        if (reviews.isEmpty()) return 0.0;
+        return reviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+    }
+
+    // 리뷰 수 조회 메서드
+    public int getReviewCount() {
+        return reviews.size();
     }
 
 }

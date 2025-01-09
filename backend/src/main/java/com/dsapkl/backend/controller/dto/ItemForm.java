@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.dto;
 
+import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.service.dto.ItemServiceDTO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemForm {
 
-    private Long itemId;
+    private Long id;
 
     @NotEmpty(message = "상품 이름은 필수입니다.")
     private String name;
@@ -32,9 +34,33 @@ public class ItemForm {
 
     private List<ItemImageDto> itemImageListDto = new ArrayList<>();
 
+    private double averageRating;
+
+    private int reviewCount;
+
+    @Builder
+    public ItemForm(String name, int price, int stockQuantity, String description) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.description = description;
+    }
+
+    public static ItemForm from(Item item) {
+        ItemForm form = new ItemForm();
+        form.setId(item.getId());
+        form.setName(item.getName());
+        form.setPrice(item.getPrice());
+        form.setStockQuantity(item.getStockQuantity());
+        form.setDescription(item.getDescription());
+        form.setAverageRating(item.getAverageRating());
+        form.setReviewCount(item.getReviewCount());
+        return form;
+    }
+
     public ItemServiceDTO toServiceDTO() {
         return ItemServiceDTO.builder()
-                .id(itemId)
+                .id(id)
                 .name(name)
                 .price(price)
                 .stockQuantity(stockQuantity)

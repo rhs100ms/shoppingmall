@@ -26,32 +26,44 @@
     // <!-- 처음 웹페이지 로딩시 호출 -->
     $(document).ready(function(){
 
-        // <!-- count 값이 변경될때마다 호출 -->
-        // $("#count").change(function(){
-        //     calculateTotalPrice();
-        // });
-
+        // 체크박스 이벤트와 초기 계산을 한 번에 처리
         $("input[name=cartItemCheck]").change(function() {
             calculateTotalPrice();
-        })
+        });
+
+        // 각 상품의 초기 가격 계산
+        $("[id^='count_']").each(function() {
+            var itemId = $(this).attr("cartItemId");
+            calculateItemPrice(itemId);
+        });
+
+        // 페이지 로드 시 초기 총액 계산
+        calculateTotalPrice();
     });
 
     <!-- 장바구니 상품 금액 계산 -->
     function calculateItemPrice(itemId){
-
         var count = $("#count_" + itemId).val();
-        var price = $("#price_" + itemId).val();
+        count = parseInt(count) || 1;  // NaN 방지
+        if (count < 1) {
+            count = 1;
+            $("#count_" + itemId).val(1);
+        }
+        var stockQuantity = parseInt($("#count_" + itemId).attr("max")) || 0;
+        if (count > stockQuantity) {
+            count = stockQuantity;
+            $("#count_" + itemId).val(stockQuantity);
+            alert("재고 수량을 초과할 수 없습니다.");
+        }
 
-        var totalPrice = price*count;
-        $("#resultPrice_" + itemId).html(totalPrice + '원');
+        var price = parseInt($("#price_" + itemId).val()) || 0;
+        var totalPrice = price * count;
+        $("#resultPrice_" + itemId).html(totalPrice.toLocaleString() + '원');
     }
 
     function changeCount(itemId) {
-        <!-- 체크박스 표시되어있으면 -->
-        if ($("#cartItemCheck_" + itemId).is(":checked")) {
-            calculateTotalPrice();
-        }
         calculateItemPrice(itemId);
+        calculateTotalPrice();  // 수량이 변경될 때마다 항상 총액 업데이트
     }
 
     <!-- 장바구니 상품 삭제 -->
@@ -85,11 +97,20 @@
         var totalPrice = 0;
         $("input[name=cartItemCheck]:checked").each(function() {
             var id = $(this).val();
-            var price = $("#price_" + id).val()*1;
-            var count = $("#count_" + id).val();
-            totalPrice += price*count;
+            var price = parseInt($("#price_" + id).val());
+            var count = parseInt($("#count_" + id).val());
+            if (count < 1) {
+                count = 1;
+                $("#count_" + id).val(1);
+            }
+            var stockQuantity = parseInt($("#count_" + id).attr("max"));
+            if (count > stockQuantity) {
+                count = stockQuantity;
+                $("#count_" + id).val(stockQuantity);
+            }
+            totalPrice += price * count;
         })
-        $("#orderPrice").html(totalPrice+ '원');
+        $("#orderPrice").html(totalPrice.toLocaleString() + '원');
     }
 
     <!-- 전체 선택, 해제 -->
@@ -189,16 +210,22 @@
                             <div class="col-md-3 col-lg-2 col-xl-2">
                                 <p>
                                     <span class="text-muted">&nbsp 구매 가능 수량</span><br>
-                                    <span style="color: red; display: flex; justify-content: center;" th:text="${cartItem.itemStockQuantity}"></span>
+                                    <span style="color: red; display: flex; justify-content: center;" 
+                                          th:text="${#numbers.formatInteger(cartItem.itemStockQuantity, 0, 'COMMA')}"></span>
                                 </p>
-                                <input th:id="'count_' + ${cartItem.cartItemId}" name="count" th:value="${cartItem.count}" min="0" value="1" type="number" th:cartItemId="${cartItem.cartItemId}"
-                                       onchange="changeCount(this.getAttribute('cartItemId'))" class="form-control form-control-sm" />
+                                <input th:id="'count_' + ${cartItem.cartItemId}" name="count" th:value="${cartItem.count}" 
+                                       min="1" th:max="${cartItem.itemStockQuantity}" value="1" type="number"
+                                       oninput="this.value = this.value < 1 ? 1 : this.value"
+                                       th:cartItemId="${cartItem.cartItemId}"
+                                       onchange="changeCount(this.getAttribute('cartItemId'))" 
+                                       class="form-control form-control-sm" />
                             </div>
                             &nbsp
                             &nbsp
                             <div class="col-md-3 col-lg-2 col-xl-2">
                                 <input type="hidden" th:value="${cartItem.price}" th:id="'price_' + ${cartItem.cartItemId}" name="price">
-                                <h5 class="mb-0" th:id="'resultPrice_' + ${cartItem.cartItemId}" th:text="${cartItem.price}*${cartItem.count}+'원'">$499.00</h5>
+                                <h5 class="mb-0" th:id="'resultPrice_' + ${cartItem.cartItemId}" 
+                                    th:text="${#numbers.formatInteger(cartItem.price * cartItem.count, 0, 'COMMA')} + '원'">$499.00</h5>
                             </div>
                             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                 <button type="button" th:cartItemId="${cartItem.cartItemId}" th:onclick="deleteCartItem(this.getAttribute('cartItemId'))">

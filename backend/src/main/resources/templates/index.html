@@ -113,9 +113,9 @@
                     <div class="card-body p-4">
                         <div class="text-center">
                             <!-- Product name -->
-                            <h5 class="fw-bolder" th:text="${item.getName()}">Product</h5>
+                            <h5 class="fw-bolder" th:text="${item.getName()}">Fancy Product</h5>
                             <!-- Product price -->
-                            <p th:text="|${item.price}₩|">price</p>
+                            <span th:text="${#numbers.formatInteger(item.getPrice(), 0, 'COMMA')}">$40.00 - $80.00</span>원
                         </div>
                     </div>
 
