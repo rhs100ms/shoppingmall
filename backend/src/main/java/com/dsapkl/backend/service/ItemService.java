@@ -77,20 +77,31 @@ public class ItemService {
 
     }
 
-    // 검색 기능
+    // 통합 검색 기능
     @Transactional(readOnly = true)
-    public List<Item> searchItemsByNames(String name) {
-        return itemRepository.findByNameContainingIgnoreCase(name);
-    }
-    // 카테고리 분류 기능
-    @Transactional(readOnly = true)
-    public List<Item> searchItemsByCategory(Category category) {
-        return itemRepository.findByCategory(category);
-    }
-    // 카테고리 + 검색어 기반 상품 조회
-    @Transactional(readOnly = true)
-    public List<Item> searchItemsByCategoryAndName(Category category, String name) {
-        return itemRepository.findByCategoryAndNameContainingIgnoreCase(category, name);
+    public List<Item> searchItems(String name, String categoryStr) {
+        Category category = null;
+        if (categoryStr != null && !categoryStr.isEmpty()) {
+            try {
+                category = Category.valueOf(categoryStr);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 카테고리 문자열이 들어온 경우 전체 상품 반환
+                return itemRepository.findAll();
+            }
+        }
+
+        if (name != null && !name.isEmpty()) {
+            if (category != null) {
+                return itemRepository.findByCategoryAndNameContainingIgnoreCase(category, name);
+            }
+            return itemRepository.findByNameContainingIgnoreCase(name);
+        }
+        
+        if (category != null) {
+            return itemRepository.findByCategory(category);
+        }
+        
+        return itemRepository.findAll();
     }
 
     @Transactional(readOnly=true)

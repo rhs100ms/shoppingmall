@@ -89,15 +89,27 @@
 </header>
 
 <!-- 검색 -->
-<form th:action="@{/}" method="get" class="d-flex">
-    <input
-            class="form-control me-2 w-75"
-            type="search"
-            placeholder="검색어 입력"
-            aria-label="Search"
-            name="query" />
-    <button class="btn btn-outline-dark w-25" type="submit">검색</button>
-</form>
+<div class="container px-4 px-lg-5 mt-3">
+    <div class="d-flex justify-content-end">
+        <form th:action="@{/}" method="get" class="d-flex" style="width: 600px;">
+            <select class="form-select me-2" name="category" style="width: 150px;">
+                <option value="">카테고리 선택</option>
+                <option value="APPAREL">의류</option>
+                <option value="ELECTRONICS">전자제품</option>
+                <option value="BOOKS">서적</option>
+                <option value="HOME_AND_KITCHEN">가구&가전</option>
+                <option value="HEALTH_AND_BEAUTY">건강&미용</option>
+            </select>
+            <input
+                class="form-control me-2"
+                type="search"
+                placeholder="검색어 입력"
+                aria-label="Search"
+                name="query" />
+            <button class="btn btn-outline-dark" style="width: 100px;" type="submit">검색</button>
+        </form>
+    </div>
+</div>
 &nbsp
 
 <!-- Section-->
