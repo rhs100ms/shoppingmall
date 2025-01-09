@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class CartItem {
 
     @Id
-    @GeneratedValue
     @Column(name = "cart_item_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int count;  //장바구니 아이템 수량
 
@@ -35,4 +35,7 @@ public class CartItem {
         return new CartItem(count, cart, item);
     }
 
+    public void changeCount(int count) {
+        this.count = count;
+    }
 }
