@@ -85,6 +85,8 @@ public class CheckoutController {
         return responseData;
     }
 
+
+
 //    // 환불 처리
 //    @PostMapping("/refund")
 //    public Map<String, String> createRefund(@RequestParam String paymentIntentId) {
@@ -105,52 +107,6 @@ public class CheckoutController {
 //        }
 //        return response;
 //    }
-
-//    // Webhook 처리
-//    @PostMapping("/webhook")
-//    public ResponseEntity<String> handleWebhook(@RequestBody String payload,
-//                                                @RequestHeader("Stripe-Signature") String sigHeader) {
-//        String endpointSecret = "your_webhook_secret";
-//        Event event;
-//
-//        try {
-//            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-//        } catch (SignatureVerificationException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
-//        }
-//
-//        if ("payment_intent.payment_failed".equals(event.getType())) {
-//            // 결제 실패 시 처리할 로직
-//            System.out.println("Payment failed for intent: " + event.getId());
-//        }
-//
-//        return ResponseEntity.ok("");
-//    }
-
-    @Value("${stripe.webhook.secret}")
-    private String endpointSecret;
-
-    @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody String payload,
-                                                @RequestHeader("Stripe-Signature") String sigHeader) {
-        Event event;
-
-        try {
-            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-        } catch (SignatureVerificationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
-        }
-
-        if ("checkout.session.completed".equals(event.getType())) {
-            // 결제 성공 이벤트 처리 로직
-            Session session = (Session) event.getData().getObject();
-
-            // 여기에 주문 정보를 DB에 저장하는 로직 추가
-            System.out.println("결제가 완료되었습니다. 주문을 저장합니다.");
-        }
-
-        return ResponseEntity.ok("");
-    }
 
 
 }

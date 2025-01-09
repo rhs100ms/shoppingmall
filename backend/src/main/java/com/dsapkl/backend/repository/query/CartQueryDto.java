@@ -45,4 +45,6 @@ public class CartQueryDto {
         this.price = price;
         this.imgUrl = imgUrl;
     }
+
+
 }

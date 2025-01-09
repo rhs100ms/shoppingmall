@@ -24,12 +24,14 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final CartService cartService;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService) {
+    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository) {
         this.itemRepository = itemRepository;
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     /**
@@ -44,13 +46,14 @@ public class OrderService {
         int orderPrice = findItem.getPrice() * count;
 
         OrderItem orderItem = OrderItem.createOrderItem(count, orderPrice, findItem);
-//        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
         Order order = Order.createOrder(orderStatus ,findMember, orderItemList);
 
         Order save = orderRepository.save(order);
+
         return save.getId();
 
     }

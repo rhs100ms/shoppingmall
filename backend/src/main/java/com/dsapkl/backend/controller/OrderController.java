@@ -55,8 +55,6 @@ public class OrderController {
     @GetMapping("/orders")
     public String findOrder(OrderStatus status, Model model, HttpServletRequest request) {
 
-
-
         Member member = CartController.getMember(request);
 
         List<OrderDto> findOrders = orderService.findOrdersDetail(member.getId(), status);

@@ -38,14 +38,6 @@ public class CartController {
     private final OrderService orderService;
 
     /**
-     *  checkout 임시
-     */
-    @GetMapping("/checkout")
-    public String checkout(Model model) {
-        return "checkout/checkoutdemo";
-    }
-
-    /**
      *  장바구니 조회
      */
     @GetMapping("/cart")
