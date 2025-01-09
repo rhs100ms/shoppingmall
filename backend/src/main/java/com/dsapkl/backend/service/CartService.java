@@ -77,7 +77,7 @@ public class CartService {
         if (cartItem == null) {
             cartItem = CartItem.createCartItem(count, cart, item);
             CartItem savedCartItem = cartItemRepository.save(cartItem);
-            log.info("cartItemId={}", cartItem.getId());
+//            log.info("cartItemId={}", cartItem.getId());
             return savedCartItem.getId();
         }
 
