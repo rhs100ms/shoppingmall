@@ -5,6 +5,7 @@ import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.OrderStatus;
 import com.dsapkl.backend.repository.OrderDto;
+import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.repository.query.MainItemDto;
 import com.dsapkl.backend.repository.query.MainItemQueryRepository;
@@ -57,24 +58,13 @@ public class HomeController {
 //}
 
     @GetMapping("/")
-    public String home( @RequestParam(value = "query", required = false) String query,
-                        @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus,
-                        Model model, HttpServletRequest request) {
+    public String home(@RequestParam(value = "query", required = false) String query,
+                      @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus,
+                      @RequestParam(value = "category", required = false) String category,
+                      Model model, HttpServletRequest request) {
 
-        //List<Item> items = itemService.findItems();
+        List<Item> items = itemService.searchItems(query, category);
 
-        List<Item> items = (query != null && !query.isEmpty())
-                ? itemService.searchItemsByNames(query)
-                : itemService.findItems();
-//        List<ItemImage> itemImages = itemImageService.findAllByDeleteYN("N");
-        //queryDSL TODO
-        //패치 조인 일반 조인 비교 TODO
-        //페이징 기능 TODO,
-
-//        //엔티티 -> DTO
-//        List<ItemListDto> itemListDto = items.stream()
-//                .map(ItemListDto::new)
-//                .collect(Collectors.toList());
         model.addAttribute("items", items);
         HttpSession session = request.getSession(false);
 
