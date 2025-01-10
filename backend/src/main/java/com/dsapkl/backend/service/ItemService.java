@@ -96,11 +96,11 @@ public class ItemService {
             }
             return itemRepository.findByNameContainingIgnoreCase(name);
         }
-        
+
         if (category != null) {
             return itemRepository.findByCategory(category);
         }
-        
+
         return itemRepository.findAll();
     }
 
