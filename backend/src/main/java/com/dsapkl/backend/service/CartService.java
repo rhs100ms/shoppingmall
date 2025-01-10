@@ -77,7 +77,7 @@ public class CartService {
         if (cartItem == null) {
             cartItem = CartItem.createCartItem(count, cart, item);
             CartItem savedCartItem = cartItemRepository.save(cartItem);
-            log.info("cartItemId={}", cartItem.getId());
+//            log.info("cartItemId={}", cartItem.getId());
             return savedCartItem.getId();
         }
 
@@ -92,9 +92,6 @@ public class CartService {
      */
     public void deleteCartItem(Long itemId) {
         CartItem findCartItem = cartItemRepository.findById(itemId).orElse(null);
-        if (findCartItem == null) {
-            throw new IllegalArgumentException("Cart item not found with id: " + itemId);
-        }
         cartItemRepository.delete(findCartItem);
     }
 

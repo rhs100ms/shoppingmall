@@ -10,4 +10,19 @@ public class CartForm {
     private Long itemId;
     private Long cartItemId;
     private int count;
+
+    // 기본 생성자 추가
+    public CartForm() {
+    }
+
+    public CartForm(Long itemId, Long cartItemId, int count) {
+        this.itemId = itemId;
+        this.cartItemId = cartItemId;
+        this.count = count;
+    }
+
+    public CartForm(Long itemId,  int count) {
+        this.itemId = itemId;
+        this.count = count;
+    }
 }

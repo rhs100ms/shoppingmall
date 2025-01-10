@@ -4,6 +4,12 @@ import com.dsapkl.backend.controller.dto.CartForm;
 import com.dsapkl.backend.controller.dto.CartOrderDto;
 import com.dsapkl.backend.repository.*;
 import com.dsapkl.backend.entity.*;
+import com.stripe.exception.StripeException;
+import com.stripe.model.LineItem;
+import com.stripe.model.StripeCollection;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionListLineItemsParams;
+import com.stripe.param.checkout.SessionListParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +24,14 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final CartService cartService;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService) {
+    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository) {
         this.itemRepository = itemRepository;
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     /**
@@ -38,13 +46,14 @@ public class OrderService {
         int orderPrice = findItem.getPrice() * count;
 
         OrderItem orderItem = OrderItem.createOrderItem(count, orderPrice, findItem);
-//        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
         Order order = Order.createOrder(orderStatus ,findMember, orderItemList);
 
         Order save = orderRepository.save(order);
+
         return save.getId();
 
     }
@@ -112,5 +121,14 @@ public class OrderService {
         orderRepository.flush();
     }
 
+    public List<LineItem> retrieveLineItems(String sessionId) throws StripeException {
 
+        Session session = Session.retrieve(sessionId);
+
+        //Line Items 조회
+        SessionListLineItemsParams params = SessionListLineItemsParams.builder().build();
+        StripeCollection<LineItem> lineItemCollection = session.listLineItems(params);
+
+        return lineItemCollection.getData();
+    }
 }

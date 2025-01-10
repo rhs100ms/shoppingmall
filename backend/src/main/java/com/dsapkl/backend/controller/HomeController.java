@@ -3,11 +3,14 @@ package com.dsapkl.backend.controller;
 import com.dsapkl.backend.controller.dto.ItemSearchCondition;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.OrderStatus;
+import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.repository.query.MainItemDto;
 import com.dsapkl.backend.repository.query.MainItemQueryRepository;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemService;
+import com.dsapkl.backend.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +30,12 @@ import java.util.Optional;
 import static com.dsapkl.backend.controller.CartController.getMember;
 
 @Controller
-//@Slf4j
+@Slf4j
 @RequiredArgsConstructor
 public class HomeController {
     private final ItemService itemService;
     private final CartService cartService;
+    private final OrderService orderService;
 //    private final MainItemQueryRepository mainItemQueryRepository;
 //    private final ItemService itemService;
 //    private final ItemImageService itemImageService;
@@ -54,6 +58,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home( @RequestParam(value = "query", required = false) String query,
+                        @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus,
                         Model model, HttpServletRequest request) {
 
         //List<Item> items = itemService.findItems();
@@ -86,6 +91,15 @@ public class HomeController {
         int cartItemCount = cartItemListForm.size();
         model.addAttribute("cartItemListForm", cartItemListForm);
         model.addAttribute("cartItemCount", cartItemCount);
+
+        List<OrderDto> ordersDetail = orderService.findOrdersDetail(member.getId(), orderStatus);
+//        ordersDetail.forEach(order -> log.info("Order: {}", order));
+
+        long orderCount = ordersDetail.stream()
+                                      .filter(order -> order.getOrderStatus() == OrderStatus.ORDER)
+                                      .count();
+
+        model.addAttribute("orderCount", orderCount);
 
         return "index";
     }

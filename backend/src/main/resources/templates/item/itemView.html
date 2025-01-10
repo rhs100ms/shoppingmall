@@ -6,6 +6,7 @@
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <title>PKLshop</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Bootstrap icons-->
@@ -82,15 +83,22 @@
 
     <!-- 단일 상품 바로 주문 -->
     function order() {
-
-
         var itemId = $("#id").val();
         var count = $("#count").val();
+        var price = $("#price").val();
+        var totalPrice = price * count;
+        var itemName = $("#name").text();
+
+        // console.log("itemId: " , itemId);
+        // console.log("count: " , count);
+        // console.log("price: " , totalPrice);
+        // console.log("itemName: " , itemName);
+
+
         var cartForm = {
             itemId: itemId,
             count: count
         };
-
         $.ajax({
             url: "/order",
             data: cartForm,
@@ -113,7 +121,68 @@
         })
     }
 
+    // 주문 버튼 클릭 시 Stripe Checkout 시작
+    function initiateCheckout() {
 
+        const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
+            // var list = new Array();
+            var itemId = $("#id").val();
+            var count = $("#count").val();
+            var price = $("#price").val();
+            // var totalPrice = price * count;
+            var itemName = $("#name").text();
+            // var obj = new Object();
+
+            // console.log("itemId: " , itemId);
+            // console.log("count: " , count);
+            // console.log("count: " , price);
+            // console.log("price: " , totalPrice);
+            // console.log("itemName: " , itemName);
+
+            // obj.cartItemId = id;
+            // obj.itemId = itemId;
+            // obj.count = count;
+            // obj.price = price;
+            // obj.itemName = itemName;
+            // list.push(obj);
+
+            var cartForm = {
+                itemId: itemId,
+                count: count,
+                price: price,
+                itemName: itemName
+            };
+
+        // var dataDto = new Object();
+        // dataDto.cartQueryDto = list;
+
+        // console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
+
+        fetch('http://localhost:8888/api/checkout/create-checkout-session-single', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cartForm)
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (session) {
+                // Stripe Checkout 페이지로 리디렉트
+                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            })
+            .then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                } else {
+                    // 결제가 성공했을 때 주문 함수 호출
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+    }
 </script>
 
 <body>
@@ -150,7 +219,7 @@
             </div>
 
             <div class="col-md-6">
-                <h1 class="display-5 fw-bolder" th:text="${item.getName()}">Shop item template</h1>
+                <h1 class="display-5 fw-bolder" th:text="${item.getName()}" id="name">Shop item template</h1>
                 <input type="hidden" th:value="${item.itemId}" id="id" name="id">
                 <div class="fs-5 mb-5">
                     <input type="hidden" th:value="${item.price}" id="price" name="price">
@@ -190,7 +259,7 @@
                 <div class="d-flex">
 
                     <button class="btn btn-outline-dark"
-                            type="button" th:onclick="order()">
+                            type="button" th:onclick="initiateCheckout()">
                         바로 구매하기
                     </button>
 
