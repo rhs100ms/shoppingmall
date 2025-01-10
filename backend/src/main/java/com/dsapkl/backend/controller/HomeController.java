@@ -60,7 +60,7 @@ public class HomeController {
 
         List<Item> items = (query != null && !query.isEmpty())
                 ? itemService.searchItemsByNames(query)
-                : itemService.findItems();
+                : itemService.findItemsPaging();
 //        List<ItemImage> itemImages = itemImageService.findAllByDeleteYN("N");
         //queryDSL TODO
         //패치 조인 일반 조인 비교 TODO

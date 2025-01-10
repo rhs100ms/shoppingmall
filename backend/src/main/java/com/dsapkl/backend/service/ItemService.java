@@ -40,7 +40,6 @@ public class ItemService {
         List<ItemImage> itemImages = filehandler.storeImages(multipartFileList);
 
         //대표 상품 이미지 설정
-
         if (!itemImages.isEmpty()) {
             itemImages.get(0).isFirstImage("Y");  // 첫 번째 이미지를 대표 이미지로 설정
         }
@@ -55,26 +54,30 @@ public class ItemService {
     }
 
     //상품 정보 업데이트 (Dirty Checking, 변경감지)
-    public void updateItem(ItemServiceDTO itemServiceDTO,  List<MultipartFile> multipartFileList) throws IOException {
+    @Transactional
+    public void updateItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
+        Item findItem = itemRepository.findById(itemServiceDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
-        Item findItem = itemRepository.findById(itemServiceDTO.getId()).orElse(null);  //DB에서 찾아옴 -> 영속 상태
+        findItem.updateItem(
+                itemServiceDTO.getName(),
+                itemServiceDTO.getPrice(),
+                itemServiceDTO.getStockQuantity(),
+                itemServiceDTO.getDescription(),
+                itemServiceDTO.getCategory()
+        );
 
-        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getDescription(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity(), itemServiceDTO.getCategory());
-
-        //상품 이미지를 수정(삭제, 추가) 하지 않으면 실행 x
         if(!multipartFileList.get(0).isEmpty()) {
             itemImageService.addItemImage(multipartFileList, findItem);
         }
-
-        //대표 이미지 재설정
-        List<ItemImage> itemImageList = itemImageRepository.findByItemIdAndDeleteYN(itemServiceDTO.getId(), "N");
-        itemImageList.get(0).isFirstImage("Y");
     }
 
-    @Transactional(readOnly=true)
-    public List<Item> findItems() {
-        return itemRepository.findAll();
-
+    @Transactional
+    public void updateItem(Long itemId, String name, int price, int stockQuantity, String description) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        
+        item.updateItem(name, price, stockQuantity, description, item.getCategory());
     }
 
     // 검색 기능
@@ -82,11 +85,13 @@ public class ItemService {
     public List<Item> searchItemsByNames(String name) {
         return itemRepository.findByNameContainingIgnoreCase(name);
     }
+
     // 카테고리 분류 기능
     @Transactional(readOnly = true)
     public List<Item> searchItemsByCategory(Category category) {
         return itemRepository.findByCategory(category);
     }
+
     // 카테고리 + 검색어 기반 상품 조회
     @Transactional(readOnly = true)
     public List<Item> searchItemsByCategoryAndName(Category category, String name) {
@@ -99,11 +104,10 @@ public class ItemService {
         return result.getContent();
     }
 
-
     @Transactional(readOnly = true)
     public Item findItem(Long ItemId) {
-
-        return itemRepository.findById(ItemId).orElse(null);
+        return itemRepository.findById(ItemId)
+            .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다. ID: " + ItemId));
     }
 
     /**
@@ -111,7 +115,8 @@ public class ItemService {
      */
     public void deleteItem(Long itemId) {
         // 삭제 전 존재 여부 확인
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found with ID: " + itemId));
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new IllegalArgumentException("Item not found with ID: " + itemId));
 
         // 관련 이미지 삭제 처리
         List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(itemId,"N");

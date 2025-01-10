@@ -43,18 +43,17 @@
             </select>
         </div>
         <br>
-        <div>
-            <label for="price">가격</label>
-            <input type="number" id="price" th:field="*{price}" class="form-control" placeholder="가격을 입력해주세요"
-                   th:errorclass="field-error">
-            <div class="field-error" th:errors="*{price}" />
+        <div class="form-group">
+            <label th:for="price">가격</label>
+            <input type="number" th:field="*{price}" class="form-control"
+                  placeholder="가격을 입력하세요" min="0" step="1">
         </div>
         <br>
-        <div>
-            <label for="stockQuantity">재고 수량</label>
-            <input type="number" id="stockQuantity" th:field="*{stockQuantity}" class="form-control" placeholder="재고 수량을 입력해주세요"
-                   th:errorclass="field-error">
-            <div class="field-error" th:errors="*{stockQuantity}" />
+        <div class="form-group">
+            <label th:for="stockQuantity">재고수량</label>
+            <input type="number" th:field="*{stockQuantity}" class="form-control"
+                   placeholder="재고수량을 입력하세요">
+            <p th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}">Incorrect date</p>
         </div>
         <br>
         <div>
@@ -85,15 +84,32 @@
                     reader.onload = function(e) {
                         const img = document.createElement("img");
                         img.src = e.target.result;
-                        img.style.width = "100px";
-                        img.style.height = "100px";
+                        img.style.width = "200px";
+                        img.style.height = "200px";
+                        img.style.objectFit = "contain";
                         img.style.marginRight = "10px";
+                        img.style.marginBottom = "10px";
                         previewContainer.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 });
             });
         </script>
+
+        <style>
+            .preview-images {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .preview-images img {
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 5px;
+            }
+        </style>
 
         <div class="preview-images"></div>
 

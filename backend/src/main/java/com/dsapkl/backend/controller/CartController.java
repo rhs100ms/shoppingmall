@@ -2,6 +2,7 @@ package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.CartForm;
 import com.dsapkl.backend.controller.dto.CartItemForm;
+import com.dsapkl.backend.controller.dto.CartResponse;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
@@ -14,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -38,8 +44,10 @@ public class CartController {
         }
 
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+        int cartItemCount = cartItemListForm.size();
 
         model.addAttribute("cartItemListForm", cartItemListForm);
+        model.addAttribute("cartItemCount", cartItemCount);
 
         return "cart/cartView";
     }
@@ -48,17 +56,18 @@ public class CartController {
      *  장바구니 담기
      */
     @PostMapping("/cart")
-    @ResponseBody
-    public ResponseEntity<String> addCart(@ModelAttribute CartForm cartForm, HttpServletRequest request) {
-
+    public ResponseEntity<?> addCart(@RequestParam Long itemId,
+                                   @RequestParam int count,
+                                   HttpServletRequest request) {
         Member member = getMember(request);
-        //비로그인 회원은 장바구니를 가질 수 없다.
         if (member == null) {
-            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("로그인이 필요합니다.");
         }
 
-        cartService.addCart(member.getId(), cartForm.getItemId(), cartForm.getCount());
-        return ResponseEntity.ok("success");
+        cartService.addCart(member.getId(), itemId, count);
+        List<CartQueryDto> cartItems = cartService.findCartItems(member.getId());
+        return ResponseEntity.ok().body(new CartResponse(cartItems.size(), cartItems));
     }
 
     @DeleteMapping("/cart")
