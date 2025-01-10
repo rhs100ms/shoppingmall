@@ -6,6 +6,7 @@
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <title>PKLshop</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Bootstrap icons-->
@@ -124,23 +125,45 @@
     function initiateCheckout() {
 
         const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
-
+            // var list = new Array();
             var itemId = $("#id").val();
             var count = $("#count").val();
             var price = $("#price").val();
-            var totalPrice = price * count;
+            // var totalPrice = price * count;
             var itemName = $("#name").text();
+            // var obj = new Object();
 
-        var dataDto = new Object();
-        dataDto.cartQueryDto = list;
-        console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
+            // console.log("itemId: " , itemId);
+            // console.log("count: " , count);
+            // console.log("count: " , price);
+            // console.log("price: " , totalPrice);
+            // console.log("itemName: " , itemName);
 
-        fetch('http://localhost:8888/api/checkout/create-checkout-session', {
+            // obj.cartItemId = id;
+            // obj.itemId = itemId;
+            // obj.count = count;
+            // obj.price = price;
+            // obj.itemName = itemName;
+            // list.push(obj);
+
+            var cartForm = {
+                itemId: itemId,
+                count: count,
+                price: price,
+                itemName: itemName
+            };
+
+        // var dataDto = new Object();
+        // dataDto.cartQueryDto = list;
+
+        // console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
+
+        fetch('http://localhost:8888/api/checkout/create-checkout-session-single', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(dataDto)
+            body: JSON.stringify(cartForm)
         })
             .then(function (response) {
                 return response.json();
@@ -236,7 +259,7 @@
                 <div class="d-flex">
 
                     <button class="btn btn-outline-dark"
-                            type="button" th:onclick="order()">
+                            type="button" th:onclick="initiateCheckout()">
                         바로 구매하기
                     </button>
 

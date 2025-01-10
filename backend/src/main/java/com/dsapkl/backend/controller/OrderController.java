@@ -2,19 +2,24 @@ package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.CartForm;
 import com.dsapkl.backend.controller.dto.CartOrderDto;
+import com.dsapkl.backend.dto.CheckoutRequest;
 import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.OrderStatus;
 import com.dsapkl.backend.exception.NotEnoughStockException;
 import com.dsapkl.backend.service.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.bridge.ISourceLocation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -30,8 +35,6 @@ public class OrderController {
     @PostMapping("/order")
     @ResponseBody
     public ResponseEntity<String> order(@ModelAttribute CartForm cartForm, HttpServletRequest request) {
-
-
 
         //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
         Member member = CartController.getMember(request);
@@ -53,7 +56,42 @@ public class OrderController {
      * 주문 내역 조회
      */
     @GetMapping("/orders")
-    public String findOrder(OrderStatus status, Model model, HttpServletRequest request) {
+    public String findOrder(@RequestParam(required = false) String sessionId, OrderStatus status, Model model, HttpServletRequest request) throws JsonProcessingException {
+
+        Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+        if (sessionId != null) {
+            try{
+                Session session = Session.retrieve(sessionId);
+                String jsessionId = request.getSession().getId();
+                String orderInfoJson = session.getMetadata().get("orderInfo");
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                CheckoutRequest checkoutRequest = objectMapper.readValue(orderInfoJson, CheckoutRequest.class);
+//                List<LineItem> lineItems = orderService.retrieveLineItems(sessionId);
+//                lineItems.forEach(lineItem -> System.out.println("LineItem: " + lineItem));
+//                cartOrderList.forEach(cartOrder -> System.out.println("CartOrderList: " + cartOrder));
+                model.addAttribute("checkoutRequest", checkoutRequest);
+
+                CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount());
+                model.addAttribute("cartForm", cartForm);
+
+                RestTemplate restTemplate = new RestTemplate();
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                headers.add("Cookie", "JSESSIONID=" + jsessionId);
+
+                HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
+
+                ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, String.class);
+//                System.out.println("Response from orders: " + response.getBody());
+
+            } catch (StripeException e) {
+                e.printStackTrace();
+                model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
+            }
+        }
 
         Member member = CartController.getMember(request);
 

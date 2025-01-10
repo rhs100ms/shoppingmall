@@ -161,14 +161,14 @@
             obj.itemId = itemId;
             obj.count = count;
             obj.price = price;
-            obj.itemName = itemName
+            obj.itemName = itemName;
             list.push(obj);
         })
             var dataDto = new Object();
             dataDto.cartQueryDto = list;
             console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
 
-        fetch('http://localhost:8888/api/checkout/create-checkout-session', {
+        fetch('http://localhost:8888/api/checkout/create-checkout-session-multi', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

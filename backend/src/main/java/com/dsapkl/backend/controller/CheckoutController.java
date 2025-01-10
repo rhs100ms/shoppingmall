@@ -33,7 +33,7 @@ public class CheckoutController {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
-    @PostMapping("/checkout/create-checkout-session")
+    @PostMapping("/checkout/create-checkout-session-multi")
     public Map<String, String> createCheckoutSession(@RequestBody DataDto request) throws StripeException, JsonProcessingException {
 
         List<CartQueryDto> cartOrderList = request.getCartQueryDto();
@@ -53,7 +53,7 @@ public class CheckoutController {
                             .setPriceData(
                                     SessionCreateParams.LineItem.PriceData.builder()
                                             .setCurrency("krw") // 통화 설정
-                                            .setUnitAmount((long)item.getPrice()) // 금액 설정 (단위: cents)
+                                            .setUnitAmount((long)item.getPrice()) // 금액 설정 (단위: won)
                                             .setProductData(
                                                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                                             .setName(item.getItemName()) // 상품명
@@ -85,6 +85,45 @@ public class CheckoutController {
         return responseData;
     }
 
+    @PostMapping("/checkout/create-checkout-session-single")
+    public Map<String, String> createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException, JsonProcessingException {
+
+        // Stripe 비밀키 설정
+        Stripe.apiKey = secretKey;
+
+        SessionCreateParams.LineItem lineItem =
+                SessionCreateParams.LineItem.builder()
+                        .setPriceData(
+                                SessionCreateParams.LineItem.PriceData.builder()
+                                        .setCurrency("krw") // 통화 설정
+                                        .setUnitAmount((long)request.getPrice()) // 금액 설정 (단위: won)
+                                        .setProductData(
+                                                SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                        .setName(request.getItemName()) // 상품명
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .setQuantity((long)request.getCount())
+                        .build();
+
+        // Checkout 세션 생성
+        SessionCreateParams params =
+                SessionCreateParams.builder()
+                        .addLineItem(lineItem)
+                        .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
+                        .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(request))
+                        .setSuccessUrl("http://localhost:8888/orders?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
+                        .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
+                        .build();
+
+        Session session = Session.create(params);
+
+        // 클라이언트에 세션 ID 반환
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("sessionId", session.getId());
+        return responseData;
+    }
 
 
 //    // 환불 처리
