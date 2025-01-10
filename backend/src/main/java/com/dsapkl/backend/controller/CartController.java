@@ -2,7 +2,6 @@ package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.CartForm;
 import com.dsapkl.backend.controller.dto.CartItemForm;
-import com.dsapkl.backend.controller.dto.CartResponse;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
@@ -22,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -65,9 +66,16 @@ public class CartController {
                     .body("로그인이 필요합니다.");
         }
 
-        cartService.addCart(member.getId(), itemId, count);
-        List<CartQueryDto> cartItems = cartService.findCartItems(member.getId());
-        return ResponseEntity.ok().body(new CartResponse(cartItems.size(), cartItems));
+        try {
+            cartService.addCart(member.getId(), itemId, count);
+            List<CartQueryDto> cartItems = cartService.findCartItems(member.getId());
+            Map<String, Object> response = new HashMap<>();
+            response.put("count", cartItems.size());
+            response.put("items", cartItems);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/cart")

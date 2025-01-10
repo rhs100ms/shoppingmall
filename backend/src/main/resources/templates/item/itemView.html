@@ -141,7 +141,6 @@
             success: function (response) {
                 alert("상품을 담았습니다.");
                 $(".badge.bg-dark.text-white.ms-1.rounded-pill").text(response.count);
-                updateCartList(response.items);
             },
             error: function (jqXHR) {
                 if (jqXHR.status === 401) {
@@ -152,22 +151,6 @@
                 }
             }
         });
-    }
-
-    function updateCartList(items) {
-        const cartList = $("#cartList");
-        if (cartList.length) {
-            cartList.empty();
-            items.forEach(item => {
-                cartList.append(`
-                    <tr>
-                        <td>${item.itemName}</td>
-                        <td>${item.count}</td>
-                        <td>${item.price.toLocaleString()}원</td>
-                    </tr>
-                `);
-            });
-        }
     }
 
     function order() {

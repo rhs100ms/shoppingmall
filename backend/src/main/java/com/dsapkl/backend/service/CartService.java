@@ -54,37 +54,27 @@ public class CartService {
      * 장바구니 담기(추가)
      */
     public Long addCart(Long memberId, Long itemId, int count) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        
+        Cart cart = cartRepository.findByMemberId(memberId)
+            .orElseGet(() -> {
+                Cart newCart = Cart.createCart(member);
+                return cartRepository.save(newCart);
+            });
+        
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
-        //엔티티 조회
-        Member member = memberRepository.findById(memberId).get();
-        Cart cart = cartRepository.findByMemberId(memberId).orElseGet(() -> null);
-        Item item = itemRepository.findById(itemId).get();
-
-        //장바구니 없으면 생성  --> 회원가입 할 때 장바구니 생성되어야 함 장바구니 눌렀을 때 생기는게 아니라
-//        if (cart == null) {
-//            log.info("장바구니 신규 생성 - memberId={}", memberId);
-//            cart = Cart.createCart(member);
-//            cartRepository.save(cart);
-//        }
-
-        //장바구니안에 장바구니 상품 조회
         CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId()).orElse(null);
-//        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId())
-//                .orElseThrow(() -> new EntityNotFoundException(
-//                        "CartItem not found for cartId: " + cart.getId() + " and itemId: " + item.getId()));
 
-        //장바구니 상품이 없으면 생성
         if (cartItem == null) {
             cartItem = CartItem.createCartItem(count, cart, item);
-            CartItem savedCartItem = cartItemRepository.save(cartItem);
-            log.info("cartItemId={}", cartItem.getId());
-            return savedCartItem.getId();
+            cartItemRepository.save(cartItem);
+        } else {
+            cartItem.changeCount(count);
         }
-
-        //장바구니 상품이 존재하면 수량 변경 (Dirty checking)
-        cartItem.changeCount(count);
         return cartItem.getId();
-
     }
 
     /**
