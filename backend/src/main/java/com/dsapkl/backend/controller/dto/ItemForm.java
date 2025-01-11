@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemForm {
 
-    private Long id;
+    private Long itemId;
 
     @NotEmpty(message = "상품 이름은 필수입니다.")
     private String name;
@@ -52,7 +52,7 @@ public class ItemForm {
 
     public static ItemForm from(Item item) {
         ItemForm form = new ItemForm();
-        form.setId(item.getId());
+        form.setItemId(item.getId());
         form.setName(item.getName());
         form.setCategory(item.getCategory());
         form.setPrice(item.getPrice());
@@ -65,7 +65,7 @@ public class ItemForm {
 
     public ItemServiceDTO toServiceDTO() {
         return ItemServiceDTO.builder()
-                .id(id)
+                .id(itemId)
                 .name(name)
                 .category(category)
                 .price(price)

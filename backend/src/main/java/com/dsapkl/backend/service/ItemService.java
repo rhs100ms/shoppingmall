@@ -55,11 +55,18 @@ public class ItemService {
     }
 
     //상품 정보 업데이트 (Dirty Checking, 변경감지)
-    public void updateItem(ItemServiceDTO itemServiceDTO,  List<MultipartFile> multipartFileList) throws IOException {
+    @Transactional
+    public void updateItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
+        Item findItem = itemRepository.findById(itemServiceDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
-        Item findItem = itemRepository.findById(itemServiceDTO.getId()).orElse(null);  //DB에서 찾아옴 -> 영속 상태
-
-        findItem.updateItem(itemServiceDTO.getName(), itemServiceDTO.getDescription(), itemServiceDTO.getPrice(), itemServiceDTO.getStockQuantity(), itemServiceDTO.getCategory());
+        findItem.updateItem(
+                itemServiceDTO.getName(),
+                itemServiceDTO.getPrice(),
+                itemServiceDTO.getStockQuantity(),
+                itemServiceDTO.getDescription(),
+                itemServiceDTO.getCategory()
+        );
 
         //상품 이미지를 수정(삭제, 추가) 하지 않으면 실행 x
         if(!multipartFileList.get(0).isEmpty()) {
@@ -71,10 +78,12 @@ public class ItemService {
         itemImageList.get(0).isFirstImage("Y");
     }
 
-    @Transactional(readOnly=true)
-    public List<Item> findItems() {
-        return itemRepository.findAll();
+    @Transactional
+    public void updateItem(Long itemId, String name, int price, int stockQuantity, String description) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
+        item.updateItem(name, price, stockQuantity, description, item.getCategory());
     }
 
     // 통합 검색 기능
