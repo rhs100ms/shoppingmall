@@ -52,4 +52,13 @@ public class MemberService {
     public List<Member> findMembers() {
         return memberRepository.findAll();
     }
+    
+    //이메일 체크
+    public boolean isEmailAvailable(String email) {
+       return memberRepository.existsByEmail(email);
+    }
+
+    public boolean isPhoneAvailable(String phoneNumber) {
+        return memberRepository.existsByPhoneNumber(phoneNumber);
+    }
 }

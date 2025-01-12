@@ -13,16 +13,16 @@ import jakarta.validation.Valid;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -154,6 +154,23 @@ public class MemberController {
         return "members/findPassword";
     }
 
+    @GetMapping("/api/members/check-email")
+    @ResponseBody
+    public Map<String, Boolean> checkEmailDuplicate(@RequestParam("email") String email) {
+        boolean isAvailable = memberService.isEmailAvailable(email);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isAvailable", isAvailable);
+        return response;
+    }
+
+    @GetMapping("/api/members/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhoneDuplicate(@RequestParam("phoneNumber") String phoneNumber) {
+        boolean isAvailable = memberService.isPhoneAvailable(phoneNumber);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isAvailable", isAvailable);
+        return response;
+    }
 }
 
 
