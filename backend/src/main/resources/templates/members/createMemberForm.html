@@ -40,10 +40,23 @@
         </div>
         <br>
         <div>
+            <label th:for="birthDate">생년월일</label>
+            <input type="text" th:field="*{birthDate}" class="form-control"
+                   placeholder="YYYYMMDD (예: 19990101)" maxlength="8" id="birthDate">
+            <div class="field-error" th:errors="*{birthDate}" />
+        </div>
+        <br>
+        <div>
+            <label th:for="phoneNumber">휴대폰 번호</label>
+            <input type="text" th:field="*{phoneNumber}" class="form-control"
+                   placeholder="예) 010-1234-5678" id="phoneNumber">
+            <div class="field-error" th:errors="*{phoneNumber}" />
+        </div>
+        <br>
+        <div>
             <label for="city">&nbsp&nbsp  지역명 &nbsp&nbsp</label>
             <input type="text" id="city" th:field="*{city}"
-                   class="formcontrol"
-            >
+                   class="formcontrol">
         </div>
         <div>
             <label for="street">&nbsp&nbsp  도로명 &nbsp&nbsp</label>

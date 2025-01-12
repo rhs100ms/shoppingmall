@@ -77,6 +77,8 @@ public class MemberController {
                     .name(memberForm.getName())
                     .email(memberForm.getEmail())
                     .password(memberForm.getPassword())
+                    .birthDate(memberForm.getBirthDate())
+                    .phoneNumber(memberForm.getPhoneNumber())
                     .address(address)
                     .build();
 
@@ -141,6 +143,15 @@ public class MemberController {
             session.invalidate();
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/members/find-email")
+    public String findEmailForm(Model model) {
+        return "members/findEmail";
+    }
+    @GetMapping("/members/find-password")
+    public String findPasswordForm(Model model) {
+        return "members/findPassword";
     }
 
 }
