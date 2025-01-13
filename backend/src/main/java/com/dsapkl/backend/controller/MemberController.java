@@ -1,6 +1,7 @@
 package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.FindEmailRequestDto;
+import com.dsapkl.backend.controller.dto.FindPasswordRequestDto;
 import com.dsapkl.backend.controller.dto.LoginForm;
 import com.dsapkl.backend.controller.dto.MemberForm;
 import com.dsapkl.backend.entity.Address;
@@ -185,6 +186,20 @@ public class MemberController {
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", "일치하는 회원정보가 없습니다.");
             return "members/findEmail";
+        }
+    }
+
+    @PostMapping("/members/find-password")
+    public String findPassword(@Valid @ModelAttribute FindPasswordRequestDto requestDto, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "members/findPassword";
+        }
+        try {
+            memberService.sendTemporaryPassword(requestDto.getEmail(),requestDto.getPhoneNumber());
+            return "members/findPasswordResult";
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage","일치하는 회원정보가 없습니다.");
+            return "members/findPassword";
         }
     }
 }

@@ -56,5 +56,8 @@ public class Member {
         }
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 
 }
