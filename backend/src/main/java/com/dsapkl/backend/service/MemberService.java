@@ -61,4 +61,9 @@ public class MemberService {
     public boolean isPhoneAvailable(String phoneNumber) {
         return memberRepository.existsByPhoneNumber(phoneNumber);
     }
+
+    public String findEmailByBirthDateAndPhone (String birthDate, String phoneNumber) {
+        Member member = memberRepository.findByBirthDateAndPhoneNumber(birthDate, phoneNumber).orElseThrow(() -> new IllegalArgumentException("일치하는 회원정보가 없습니다."));
+        return member.getEmail();
+    }
 }

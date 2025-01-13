@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller;
 
+import com.dsapkl.backend.controller.dto.FindEmailRequestDto;
 import com.dsapkl.backend.controller.dto.LoginForm;
 import com.dsapkl.backend.controller.dto.MemberForm;
 import com.dsapkl.backend.entity.Address;
@@ -170,6 +171,21 @@ public class MemberController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("isAvailable", isAvailable);
         return response;
+    }
+
+    @PostMapping("/members/find-email")
+    public String findEmail(@Valid @ModelAttribute FindEmailRequestDto requestDto, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "members/findEmail";
+        }
+        try {
+            String email = memberService.findEmailByBirthDateAndPhone(requestDto.getBirthDate(),requestDto.getPhoneNumber());
+            model.addAttribute("foundEmail", email);
+            return "members/findEmailResult";
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage", "일치하는 회원정보가 없습니다.");
+            return "members/findEmail";
+        }
     }
 }
 
