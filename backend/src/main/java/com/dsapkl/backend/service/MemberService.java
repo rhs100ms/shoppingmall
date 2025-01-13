@@ -2,7 +2,9 @@ package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.entity.Cart;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.repository.CartRepository;
+import com.dsapkl.backend.repository.MemberInfoRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
+    private final MemberInfoRepository memberInfoRepository;
 
     //회원가입
     @Transactional(readOnly = false)
@@ -26,6 +29,8 @@ public class MemberService {
         Cart cart = Cart.createCart(savedMember);
         cartRepository.save(cart);
 
+        MemberInfo memberInfo = MemberInfo.createMemberInfo(savedMember);
+        memberInfoRepository.save(memberInfo);
 
         return savedMember.getId();
     }

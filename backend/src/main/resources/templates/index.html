@@ -75,6 +75,15 @@
                 </button>
             </form>
 
+            <!-- 회원 정보 수정 버튼 추가 -->
+            <form th:action="@{/api/member-info/update/{memberId}(memberId=${session.loginMember.id})}" 
+                  class="d-flex" method="get">
+                <button class="btn btn-outline-dark" type="submit">
+                    <i class="bi-person-fill me-1"></i>
+                    회원 정보
+                </button>
+            </form>
+
         </div>
     </div>
 </nav>
