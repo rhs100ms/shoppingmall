@@ -41,6 +41,10 @@ public class MemberService {
         if (findMember != null) {
             throw new IllegalStateException("이미 존재하는 회원 입니다.");
         }
+
+        if (memberRepository.existsByPhoneNumber(member.getPhoneNumber())) {
+            throw new IllegalStateException("이미 사용중인 전화번호입니다.");
+        }
     }
 
     //로그인 체크
