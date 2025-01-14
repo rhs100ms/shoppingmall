@@ -67,18 +67,10 @@ public class OrderController {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 CheckoutRequest checkoutRequest = objectMapper.readValue(orderInfoJson, CheckoutRequest.class);
-//                List<LineItem> lineItems = orderService.retrieveLineItems(sessionId);
-//                lineItems.forEach(lineItem -> System.out.println("LineItem: " + lineItem));
-//                cartOrderList.forEach(cartOrder -> System.out.println("CartOrderList: " + cartOrder));
                 model.addAttribute("checkoutRequest", checkoutRequest);
 
                 CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount());
                 model.addAttribute("cartForm", cartForm);
-
-                //JSON 확인
-                String jsonRequest = objectMapper.writeValueAsString(cartForm);
-                System.out.println("Request JSON: " + jsonRequest);
-
 
                 RestTemplate restTemplate = new RestTemplate();
 
@@ -90,8 +82,6 @@ public class OrderController {
                 HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
 
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, String.class);
-//                System.out.println("Response from orders: " + response.getBody());
-
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
@@ -107,20 +97,6 @@ public class OrderController {
         return "order/orderList";
 
     }
-
-//    @GetMapping("/orders")
-//    public String findOrder(OrderStatus status, Model model, HttpServletRequest request) {
-//
-//        Member member = CartController.getMember(request);
-//
-//        List<OrderDto> findOrders = orderService.findOrdersDetail(member.getId(), status);
-//
-//        model.addAttribute("orderDetails", findOrders);
-//
-//        return "order/orderList";
-//
-//    }
-
 
     /**
      * 장바구니 상품 주문

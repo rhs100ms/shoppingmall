@@ -55,11 +55,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     private BooleanExpression orderStatusEq(OrderStatus orderStatus) {
 
         return orderStatus != null ? order.status.eq(orderStatus) : null;
-
-//        if (orderStatus == null) {
-//            return null;
-//        }
-//        return order.status.eq(orderStatus);
     }
 
     private List<OrderItemDto> findOrderItemDtos(Long orderId) {

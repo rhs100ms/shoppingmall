@@ -152,34 +152,7 @@
             }
         });
     }
-    //
-    // function order() {
-    //     var itemId = $("#orderItemId").val();
-    //     var count = $("#orderCount").val();
-    //     var cartForm = {
-    //         itemId: itemId,
-    //         count: count
-    //     };
-    //
-    //     $.ajax({
-    //         url: "/order",
-    //         data: cartForm,
-    //         type: 'POST',
-    //         success: function (result) {
-    //             alert("상품 주문이 완료되었습니다.");
-    //             location.href = "/";
-    //         },
-    //         error: function (jqXHR) {
-    //             if (jqXHR.status === 401) {
-    //                 alert(jqXHR.responseText);
-    //                 location.href = "/members"
-    //             } else {
-    //                 alert(jqXHR.responseText);
-    //             }
-    //         }
-    //     });
-    // }
-    //
+
     function initiateCheckout() {
         const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
 
