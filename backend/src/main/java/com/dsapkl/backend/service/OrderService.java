@@ -37,7 +37,7 @@ public class OrderService {
     /**
      * 단일 주문
      */
-    public Long order(Long memberId, Long itemId, int count) {
+    public Long order(Long memberId, Long itemId, int count, String paymentIntentId) {
 
         List<OrderItem> orderItemList = new ArrayList<>();
         Item findItem = itemRepository.findById(itemId).orElseGet(() -> null);
@@ -51,7 +51,7 @@ public class OrderService {
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
-        Order order = Order.createOrder(orderStatus ,findMember, orderItemList);
+        Order order = Order.createOrder(orderStatus , findMember, paymentIntentId, orderItemList);
 
         Order save = orderRepository.save(order);
 
@@ -65,14 +65,17 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public List<OrderDto> findOrdersDetail(Long memberId, OrderStatus orderStatus) {
-        return orderRepository.findOrderDetail(memberId, orderStatus);
-//        return null;
+        List<OrderDto> orders = orderRepository.findOrderDetail(memberId, orderStatus);
+
+        System.out.println("조회된 주문: " + orders);
+
+        return orders;
     }
 
     /**
      * 장바구니 상품들 주문
      */
-    public Long orders(Long memberId, CartOrderDto cartOrderDto) {
+    public Long orders(Long memberId, CartOrderDto cartOrderDto, String paymentIntentId) {
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
@@ -95,7 +98,7 @@ public class OrderService {
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
-        Order order = Order.createOrder(orderStatus, findMember, orderItemList);
+        Order order = Order.createOrder(orderStatus, findMember, paymentIntentId, orderItemList);
 
         Order save = orderRepository.save(order);
 

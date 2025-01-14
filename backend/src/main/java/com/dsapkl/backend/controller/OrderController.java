@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -44,7 +45,7 @@ public class OrderController {
         }
 
         try {
-            orderService.order(member.getId(), cartForm.getItemId(), cartForm.getCount());
+            orderService.order(member.getId(), cartForm.getItemId(), cartForm.getCount(), cartForm.getPaymentIntentId());
         } catch (NotEnoughStockException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -59,17 +60,28 @@ public class OrderController {
     public String findOrder(@RequestParam(required = false) String sessionId, OrderStatus status, Model model, HttpServletRequest request) throws JsonProcessingException {
 
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+
+        Member member = CartController.getMember(request);
+
+        List<OrderDto> findOrders;
+
+
         if (sessionId != null) {
             try{
                 Session session = Session.retrieve(sessionId);
+
                 String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
                 ObjectMapper objectMapper = new ObjectMapper();
 
+                String paymentIntentId = session.getPaymentIntent();
+
+                System.out.println(paymentIntentId);
+
                 CheckoutRequest checkoutRequest = objectMapper.readValue(orderInfoJson, CheckoutRequest.class);
                 model.addAttribute("checkoutRequest", checkoutRequest);
 
-                CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount());
+                CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount(), paymentIntentId);
                 model.addAttribute("cartForm", cartForm);
 
                 RestTemplate restTemplate = new RestTemplate();
@@ -82,15 +94,16 @@ public class OrderController {
                 HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
 
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, String.class);
+
+                findOrders = orderService.findOrdersDetail(member.getId(), status);
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
+                findOrders = Collections.emptyList();
             }
+        } else {
+            findOrders = orderService.findOrdersDetail(member.getId(), status);
         }
-
-        Member member = CartController.getMember(request);
-
-        List<OrderDto> findOrders = orderService.findOrdersDetail(member.getId(), status);
 
         model.addAttribute("orderDetails", findOrders);
 
@@ -103,7 +116,7 @@ public class OrderController {
      */
     @PostMapping("/orders")
     @ResponseBody
-    public ResponseEntity<String> orders(@RequestBody CartOrderDto cartOrderDto, HttpServletRequest request) {
+    public ResponseEntity<String> orders(@RequestBody CartOrderDto cartOrderDto, HttpServletRequest request, String paymentIntentId) {
 
         //장바구니에서 아무 상품도 체크하지 않을 경우
         if (cartOrderDto.getCartOrderDtoList().isEmpty()) {
@@ -117,7 +130,7 @@ public class OrderController {
         }
 
         try {
-            orderService.orders(member.getId(), cartOrderDto);
+            orderService.orders(member.getId(), cartOrderDto, paymentIntentId);
         } catch (NotEnoughStockException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

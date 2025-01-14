@@ -126,26 +126,26 @@ public class CheckoutController {
     }
 
 
-//    // 환불 처리
-//    @PostMapping("/refund")
-//    public Map<String, String> createRefund(@RequestParam String paymentIntentId) {
-//        Stripe.apiKey = secretKey;
-//
-//        Map<String, String> response = new HashMap<>();
-//        try {
-//            RefundCreateParams params = RefundCreateParams.builder()
-//                    .setPaymentIntent(paymentIntentId)
-//                    .build();
-//
-//            Refund refund = Refund.create(params);
-//            response.put("status", "success");
-//            response.put("refundId", refund.getId());
-//        } catch (StripeException e) {
-//            response.put("status", "failed");
-//            response.put("error", e.getMessage());
-//        }
-//        return response;
-//    }
+    // 환불 처리
+    @PostMapping("/refund")
+    public Map<String, String> createRefund(@RequestParam String paymentIntentId) {
+        Stripe.apiKey = secretKey;
+
+        Map<String, String> response = new HashMap<>();
+        try {
+            RefundCreateParams params = RefundCreateParams.builder()
+                    .setPaymentIntent(paymentIntentId)
+                    .build();
+
+            Refund refund = Refund.create(params);
+            response.put("status", "success");
+            response.put("refundId", refund.getId());
+        } catch (StripeException e) {
+            response.put("status", "failed");
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
 
 
 }

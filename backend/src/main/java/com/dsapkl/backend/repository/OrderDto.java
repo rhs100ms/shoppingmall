@@ -17,6 +17,7 @@ public class OrderDto {
     private int totalPrice;  //총 주문 가격
     private String orderDate;
     private OrderStatus orderStatus;
+    private String paymentIntentId;
     private List<OrderItemDto> orderItemDtoList;
 
 
@@ -24,7 +25,6 @@ public class OrderDto {
     public OrderDto(Long orderId, int totalPrice, LocalDateTime orderDate, OrderStatus orderStatus) {
         this.orderId = orderId;
         this.totalPrice = totalPrice;
-//        this.orderDate = orderDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));  //보기 좋게 format
         this.orderDate = orderDate.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));  //보기 좋게 format
         this.orderStatus = orderStatus;
     }
