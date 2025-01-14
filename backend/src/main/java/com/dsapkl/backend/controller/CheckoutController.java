@@ -113,7 +113,7 @@ public class CheckoutController {
                         .addLineItem(lineItem)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
                         .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(request))
-                        .setSuccessUrl("http://localhost:8888/orders?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
+                        .setSuccessUrl("http://localhost:8888/orders/success?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
                         .build();
 

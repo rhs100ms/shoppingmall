@@ -135,4 +135,9 @@ public class OrderService {
 
         return lineItemCollection.getData();
     }
+
+    public List<OrderDto> findOrderById(Long orderId) {
+        Order findOrder = orderRepository.findById(orderId).orElseGet(() -> null);
+        return orders.stream();
+    }
 }
