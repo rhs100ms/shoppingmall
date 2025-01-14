@@ -34,7 +34,7 @@ public class OrderController {
      */
     @PostMapping("/order")
     @ResponseBody
-    public ResponseEntity<String> order(@ModelAttribute CartForm cartForm, HttpServletRequest request) {
+    public ResponseEntity<String> order(@RequestBody CartForm cartForm, HttpServletRequest request) {
 
         //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
         Member member = CartController.getMember(request);
@@ -74,6 +74,11 @@ public class OrderController {
 
                 CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount());
                 model.addAttribute("cartForm", cartForm);
+
+                //JSON 확인
+                String jsonRequest = objectMapper.writeValueAsString(cartForm);
+                System.out.println("Request JSON: " + jsonRequest);
+
 
                 RestTemplate restTemplate = new RestTemplate();
 

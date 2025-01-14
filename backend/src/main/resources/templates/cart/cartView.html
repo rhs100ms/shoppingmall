@@ -102,45 +102,45 @@
         }
         calculateTotalPrice();
     }
-
-    <!-- 체크된 상품들 주문 -->
-    function order() {
-        console.log("order() 함수가 호출되었습니다.");
-        var list = new Array();
-
-        $("input[name=cartItemCheck]:checked").each(function() {
-            var id = $(this).val();          //cart_item_id
-            var itemId = $(this).data("item-id");
-            var count = $("#count_" + id).val();
-            var obj = new Object();
-            obj.cartItemId = id;
-            obj.itemId = itemId;
-            obj.count = count;
-            list.push(obj);
-        })
-
-        var dataDto = new Object();
-        dataDto.cartOrderDtoList = list;
-        console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
-
-        // $.ajax({
-        //     url: "/orders",
-        //     type: 'POST',
-        //     data: JSON.stringify(dataDto),
-        //     contentType: 'application/json',
-        //
-        //     <!-- 성공시 -->
-        //     success: function (result) {
-        //         alert("선택하신 상품 주문이 완료되었습니다.");
-        //         location.href="/"
-        //     },
-        //     <!-- 실패시 -->
-        //     error: function (jqXHR) {
-        //         alert(jqXHR.responseText);
-        //         location.href = "/cart";
-        //     }
-        // })
-    }
+    //  결제 기능 구현하기전에 order 함수
+    // <!-- 체크된 상품들 주문 -->
+    // function order() {
+    //     console.log("order() 함수가 호출되었습니다.");
+    //     var list = new Array();
+    //
+    //     $("input[name=cartItemCheck]:checked").each(function() {
+    //         var id = $(this).val();          //cart_item_id
+    //         var itemId = $(this).data("item-id");
+    //         var count = $("#count_" + id).val();
+    //         var obj = new Object();
+    //         obj.cartItemId = id;
+    //         obj.itemId = itemId;
+    //         obj.count = count;
+    //         list.push(obj);
+    //     })
+    //
+    //     var dataDto = new Object();
+    //     dataDto.cartOrderDtoList = list;
+    //     console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
+    //
+    //     // $.ajax({
+    //     //     url: "/orders",
+    //     //     type: 'POST',
+    //     //     data: JSON.stringify(dataDto),
+    //     //     contentType: 'application/json',
+    //     //
+    //     //     <!-- 성공시 -->
+    //     //     success: function (result) {
+    //     //         alert("선택하신 상품 주문이 완료되었습니다.");
+    //     //         location.href="/"
+    //     //     },
+    //     //     <!-- 실패시 -->
+    //     //     error: function (jqXHR) {
+    //     //         alert(jqXHR.responseText);
+    //     //         location.href = "/cart";
+    //     //     }
+    //     // })
+    // }
 
     // 주문 버튼 클릭 시 Stripe Checkout 시작
     function initiateCheckout() {
