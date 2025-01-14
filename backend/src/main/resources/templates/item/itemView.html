@@ -6,6 +6,7 @@
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <title>PKLshop</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Bootstrap icons-->
@@ -19,8 +20,8 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var currentMemberId = [[${currentMemberId}]];
-    var itemId = [[${item.itemId}]];
+    var currentMemberId = [[${currentMemberId}]] || null;
+    var itemId = [[${item.itemId}]] || null;
 
     $(document).ready(function() {
         loadReviews();
@@ -30,11 +31,11 @@
             submitReview();
         });
 
-        calculateTotalPrice();
-
         $("#orderCount").on('input change', function() {
             calculateTotalPrice();
         });
+
+        calculateTotalPrice();
     });
 
     function submitReview() {
@@ -43,7 +44,7 @@
         }
         $("#reviewForm").data("submitting", true);
 
-        const content = $("#content").val();
+        const content = $("#reviewContent").val();
         const rating = $("input[name='rating']:checked").val();
 
         if (!rating) {
@@ -71,7 +72,7 @@
             data: JSON.stringify(reviewData),
             success: function(response) {
                 alert("리뷰가 등록되었습니다.");
-                $("#content").val("");
+                $("#reviewContent").val("");
                 $("input[name='rating']").prop("checked", false);
                 loadReviews();
             },
@@ -126,7 +127,6 @@
 
     function addCart() {
         const count = parseInt($("#orderCount").val());
-        const itemId = parseInt($("#itemId").val());
 
         var cartForm = {
             itemId: itemId,
@@ -153,32 +153,44 @@
         });
     }
 
-    function order() {
-        var itemId = $("#itemId").val();
-        var count = $("#orderCount").val();
-        var cartForm = {
+    function initiateCheckout() {
+        const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
+
+        const count = $("#orderCount").val();
+        const itemId = $("#orderItemId").val();
+        const itemName = $(".display-5.fw-bolder").text();
+        const price = $("#orderPrice").val();
+
+        console.log({
             itemId: itemId,
-            count: count
+            count: count,
+            price: price,
+            itemName: itemName
+        })
+
+        const checkoutData = {
+            itemId: itemId,
+            count: count,
+            price: price,
+            itemName: itemName
         };
 
-        $.ajax({
-            url: "/order",
-            data: cartForm,
-            type: 'POST',
-            success: function (result) {
-                alert("상품 주문이 완료되었습니다.");
-                location.href = "/";
+        fetch('/api/checkout/create-checkout-session-single', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            error: function (jqXHR) {
-                if (jqXHR.status === 401) {
-                    alert(jqXHR.responseText);
-                    location.href = "/members"
-                } else {
-                    alert(jqXHR.responseText);
-                }
-            }
-        });
+            body: JSON.stringify(checkoutData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                return stripe.redirectToCheckout({ sessionId: data.sessionId})
+                    .then(result => {if (result.error) {alert(result.error.message);}})
+                    .catch(error => {console.error('Error:', error);
+                                     alert('결제 처리 중 오류가 발생했습니다.');})
+            });
     }
+
 
     function toggleEditMode() {
         const viewElements = document.querySelectorAll('.view-mode');
@@ -249,7 +261,7 @@
                         <span class="star-rating" th:text="${'★'.repeat(item.getAverageRating().intValue()) + '☆'.repeat(5 - item.getAverageRating().intValue())}"></span>
                         <span class="text-muted" th:text="'(' + ${item.getReviewCount()} + '개의 리뷰)'"></span>
                     </div>
-                    <input type="hidden" th:value="${item.itemId}" id="itemId" name="itemId">
+                    <input type="hidden" th:value="${item.itemId}" id="orderItemId" name="itemId">
                     <div class="fs-5 mb-5">
                         <input type="hidden" th:value="${item.price}" id="orderPrice" name="orderPrice">
                         <input type="hidden" th:value="${item.stockQuantity}" id="orderStockQuantity" name="orderStockQuantity">
@@ -307,7 +319,7 @@
 
                 <div class="d-flex mt-4">
                     <button class="btn btn-outline-dark view-mode"
-                            type="button" th:onclick="order()">
+                            type="button" th:onclick="initiateCheckout()">
                         바로 구매하기
                     </button>
 
@@ -386,8 +398,8 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="content" class="form-label">리뷰 내용</label>
-                    <textarea class="form-control" id="content" rows="3" required></textarea>
+                    <label for="reviewContent" class="form-label">리뷰 내용</label>
+                    <textarea class="form-control" id="reviewContent" rows="3" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">리뷰 등록</button>
             </form>
@@ -488,93 +500,6 @@
             reader.readAsDataURL(file);
         });
     });
-
-    $(document).ready(function() {
-        var currentMemberId = [[${currentMemberId}]];
-        var itemId = [[${item.itemId}]];
-        loadReviews();
-
-        $("#reviewForm").on("submit", function(e) {
-            e.preventDefault();
-            submitReview();
-        });
-
-        $("#content").val("");
-        $("input[name='rating']").prop("checked", false);
-
-        calculateTotalPrice();
-
-        $("#orderCount").on('input change', function() {
-            calculateTotalPrice();
-        });
-    });
-
-    function submitReview() {
-        if ($("#reviewForm").data("submitting")) {
-            return;
-        }
-        $("#reviewForm").data("submitting", true);
-
-        const content = $("#content").val();
-        const rating = $("input[name='rating']:checked").val();
-
-        if (!rating) {
-            alert("평점을 선택해주세요.");
-            $("#reviewForm").data("submitting", false);
-            return;
-        }
-
-        if (!content || content.trim() === '') {
-            alert("리뷰 내용을 입력해주세요.");
-            $("#reviewForm").data("submitting", false);
-            return;
-        }
-
-        const reviewData = {
-            itemId: itemId,
-            rating: parseInt(rating),
-            content: content.trim()
-        };
-
-        $.ajax({
-            url: "/api/reviews",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(reviewData),
-            success: function(response) {
-                alert("리뷰가 등록되었습니다.");
-                $("#content").val("");
-                $("input[name='rating']").prop("checked", false);
-                loadReviews();
-            },
-            error: function(xhr) {
-                if (xhr.status === 401) {
-                    alert("로그인이 필요합니다.");
-                    location.href = "/members";
-                } else {
-                    alert(xhr.responseText);
-                }
-            },
-            complete: function() {
-                $("#reviewForm").data("submitting", false);
-            }
-        });
-    }
-
-    function loadReviews() {
-        console.log("Loading reviews for item:", itemId);
-        $.ajax({
-            url: `/api/items/${itemId}/reviews`,
-            method: "GET",
-            success: function(reviews) {
-                console.log("Received reviews:", reviews);
-                displayReviews(reviews);
-            },
-            error: function(xhr) {
-                console.error("Failed to load reviews:", xhr);
-            }
-        });
-    }
 
     function displayReviews(reviews) {
         const reviewsList = $("#reviewsList");
@@ -697,7 +622,7 @@
             success: function() {
                 alert("리뷰가 삭제되었습니다.");
                 loadReviews();
-                $("#content").val("");
+                $("#reviewContent").val("");
                 $("input[name='rating']").prop("checked", false);
             },
             error: function(xhr) {

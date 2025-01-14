@@ -41,6 +41,7 @@ public class OrderService {
 
         List<OrderItem> orderItemList = new ArrayList<>();
         Item findItem = itemRepository.findById(itemId).orElseGet(() -> null);
+
         Member findMember = memberRepository
                 .findById(memberId).orElseGet(() -> null);
         int orderPrice = findItem.getPrice() * count;

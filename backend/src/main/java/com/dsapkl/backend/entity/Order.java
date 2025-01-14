@@ -59,7 +59,6 @@ public class Order {
         return order;
     }
 
-
     //== 전체 주문 가격 조회 ==/
     public int getTotalPrice() {
         int totalPrice = 0;

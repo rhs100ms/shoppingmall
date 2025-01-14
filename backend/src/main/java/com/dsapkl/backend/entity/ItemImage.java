@@ -33,8 +33,6 @@ public class ItemImage {
         this.deleteYN = "N";
     }
 
-
-
     public void changeItem(Item item) {
         this.item = item;
     }

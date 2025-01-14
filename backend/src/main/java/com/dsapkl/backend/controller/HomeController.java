@@ -37,25 +37,6 @@ public class HomeController {
     private final ItemService itemService;
     private final CartService cartService;
     private final OrderService orderService;
-//    private final MainItemQueryRepository mainItemQueryRepository;
-//    private final ItemService itemService;
-//    private final ItemImageService itemImageService;
-//    private final MainItemQueryRepository mainItemQueryRepository;
-//    private final FileHandler fileHandler;
-
-//    @GetMapping("/")
-//    public String home2(@ModelAttribute Optional<Integer> page, ItemSearchCondition itemSearchCondition, Model model) {
-//
-//        PageRequest pageRequest = PageRequest.of(page.orElseGet(() -> 0), 3);
-//
-//        Page<MainItemDto> result = mainItemQueryRepository.findMainItem(pageRequest, itemSearchCondition);
-//
-//        model.addAttribute("result", result);
-//        model.addAttribute("maxPage", 10);
-//
-//
-//        return "home";
-//}
 
     @GetMapping("/")
     public String home(@RequestParam(value = "query", required = false) String query,
@@ -70,12 +51,9 @@ public class HomeController {
 
         //비로그인 사용자
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
-//            log.info("home controller");
             return "home";
         }
         //로그인된 사용자
-//        log.info("userHome Controller");
-        // th:text="${cartItemCount}" 쓰기 위함
         Member member = getMember(request);
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
         int cartItemCount = cartItemListForm.size();
@@ -83,7 +61,6 @@ public class HomeController {
         model.addAttribute("cartItemCount", cartItemCount);
 
         List<OrderDto> ordersDetail = orderService.findOrdersDetail(member.getId(), orderStatus);
-//        ordersDetail.forEach(order -> log.info("Order: {}", order));
 
         long orderCount = ordersDetail.stream()
                                       .filter(order -> order.getOrderStatus() == OrderStatus.ORDER)

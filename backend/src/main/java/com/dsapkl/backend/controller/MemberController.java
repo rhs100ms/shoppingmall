@@ -106,9 +106,6 @@ public class MemberController {
     public String login(@Valid @ModelAttribute LoginForm form
             , BindingResult bindingResult
             , HttpServletRequest request){
-        //로그인 할 때 세션 다 가져오제?
-
-
 
         //이메일 또는 비밀번호를 누락시
         if (bindingResult.hasErrors()) {
@@ -129,15 +126,12 @@ public class MemberController {
         HttpSession session = request.getSession();  //만약 세션이 있으면 기존 세션을 반환하고, 없으면 신규 세션 생성
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);  //세션에 회원 정보 보관
 
-
-
         return "redirect:/";
     }
 
     /*
     로그아웃
     */
-
     @PostMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

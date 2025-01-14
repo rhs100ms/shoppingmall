@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
-//@Slf4j
+@Slf4j
 public class CartController {
 
     private final CartService cartService;
@@ -51,17 +51,11 @@ public class CartController {
                 String orderInfoJson = session.getMetadata().get("orderInfo");
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
-//                List<LineItem> lineItems = orderService.retrieveLineItems(sessionId);
-//                lineItems.forEach(lineItem -> System.out.println("LineItem: " + lineItem));
-//                cartOrderList.forEach(cartOrder -> System.out.println("CartOrderList: " + cartOrder));
                 model.addAttribute("cartOrderList", cartOrderList);
 
                 List<CartForm> cartFormList = cartOrderList.stream()
                         .map(cartQueryDto -> new CartForm(cartQueryDto.getItemId(), cartQueryDto.getCartItemId(), cartQueryDto.getCount()))
                         .collect(Collectors.toList());
-
-//                cartFormList.forEach(cartForm -> System.out.println(
-//                        "CartForm - ItemId " + cartForm.getItemId() + "CartItemId: " + cartForm.getCartItemId() + "Count: " + cartForm.getCount()));
 
                 CartOrderDto cartOrderDto = new CartOrderDto();
                 cartOrderDto.setCartOrderDtoList(cartFormList);
@@ -74,7 +68,6 @@ public class CartController {
                 HttpEntity<CartOrderDto> requestEntity = new HttpEntity<>(cartOrderDto, headers);
 
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, String.class);
-//                System.out.println("Response from orders: " + response.getBody());
 
             } catch (StripeException e) {
                 e.printStackTrace();
