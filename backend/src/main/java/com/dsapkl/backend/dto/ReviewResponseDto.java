@@ -3,6 +3,7 @@ package com.dsapkl.backend.dto;
 import com.dsapkl.backend.entity.Review;
 import lombok.Builder;
 import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +16,9 @@ public class ReviewResponseDto {
     private String memberName;
     private String content;
     private int rating;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime modifiedDate;
 
     @Builder

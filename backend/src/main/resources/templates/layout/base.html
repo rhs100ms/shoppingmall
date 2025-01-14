@@ -21,7 +21,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         .field-error {
-            /*border-color: #dc3545;*/
             color: #dc3545;
         }
         .wrapper {
@@ -30,7 +29,42 @@
         }
         .content {
             margin-top: 150px;
-            padding-bottom: 150px; /* footer의 높이 */
+            padding-bottom: 150px;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
+        .carousel-control-prev,
+        .carousel-control-next {
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        #productImageSlider:hover .carousel-control-prev,
+        #productImageSlider:hover .carousel-control-next {
+            opacity: 0.8;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1 !important;
         }
     </style>
     <th:block layout:fragment="script"></th:block>
