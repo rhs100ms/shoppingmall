@@ -96,6 +96,7 @@
                 $("#content").val("");
                 $("input[name='rating']").prop("checked", false);
                 loadReviews();
+                updateItemRating();
             },
             error: function(xhr) {
                 if (xhr.status === 401) {
@@ -214,6 +215,83 @@
             el.style.display = el.style.display === 'none' ? '' : 'none';
         });
     }
+
+    function updateAverageRating(averageRating, reviewCount) {
+        const stars = '★'.repeat(Math.floor(averageRating)) + '☆'.repeat(5 - Math.floor(averageRating));
+        $('.star-rating').first().text(stars);
+        $('.text-muted').first().text(`(${averageRating.toFixed(1)}) (${reviewCount}개의 리뷰)`);
+    }
+
+    function saveReview(reviewId) {
+        const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
+        const content = reviewItem.find('.edit-content').val();
+        const rating = reviewItem.find(`input[name="edit-rating-${reviewId}"]:checked`).val();
+
+        if (!rating) {
+            alert("평점을 선택해주세요.");
+            return;
+        }
+
+        if (!content || content.trim() === '') {
+            alert("리뷰 내용을 입력해주세요.");
+            return;
+        }
+
+        const reviewData = {
+            itemId: itemId,
+            content: content.trim(),
+            rating: parseInt(rating)
+        };
+
+        $.ajax({
+            url: `/api/reviews/${reviewId}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(reviewData),
+            success: function() {
+                alert("리뷰가 수정되었습니다.");
+                loadReviews();
+                updateItemRating();
+                reviewItem.find('.edit-form').hide();
+                reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
+            },
+            error: function(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function deleteReview(reviewId) {
+        if (!confirm("리뷰를 삭제하시겠습니까?")) return;
+
+        $.ajax({
+            url: `/api/reviews/${reviewId}`,
+            method: "DELETE",
+            success: function() {
+                alert("리뷰가 삭제되었습니다.");
+                loadReviews();
+                updateItemRating();
+                $("#content").val("");
+                $("input[name='rating']").prop("checked", false);
+            },
+            error: function(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function updateItemRating() {
+        $.ajax({
+            url: `/api/items/${itemId}/rating`,
+            method: "GET",
+            success: function(response) {
+                updateAverageRating(response.averageRating, response.reviewCount);
+            },
+            error: function(xhr) {
+                console.error("Failed to update rating:", xhr);
+            }
+        });
+    }
     /*]]>*/
 </script>
 
@@ -274,7 +352,7 @@
                     </th:block>
                 </div>
 
-                <!-- 썸네일 미리보기 추가 -->
+                <!-- 썸네일 미미리보기 추가 -->
                 <div class="thumbnail-preview mt-3" th:if="${!item.getItemImageListDto().isEmpty()}">
                     <div class="d-flex justify-content-center flex-wrap gap-2">
                         <div th:each="image, iterStat : ${item.getItemImageListDto()}" 
@@ -328,7 +406,7 @@
                     </span>
                     </div>
                     <div class="container bg-light">
-                        <h6>총 상품 �액</h6>
+                        <h6>총 상품 금액</h6>
                         <h4 name="totalPrice" id="totalPrice" class="font-weight-bold"></h4>
                     </div>
                 </div>
@@ -661,6 +739,7 @@
                 $("#content").val("");
                 $("input[name='rating']").prop("checked", false);
                 loadReviews();
+                updateItemRating();
             },
             error: function(xhr) {
                 if (xhr.status === 401) {
@@ -800,6 +879,7 @@
             success: function() {
                 alert("리뷰가 수정되었습니다.");
                 loadReviews();
+                updateItemRating();
                 reviewItem.find('.edit-form').hide();
                 reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
             },
@@ -818,11 +898,25 @@
             success: function() {
                 alert("리뷰가 삭제되었습니다.");
                 loadReviews();
+                updateItemRating();
                 $("#content").val("");
                 $("input[name='rating']").prop("checked", false);
             },
             error: function(xhr) {
                 alert(xhr.responseText);
+            }
+        });
+    }
+
+    function updateItemRating() {
+        $.ajax({
+            url: `/api/items/${itemId}/rating`,
+            method: "GET",
+            success: function(response) {
+                updateAverageRating(response.averageRating, response.reviewCount);
+            },
+            error: function(xhr) {
+                console.error("Failed to update rating:", xhr);
             }
         });
     }

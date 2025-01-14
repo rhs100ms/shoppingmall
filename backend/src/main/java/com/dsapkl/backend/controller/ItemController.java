@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.dsapkl.backend.controller.CartController.getMember;
@@ -151,6 +154,16 @@ public class ItemController {
         }
 
         return "redirect:/items/" + itemId;
+    }
+
+    @GetMapping("/api/items/{itemId}/rating")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getItemRating(@PathVariable Long itemId) {
+        Item item = itemService.findItem(itemId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("averageRating", item.getAverageRating());
+        response.put("reviewCount", item.getReviewCount());
+        return ResponseEntity.ok(response);
     }
 
 }
