@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,6 +32,9 @@ public class Review extends BaseTimeEntity {  // 생성/수정 시간 추적을 
     @Column(nullable = false)
     private int rating;  // 1-5 평점
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> reviewImages = new ArrayList<>();
+
     @Builder
     public Review(Item item, Member member, String content, int rating) {
         this.item = item;
@@ -42,5 +47,10 @@ public class Review extends BaseTimeEntity {  // 생성/수정 시간 추적을 
     public void update(String content, int rating) {
         this.content = content;
         this.rating = rating;
+    }
+
+    public void addReviewImage(ReviewImage reviewImage) {
+        reviewImages.add(reviewImage);
+        reviewImage.setReview(this);
     }
 } 

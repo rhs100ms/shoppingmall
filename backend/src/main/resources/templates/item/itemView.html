@@ -65,49 +65,48 @@
         }
         $("#reviewForm").data("submitting", true);
 
-        const content = $("#content").val();
         const rating = $("input[name='rating']:checked").val();
+        const content = $("#content").val().trim();
+        const formData = new FormData();
+        const files = $("#reviewImages")[0].files;
 
         if (!rating) {
             alert("평점을 선택해주세요.");
-            $("#reviewForm").data("submitting", false);
             return;
         }
 
-        if (!content || content.trim() === '') {
+        if (!content) {
             alert("리뷰 내용을 입력해주세요.");
-            $("#reviewForm").data("submitting", false);
             return;
         }
 
-        const reviewData = {
-            itemId: itemId,
-            rating: parseInt(rating),
-            content: content.trim()
-        };
+        formData.append("itemId", itemId);
+        formData.append("content", content);
+        formData.append("rating", rating);
+
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append("images", files[i]);
+            }
+        }
 
         $.ajax({
             url: "/api/reviews",
             method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(reviewData),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
                 alert("리뷰가 등록되었습니다.");
                 $("#content").val("");
                 $("input[name='rating']").prop("checked", false);
+                $("#reviewImages").val("");
+                $("#imagePreview").empty();
                 loadReviews();
                 updateItemRating();
             },
             error: function(xhr) {
-                if (xhr.status === 401) {
-                    alert("로그인이 필요합니다.");
-                    location.href = "/members";
-                } else {
-                    alert(xhr.responseText);
-                }
-            },
-            complete: function() {
-                $("#reviewForm").data("submitting", false);
+                alert(xhr.responseText);
             }
         });
     }
@@ -226,7 +225,9 @@
         const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
         const content = reviewItem.find('.edit-content').val();
         const rating = reviewItem.find(`input[name="edit-rating-${reviewId}"]:checked`).val();
-
+        const formData = new FormData();
+        const files = reviewItem.find('.edit-images')[0].files;
+        
         if (!rating) {
             alert("평점을 선택해주세요.");
             return;
@@ -237,23 +238,26 @@
             return;
         }
 
-        const reviewData = {
-            itemId: itemId,
-            content: content.trim(),
-            rating: parseInt(rating)
-        };
+        formData.append("itemId", itemId);
+        formData.append("content", content.trim());
+        formData.append("rating", rating);
+        
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append("images", files[i]);
+            }
+        }
 
         $.ajax({
             url: `/api/reviews/${reviewId}`,
             method: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(reviewData),
+            processData: false,
+            contentType: false,
+            data: formData,
             success: function() {
                 alert("리뷰가 수정되었습니다.");
                 loadReviews();
                 updateItemRating();
-                reviewItem.find('.edit-form').hide();
-                reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
             },
             error: function(xhr) {
                 alert(xhr.responseText);
@@ -528,6 +532,11 @@
                     <label for="content" class="form-label">리뷰 내용</label>
                     <textarea class="form-control" id="content" rows="3" required></textarea>
                 </div>
+                <div class="mb-3">
+                    <label for="reviewImages" class="form-label">이미지 첨부</label>
+                    <input class="form-control" type="file" id="reviewImages" name="images" multiple accept="image/*">
+                    <div id="imagePreview" class="mt-2 d-flex flex-wrap gap-2"></div>
+                </div>
                 <button type="submit" class="btn btn-primary">리뷰 등록</button>
             </form>
         </div>
@@ -671,6 +680,11 @@
             reader.onload = function(e) {
                 const img = document.createElement("img");
                 img.src = e.target.result;
+                img.style.width = '200px';
+                img.style.height = '200px';
+                img.style.objectFit = 'contain';
+                img.style.border = '1px solid #dee2e6';
+                img.style.borderRadius = '0.25rem';
                 previewContainer.appendChild(img);
             };
             reader.readAsDataURL(file);
@@ -708,49 +722,48 @@
         }
         $("#reviewForm").data("submitting", true);
 
-        const content = $("#content").val();
         const rating = $("input[name='rating']:checked").val();
+        const content = $("#content").val().trim();
+        const formData = new FormData();
+        const files = $("#reviewImages")[0].files;
 
         if (!rating) {
             alert("평점을 선택해주세요.");
-            $("#reviewForm").data("submitting", false);
             return;
         }
 
-        if (!content || content.trim() === '') {
+        if (!content) {
             alert("리뷰 내용을 입력해주세요.");
-            $("#reviewForm").data("submitting", false);
             return;
         }
 
-        const reviewData = {
-            itemId: itemId,
-            rating: parseInt(rating),
-            content: content.trim()
-        };
+        formData.append("itemId", itemId);
+        formData.append("content", content);
+        formData.append("rating", rating);
+
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append("images", files[i]);
+            }
+        }
 
         $.ajax({
             url: "/api/reviews",
             method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(reviewData),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
                 alert("리뷰가 등록되었습니다.");
                 $("#content").val("");
                 $("input[name='rating']").prop("checked", false);
+                $("#reviewImages").val("");
+                $("#imagePreview").empty();
                 loadReviews();
                 updateItemRating();
             },
             error: function(xhr) {
-                if (xhr.status === 401) {
-                    alert("로그인이 필요합니다.");
-                    location.href = "/members";
-                } else {
-                    alert(xhr.responseText);
-                }
-            },
-            complete: function() {
-                $("#reviewForm").data("submitting", false);
+                alert(xhr.responseText);
             }
         });
     }
@@ -792,7 +805,7 @@
             });
 
             const reviewHtml = `
-                <div class="review-item" data-review-id="${review.reviewId}">
+                <div class="review-item border-bottom py-3" data-review-id="${review.reviewId}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0">${review.memberName}</h5>
@@ -802,7 +815,15 @@
                             </div>
                         </div>
                     </div>
-                    <p class="review-content">${review.content}</p>
+                    <p class="review-content mt-2">${review.content}</p>
+                    <div class="review-images d-flex gap-2 mt-2">
+                        ${review.reviewImages ? review.reviewImages.map(img => `
+                            <img src="/images/${img.storeFileName}" 
+                                 alt="리뷰 이미지" 
+                                 style="width: 200px; height: 200px; object-fit: contain;"
+                                 class="rounded border">
+                        `).join('') : ''}
+                    </div>
                     ${review.memberId === currentMemberId ? `
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline-primary edit-btn"
@@ -823,6 +844,23 @@
                             </div>
                             <div class="mb-3">
                                 <textarea class="form-control edit-content" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">이미지 수정</label>
+                                <div class="current-images mb-2">
+                                    ${review.reviewImages ? review.reviewImages.map(img => `
+                                        <div class="position-relative d-inline-block">
+                                            <img src="/images/${img.storeFileName}" 
+                                                 alt="현재 이미지" 
+                                                 style="width: 100px; height: 100px; object-fit: contain;"
+                                                 class="rounded border">
+                                        </div>
+                                    `).join('') : ''}
+                                </div>
+                                <input type="file" class="form-control edit-images" 
+                                       multiple accept="image/*" 
+                                       id="edit-images-${review.reviewId}">
+                                <div class="edit-image-preview mt-2 d-flex gap-2"></div>
                             </div>
                             <button class="btn btn-primary btn-sm save-edit"
                                     onclick="saveReview(${review.reviewId})">저장</button>
@@ -848,45 +886,6 @@
         const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
         reviewItem.find('.edit-form').hide();
         reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
-    }
-
-    function saveReview(reviewId) {
-        const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
-        const content = reviewItem.find('.edit-content').val();
-        const rating = reviewItem.find(`input[name="edit-rating-${reviewId}"]:checked`).val();
-
-        if (!rating) {
-            alert("평점을 선택해주세요.");
-            return;
-        }
-
-        if (!content || content.trim() === '') {
-            alert("리뷰 내용을 입력해주세요.");
-            return;
-        }
-
-        const reviewData = {
-            itemId: itemId,
-            content: content.trim(),
-            rating: parseInt(rating)
-        };
-
-        $.ajax({
-            url: `/api/reviews/${reviewId}`,
-            method: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(reviewData),
-            success: function() {
-                alert("리뷰가 수정되었습니다.");
-                loadReviews();
-                updateItemRating();
-                reviewItem.find('.edit-form').hide();
-                reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
-            },
-            error: function(xhr) {
-                alert(xhr.responseText);
-            }
-        });
     }
 
     function deleteReview(reviewId) {
@@ -920,6 +919,27 @@
             }
         });
     }
+
+    // 이미지 미리보기
+    document.getElementById('reviewImages').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        
+        Array.from(e.target.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '200px';
+                img.style.height = '200px';
+                img.style.objectFit = 'contain';
+                img.style.border = '1px solid #dee2e6';
+                img.style.borderRadius = '0.25rem';
+                preview.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
 </script>
 </body>
 </html>

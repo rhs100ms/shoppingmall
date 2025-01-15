@@ -6,9 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
+@Setter
 public class ReviewRequestDto {
     private Long itemId;
     @NotBlank(message = "리뷰 내용을 입력해주세요.")

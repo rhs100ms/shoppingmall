@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.dsapkl.backend.controller.CartController.getMember;
@@ -25,7 +27,8 @@ public class ReviewController {
 
     @PostMapping("/api/reviews")
     @ResponseBody
-    public ResponseEntity<?> createReview(@Valid @RequestBody ReviewRequestDto requestDto,
+    public ResponseEntity<?> createReview(@Valid @ModelAttribute ReviewRequestDto requestDto,
+                                        @RequestParam(required = false) List<MultipartFile> images,
                                         HttpServletRequest request) {
         try {
             Member member = getMember(request);
@@ -33,9 +36,9 @@ public class ReviewController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("로그인이 필요합니다.");
             }
-            Long reviewId = reviewService.createReview(requestDto, member.getId());
+            Long reviewId = reviewService.createReview(requestDto, member.getId(), images);
             return ResponseEntity.ok(reviewId);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

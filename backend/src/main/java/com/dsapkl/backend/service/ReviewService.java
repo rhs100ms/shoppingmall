@@ -3,15 +3,19 @@ package com.dsapkl.backend.service;
 import com.dsapkl.backend.entity.Review;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.ReviewImage;
 import com.dsapkl.backend.repository.ItemRepository;
 import com.dsapkl.backend.repository.MemberRepository;
+import com.dsapkl.backend.repository.ReviewImageRepository;
 import com.dsapkl.backend.repository.ReviewRepository;
 import com.dsapkl.backend.dto.ReviewRequestDto;
 import com.dsapkl.backend.dto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,9 +27,12 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+    private final FileHandler fileHandler;
+    private final ReviewImageRepository reviewImageRepository;
 
     // 리뷰 작성
-    public Long createReview(ReviewRequestDto requestDto, Long memberId) {
+    @Transactional
+    public Long createReview(ReviewRequestDto requestDto, Long memberId, List<MultipartFile> images) throws IOException {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
         
@@ -43,6 +50,14 @@ public class ReviewService {
                 .content(requestDto.getContent())
                 .rating(requestDto.getRating())
                 .build();
+
+        // 이미지 처리
+        if (images != null && !images.isEmpty()) {
+            List<ReviewImage> reviewImages = fileHandler.storeFiles(images);
+            for (ReviewImage image : reviewImages) {
+                review.addReviewImage(image);
+            }
+        }
 
         return reviewRepository.save(review).getId();
     }

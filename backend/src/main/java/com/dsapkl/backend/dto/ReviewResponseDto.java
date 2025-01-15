@@ -6,6 +6,8 @@ import lombok.Getter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -20,19 +22,7 @@ public class ReviewResponseDto {
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime modifiedDate;
-
-    @Builder
-    public ReviewResponseDto(Long reviewId, Long itemId, Long memberId, String memberName,
-                           String content, int rating, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.reviewId = reviewId;
-        this.itemId = itemId;
-        this.memberId = memberId;
-        this.memberName = memberName;
-        this.content = content;
-        this.rating = rating;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
+    private List<ReviewImageDto> reviewImages;
 
     public static ReviewResponseDto from(Review review) {
         return ReviewResponseDto.builder()
@@ -43,7 +33,9 @@ public class ReviewResponseDto {
                 .content(review.getContent())
                 .rating(review.getRating())
                 .createdDate(review.getCreatedDate())
-                .modifiedDate(review.getModifiedDate())
+                .reviewImages(review.getReviewImages().stream()
+                        .map(ReviewImageDto::from)
+                        .collect(Collectors.toList()))
                 .build();
     }
 } 
