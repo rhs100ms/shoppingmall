@@ -50,15 +50,22 @@ public class CartController {
                 String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
                 ObjectMapper objectMapper = new ObjectMapper();
+
+                String paymentIntentId = session.getPaymentIntent();
+                System.out.println("Cart에서 결제한: " + paymentIntentId);
+
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
                 model.addAttribute("cartOrderList", cartOrderList);
 
                 List<CartForm> cartFormList = cartOrderList.stream()
-                        .map(cartQueryDto -> new CartForm(cartQueryDto.getItemId(), cartQueryDto.getCartItemId(), cartQueryDto.getCount()))
+                        .map(cartQueryDto -> new CartForm(cartQueryDto.getItemId(), cartQueryDto.getCartItemId(), cartQueryDto.getCount(), paymentIntentId))
                         .collect(Collectors.toList());
 
                 CartOrderDto cartOrderDto = new CartOrderDto();
                 cartOrderDto.setCartOrderDtoList(cartFormList);
+
+                log.info("paymentIntentId 들어간 cartOrderDto 인가요? : {}", new ObjectMapper().writeValueAsString(cartOrderDto));
+                //=> paymentIntentId 들어감 ,, cartItemId 안들어감
 
                 RestTemplate restTemplate = new RestTemplate();
                 HttpHeaders headers = new HttpHeaders();
@@ -68,7 +75,7 @@ public class CartController {
                 HttpEntity<CartOrderDto> requestEntity = new HttpEntity<>(cartOrderDto, headers);
 
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, String.class);
-
+                //=> paymentIntentId 안들어감
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");

@@ -76,7 +76,7 @@ public class OrderController {
     public String findOrderSuccess(@RequestParam(required = false) String sessionId, OrderStatus status, Model model, HttpServletRequest request) throws JsonProcessingException {
         List<OrderDto> findOrders = getOrderDetails(sessionId, status, model, request);
         model.addAttribute("orderDetails", findOrders);
-        return "order/orderList";
+        return "redirect:/orders";
     }
 
     private List<OrderDto> getOrderDetails(String sessionId, OrderStatus status, Model model, HttpServletRequest request) {
@@ -106,11 +106,12 @@ public class OrderController {
 
                 HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
 //                restTemplate.postForEntity("http://localhost:8888/order", requestEntity, String.class);
-                ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, Map.class);
+                ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, Map.class);
                 Map<String, Object> responseBody = response.getBody();
-                Long orderId = (Long) responseBody.get("orderId");
+                Long orderId = ((Integer) responseBody.get("orderId")).longValue();
+                System.out.println(orderId);
+                findOrders = orderService.findOrdersDetail(member.getId(), status);
 
-                findOrders = orderService.findOrderById(orderId);
 
             } catch (StripeException | JsonProcessingException e) {
                 e.printStackTrace();
@@ -158,6 +159,7 @@ public class OrderController {
     @ResponseBody
     public ResponseEntity<String> cancelOrder(@PathVariable("orderId") Long orderId) {
 
+        System.out.println("@PostMapping(\"/order/{orderId}/cancel\")" + orderId);
         orderService.cancelOrder(orderId);
 
         return ResponseEntity.ok("Success");

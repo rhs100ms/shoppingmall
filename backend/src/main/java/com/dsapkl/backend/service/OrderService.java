@@ -13,9 +13,7 @@ import com.stripe.param.checkout.SessionListParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -103,7 +101,7 @@ public class OrderService {
         Order save = orderRepository.save(order);
 
         //주문한 상품은 장바구니에서 제거
-        deleteCartItem(cartOrderDto);
+//        deleteCartItem(cartOrderDto);
 
         return save.getId();
 
@@ -137,7 +135,10 @@ public class OrderService {
     }
 
     public List<OrderDto> findOrderById(Long orderId) {
-        Order findOrder = orderRepository.findById(orderId).orElseGet(() -> null);
-        return orders.stream();
+
+        Optional<Order> findOrder = Optional.ofNullable(orderRepository.findById(orderId).orElseGet(() -> null));
+
+        return findOrder.map(order -> List.of(new OrderDto(order.getId(), order.getTotalPrice(),order.getOrderDate(),order.getStatus(), order.getPaymentIntentId())))
+                .orElseGet(Collections::emptyList);
     }
 }

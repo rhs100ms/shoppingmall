@@ -43,7 +43,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         order.id,
                         order.totalPrice,
                         order.orderDate,
-                        order.status
+                        order.status,
+                        order.paymentIntentId
                 ))
                 .from(order)
                 .join(order.member, member)

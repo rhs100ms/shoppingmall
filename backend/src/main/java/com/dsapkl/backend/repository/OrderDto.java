@@ -22,10 +22,11 @@ public class OrderDto {
 
 
     @QueryProjection
-    public OrderDto(Long orderId, int totalPrice, LocalDateTime orderDate, OrderStatus orderStatus) {
+    public OrderDto(Long orderId, int totalPrice, LocalDateTime orderDate, OrderStatus orderStatus, String paymentIntentId) {
         this.orderId = orderId;
         this.totalPrice = totalPrice;
         this.orderDate = orderDate.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));  //보기 좋게 format
         this.orderStatus = orderStatus;
+        this.paymentIntentId = paymentIntentId;
     }
 }

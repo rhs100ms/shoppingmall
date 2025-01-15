@@ -16,6 +16,12 @@ public class CartForm {
     public CartForm() {
     }
 
+    public CartForm(Long itemId, Long cartItemId, int count, String paymentIntentId) {
+        this.itemId = itemId;
+        this.count = count;
+        this.paymentIntentId = paymentIntentId;
+    }
+
     public CartForm(Long itemId, int count, String paymentIntentId) {
         this.itemId = itemId;
         this.count = count;
