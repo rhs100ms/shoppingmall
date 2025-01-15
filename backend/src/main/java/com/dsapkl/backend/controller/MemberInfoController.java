@@ -13,41 +13,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/api/member-info")
+@RequestMapping("api/member-info")
 @RequiredArgsConstructor
 public class MemberInfoController {
 
     private final MemberInfoService memberInfoService;
-
-//    @GetMapping("/{memberId}")
-//    public ResponseEntity<MemberInfoResponseDto> getMemberInfo(@PathVariable Long memberId) {
-//        MemberInfo memberInfo = memberInfoService.findMemberInfo(memberId);
-//        return ResponseEntity.ok(MemberInfoResponseDto.of(memberInfo));
-//    }
-//
-//    @PostMapping("/update-login/{memberId}")
-//    public ResponseEntity<Void> updateLoginInfo(@PathVariable Long memberId) {
-//        memberInfoService.updateMemberLoginInfo(memberId);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/update-statistics/{memberId}")
-//    public ResponseEntity<Void> updateStatistics(@PathVariable Long memberId) {
-//        memberInfoService.updateAllStatistics(memberId);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/update-purchase/{memberId}")
-//    public ResponseEntity<Void> updatePurchaseInfo(@PathVariable Long memberId) {
-//        memberInfoService.updatePurchaseStatistics(memberId);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/update-preference/{memberId}")
-//    public ResponseEntity<Void> updatePreference(@PathVariable Long memberId) {
-//        memberInfoService.updateProductPreference(memberId);
-//        return ResponseEntity.ok().build();
-//    }
 
     @GetMapping("/update/{memberId}")
     public String updateMemberInfoForm(@PathVariable Long memberId, Model model) {
@@ -70,7 +40,7 @@ public class MemberInfoController {
             }
 
             memberInfoService.updateMemberInfo(memberId, memberInfoCreateDto);
-            return "redirect:/";  // 메인 페이지로 리다이렉트
+            return "redirect:/";
         } catch (Exception e) {
             MemberInfo memberInfo = memberInfoService.findMemberInfo(memberId);
             model.addAttribute("memberInfo", MemberInfoResponseDto.of(memberInfo));

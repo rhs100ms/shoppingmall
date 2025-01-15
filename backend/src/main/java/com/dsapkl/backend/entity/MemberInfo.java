@@ -9,19 +9,19 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "Member_Info")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberInfo {
 
     @Id
-    @Column(name = "info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "info_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
 
     private Integer age;
     private String gender;
@@ -48,7 +48,7 @@ public class MemberInfo {
 
 //    @ManyToOne
 //    @JoinColumn(name = "cluster_id")
-//    private ClusterItemPreference clusterItemPreference; // 파이썬 군집 결과를 저장
+//    private Integer cluster_id; // 파이썬 군집 결과를 저장
 
     @Builder
     private MemberInfo(Member member, Integer age, String gender, Interest interests,

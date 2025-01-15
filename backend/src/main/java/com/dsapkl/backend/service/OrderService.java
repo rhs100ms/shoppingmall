@@ -12,6 +12,7 @@ import com.stripe.param.checkout.SessionListLineItemsParams;
 import com.stripe.param.checkout.SessionListParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +26,15 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final OrderItemRepository orderItemRepository;
+    private final MemberInfoService memberInfoService;
 
-    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository) {
+    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository, MemberInfoService memberInfoService) {
         this.itemRepository = itemRepository;
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.orderItemRepository = orderItemRepository;
+        this.memberInfoService = memberInfoService;
     }
 
     /**
@@ -54,10 +57,17 @@ public class OrderService {
 
         Order save = orderRepository.save(order);
 
+        updateMemberInfoAfterPurchase(memberId);
+
         return save.getId();
 
     }
 
+    private void updateMemberInfoAfterPurchase(Long memberId) {
+        memberInfoService.updatePurchaseStatistics(memberId);
+        memberInfoService.updateProductPreference(memberId);
+        memberInfoService.updateAllStatistics(memberId);
+    }
 
     /**
      * 주문 목록 조회
@@ -75,12 +85,9 @@ public class OrderService {
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
-
         Member findMember = memberRepository.findById(memberId)
             .orElseThrow(() -> new
                     NoSuchElementException("Member with ID " + memberId + " not found"));
-
-
 
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
 
@@ -100,6 +107,8 @@ public class OrderService {
 
         //주문한 상품은 장바구니에서 제거
         deleteCartItem(cartOrderDto);
+
+        updateMemberInfoAfterPurchase(memberId);
 
         return save.getId();
 
