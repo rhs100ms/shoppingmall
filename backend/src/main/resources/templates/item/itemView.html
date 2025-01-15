@@ -19,8 +19,8 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var currentMemberId = [[${currentMemberId}]];
-    var itemId = [[${item.itemId}]];
+    var currentMemberId = /*[[${currentMemberId}]]*/ null;
+    var itemId = /*[[${item.itemId}]]*/ null;
 
     $(document).ready(function() {
         loadReviews();
@@ -692,8 +692,8 @@
     });
 
     $(document).ready(function() {
-        var currentMemberId = [[${currentMemberId}]];
-        var itemId = [[${item.itemId}]];
+        var currentMemberId = /*[[${currentMemberId}]]*/ null;
+        var itemId = /*[[${item.itemId}]]*/ null;
         loadReviews();
 
         $("#reviewForm").on("submit", function(e) {
