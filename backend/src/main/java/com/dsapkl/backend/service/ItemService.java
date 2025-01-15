@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -143,5 +145,53 @@ public class ItemService {
 
         // 상품 삭제
         itemRepository.delete(item);
+    }
+
+    public Page<Item> findItemsPage(Pageable pageable) {
+        return itemRepository.findAll(pageable);
+    }
+
+    public Page<Item> searchItems(String query, String categoryStr, String status, Pageable pageable) {
+        final Category selectedCategory = (categoryStr != null && !categoryStr.isEmpty()) ? 
+            Category.valueOf(categoryStr) : null;
+
+        Specification<Item> spec = Specification.where(null);
+        
+        if (selectedCategory != null) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("category"), selectedCategory)
+            );
+        }
+
+        if (query != null && !query.isEmpty()) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + query.toLowerCase() + "%"),
+                    criteriaBuilder.like(root.get("id").as(String.class), "%" + query + "%")
+                )
+            );
+        }
+
+        if (status != null) {
+            switch (status) {
+                case "SELLING":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.greaterThan(root.get("stockQuantity"), 10));
+                    break;
+                case "LOW_STOCK":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.and(
+                            criteriaBuilder.greaterThan(root.get("stockQuantity"), 0),
+                            criteriaBuilder.lessThanOrEqualTo(root.get("stockQuantity"), 10)
+                        ));
+                    break;
+                case "SOLDOUT":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("stockQuantity"), 0));
+                    break;
+            }
+        }
+
+        return itemRepository.findAll(spec, pageable);
     }
 }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,17 @@ public class Item {
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
+
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(updatable = false)
+    private LocalDateTime modifiedDate;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdDate = LocalDateTime.now();
+    }
 
     //== 연관 관계 편의 메소드 ==//
     public void addItemImage(ItemImage itemImage) {

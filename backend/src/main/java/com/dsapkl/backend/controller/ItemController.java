@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -164,6 +166,65 @@ public class ItemController {
         response.put("averageRating", item.getAverageRating());
         response.put("reviewCount", item.getReviewCount());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/items/manage")
+    public String manageItems(Model model, 
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "10") int size,
+                             @RequestParam(required = false) String query,
+                             @RequestParam(required = false) String category,
+                             @RequestParam(required = false) String status,
+                             HttpServletRequest request) {
+        
+        Page<Item> itemPage;
+        if (query != null || category != null || status != null) {
+            itemPage = itemService.searchItems(query, category, status, PageRequest.of(page, size));
+        } else {
+            itemPage = itemService.findItemsPage(PageRequest.of(page, size));
+        }
+        
+        // ItemForm으로 변환
+        List<ItemForm> itemForms = itemPage.getContent().stream()
+            .map(item -> {
+                ItemForm form = ItemForm.from(item);
+                List<ItemImage> images = itemImageService.findItemImageDetail(item.getId(), "N");
+                form.setItemImageListDto(images.stream()
+                    .map(ItemImageDto::new)
+                    .collect(Collectors.toList()));
+                return form;
+            })
+            .collect(Collectors.toList());
+            
+        // 통계 계산
+        long totalItems = itemForms.size();
+        long lowStockItems = itemForms.stream()
+                .filter(item -> item.getStockQuantity() <= 10 && item.getStockQuantity() > 0)
+                .count();
+        long sellingItems = itemForms.stream()
+                .filter(item -> item.getStockQuantity() > 0)
+                .count();
+        long soldOutItems = itemForms.stream()
+                .filter(item -> item.getStockQuantity() == 0)
+                .count();
+
+        // 모델에 데이터 추가
+        model.addAttribute("items", itemForms);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("lowStockItems", lowStockItems);
+        model.addAttribute("sellingItems", sellingItems);
+        model.addAttribute("soldOutItems", soldOutItems);
+        model.addAttribute("currentPage", itemPage.getNumber());
+        model.addAttribute("totalPages", itemPage.getTotalPages());
+
+        // 카트 아이템 카운트
+        Member member = getMember(request);
+        if (member != null) {
+            List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+            model.addAttribute("cartItemCount", cartItemListForm.size());
+        }
+
+        return "item/itemManage";
     }
 
 }

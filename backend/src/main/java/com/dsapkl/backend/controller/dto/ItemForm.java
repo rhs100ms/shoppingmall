@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,10 @@ public class ItemForm {
 
     private int reviewCount;
 
+    private LocalDateTime createdDate;
+
+    private LocalDateTime modifiedDate;
+
     @Builder
     public ItemForm(String name, int price, int stockQuantity, String description) {
         this.name = name;
@@ -60,6 +65,8 @@ public class ItemForm {
         form.setDescription(item.getDescription());
         form.setAverageRating(item.getAverageRating());
         form.setReviewCount(item.getReviewCount());
+        form.setCreatedDate(item.getCreatedDate());
+        form.setModifiedDate(item.getModifiedDate());
         return form;
     }
 
