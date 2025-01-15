@@ -41,7 +41,7 @@ public class RecommendationService {
         Integer prediction = processFlaskResponse(response);
         
         // Cluster 엔티티 생성 및 저장
-        Cluster cluster = new Cluster(memberId.intValue(), prediction);
+        Cluster cluster = new Cluster(prediction, prediction);
         clusterRepository.save(cluster);
 
         // MemberInfo에 cluster_id 업데이트
