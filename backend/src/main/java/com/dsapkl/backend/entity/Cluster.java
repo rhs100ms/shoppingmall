@@ -17,4 +17,13 @@ public class Cluster {
     
     @Column(name = "cluster_number")
     private Integer clusterNumber;
+
+    public Cluster(Integer id, Integer clusterNumber) {
+        this.id = id;
+        this.clusterNumber = clusterNumber;
+    }
+
+    public void setClusterNumber(Integer clusterNumber) {
+        this.clusterNumber = clusterNumber;
+    }
 }

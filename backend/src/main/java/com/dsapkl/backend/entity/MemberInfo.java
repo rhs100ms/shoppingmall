@@ -46,15 +46,15 @@ public class MemberInfo {
     @Enumerated(value = EnumType.STRING)
     private Category productCategoryPreference; // order_item 테이블에서 가져옴
 
-//    @ManyToOne
-//    @JoinColumn(name = "cluster_id")
-//    private Integer cluster_id; // 파이썬 군집 결과를 저장
+    @ManyToOne
+    @JoinColumn(name = "cluster_id")
+    private Cluster cluster_id; // 파이썬 군집 결과를 저장
 
     @Builder
     private MemberInfo(Member member, Integer age, String gender, Interest interests,
                        LocalDate lastLoginDay, LocalDate loginDay, Integer lastLoginDays, Integer purchaseFrequency,
-                       Integer averageOrderValue, Integer totalSpending, Category productCategoryPreference
-//                       ClusterItemPreference clusterItemPreference
+                       Integer averageOrderValue, Integer totalSpending, Category productCategoryPreference,
+                       Cluster cluster_id
     ) {
         this.member = member;
         this.age = age;
@@ -72,7 +72,7 @@ public class MemberInfo {
         this.timeSpentOnSiteMinutes = 293;
         this.pagesViewed = 25;
         this.newsletterSubscription = 1;
-//        this.clusterItemPreference = clusterItemPreference;
+        this.cluster_id = cluster_id;
     }
 
     private MemberInfo(Member member) {
@@ -138,5 +138,7 @@ public class MemberInfo {
         this.averageOrderValue = 0;
         this.totalSpending = 0;
     }
+
+    public void updateCluster(Cluster cluster_id) {this.cluster_id = cluster_id;}
 
 }

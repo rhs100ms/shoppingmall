@@ -2,6 +2,8 @@ package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.repository.MemberInfoRepository;
+import com.dsapkl.backend.entity.Cluster;
+import com.dsapkl.backend.repository.ClusterRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Map;
 public class RecommendationService {
 
     private final MemberInfoRepository memberInfoRepository;
+    private final ClusterRepository clusterRepository;
     private final ObjectMapper objectMapper;
     private static final String FLASK_URL = "http://localhost:5000/api/data";
 
@@ -34,8 +37,18 @@ public class RecommendationService {
         // Flask 서버로 데이터 전송 및 응답 받기
         String response = sendDataToFlask(memberData);
 
-        // 응답 처리
-        return processFlaskResponse(response);
+        // 응답 처리 및 클러스터 저장
+        Integer prediction = processFlaskResponse(response);
+        
+        // Cluster 엔티티 생성 및 저장
+        Cluster cluster = new Cluster(memberId.intValue(), prediction);
+        clusterRepository.save(cluster);
+
+        // MemberInfo에 cluster_id 업데이트
+        memberInfo.updateCluster(cluster);
+        memberInfoRepository.save(memberInfo);
+
+        return prediction;
     }
 
     private Map<String, Object> prepareMemberData(MemberInfo memberInfo) {

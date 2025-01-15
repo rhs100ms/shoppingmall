@@ -27,14 +27,22 @@ public class OrderService {
     private final CartService cartService;
     private final OrderItemRepository orderItemRepository;
     private final MemberInfoService memberInfoService;
+    private final MemberInfoRepository memberInfoRepository;
+    private final RecommendationService recommendationService;
+    private final ClusterItemPreferenceRepository clusterItemPreferenceRepository;
+    private final ClusterRepository clusterRepository;
 
-    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository, MemberInfoService memberInfoService) {
+    public OrderService(ItemRepository itemRepository, MemberRepository memberRepository, OrderRepository orderRepository, CartService cartService, OrderItemRepository orderItemRepository, MemberInfoService memberInfoService, RecommendationService recommendationService, ClusterItemPreferenceRepository clusterItemPreferenceRepository, ClusterRepository clusterRepository, MemberInfoRepository memberInfoRepository) {
         this.itemRepository = itemRepository;
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.orderItemRepository = orderItemRepository;
         this.memberInfoService = memberInfoService;
+        this.recommendationService = recommendationService;
+        this.clusterItemPreferenceRepository = clusterItemPreferenceRepository;
+        this.clusterRepository = clusterRepository;
+        this.memberInfoRepository = memberInfoRepository;
     }
 
     /**
@@ -58,6 +66,15 @@ public class OrderService {
         Order save = orderRepository.save(order);
 
         updateMemberInfoAfterPurchase(memberId);
+        
+        // 클러스터 예측 실행
+        try {
+            recommendationService.getClusterPrediction(memberId);
+            // 클러스터 아이템 선호도 업데이트
+            updateClusterItemPreference(memberId, findItem);
+        } catch (Exception e) {
+            System.err.println("클러스터 처리 중 오류 발생: " + e.getMessage());
+        }
 
         return save.getId();
 
@@ -110,6 +127,16 @@ public class OrderService {
 
         updateMemberInfoAfterPurchase(memberId);
 
+        try {
+            recommendationService.getClusterPrediction(memberId);
+            // 장바구니의 모든 아이템에 대해 선호도 업데이트
+            for (OrderItem orderItem : orderItemList) {
+                updateClusterItemPreference(memberId, orderItem.getItem());
+            }
+        } catch (Exception e) {
+            System.err.println("클러스터 처리 중 오류 발생: " + e.getMessage());
+        }
+
         return save.getId();
 
     }
@@ -139,5 +166,31 @@ public class OrderService {
         StripeCollection<LineItem> lineItemCollection = session.listLineItems(params);
 
         return lineItemCollection.getData();
+    }
+
+    private void updateClusterItemPreference(Long memberId, Item item) {
+        try {
+            // MemberInfo에서 cluster_id 가져오기
+            MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+            
+            Cluster cluster = memberInfo.getCluster_id();
+            if (cluster == null) return;  // 클러스터가 없으면 무시
+
+            // ClusterItemPreference 조회 또는 생성
+            ClusterItemPreference preference = clusterItemPreferenceRepository
+                    .findByClusterAndItem(cluster, item)
+                    .orElseGet(() -> {
+                        ClusterItemPreference newPreference = new ClusterItemPreference(cluster, item);
+                        return clusterItemPreferenceRepository.save(newPreference);
+                    });
+
+            // 선호도 점수 증가
+            preference.increasePreferenceScore();
+            clusterItemPreferenceRepository.save(preference);
+        } catch (Exception e) {
+            // 오류 로깅만 하고 진행
+            System.err.println("클러스터 아이템 선호도 업데이트 중 오류 발생: " + e.getMessage());
+        }
     }
 }
