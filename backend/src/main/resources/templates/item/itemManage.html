@@ -167,7 +167,7 @@
                         <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
                         <td>
                             <div class="btn-group">
-                                <a th:href="@{/items/{id}/edit(id=${item.itemId})}" class="btn btn-sm btn-outline-dark">
+                                <a th:href="@{/items/{itemId}/edit(itemId=${item.itemId})}" class="btn btn-sm btn-outline-dark">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" 

@@ -59,10 +59,10 @@ public class ItemForm {
         ItemForm form = new ItemForm();
         form.setItemId(item.getId());
         form.setName(item.getName());
-        form.setCategory(item.getCategory());
         form.setPrice(item.getPrice());
         form.setStockQuantity(item.getStockQuantity());
         form.setDescription(item.getDescription());
+        form.setCategory(item.getCategory());
         form.setAverageRating(item.getAverageRating());
         form.setReviewCount(item.getReviewCount());
         form.setCreatedDate(item.getCreatedDate());
@@ -72,7 +72,7 @@ public class ItemForm {
 
     public ItemServiceDTO toServiceDTO() {
         return ItemServiceDTO.builder()
-                .id(itemId)
+                .itemId(itemId)
                 .name(name)
                 .category(category)
                 .price(price)

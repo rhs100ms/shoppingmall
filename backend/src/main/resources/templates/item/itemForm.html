@@ -18,10 +18,11 @@
 <section>
 <div layout:fragment="content" class="container">
     <div class="py-5 text-center">
-        <h2>상품 등록</h2>
+        <h2 th:text="${itemForm.itemId == null ? '상품 등록' : '상품 수정'}">상품 등록</h2>
     </div>
     <!-- th:action 생략 => items/new 현재 URL-->
-    <form th:action th:object="${itemForm}" method="post" enctype="multipart/form-data">
+    <form th:action="${itemForm.itemId != null ? '/items/' + itemForm.itemId + '/edit' : '/items/new'}" 
+          th:object="${itemForm}" method="post" enctype="multipart/form-data">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
                th:text="${err}">전체 오류 메시지</p>
@@ -39,7 +40,9 @@
                 <option value="">카테고리 선택</option>
                 <option th:each="categoryCode : ${categoryCode}"
                         th:value="${categoryCode.code}"
-                        th:text="${categoryCode.displayName}" />
+                        th:text="${categoryCode.displayName}"
+                        th:selected="${itemForm.category != null && itemForm.category.name() == categoryCode.code}">
+                </option>
             </select>
         </div>
         <br>
@@ -67,17 +70,31 @@
 <!--            <input id="itemImages" name="itemImages" type="file" multiple="multiple" >-->
 <!--        </div>-->
 
+        <div th:if="${itemForm.itemId != null}" class="mb-3">
+            <label class="form-label">현재 이미지</label>
+            <div class="current-images">
+                <div th:each="image : ${itemForm.itemImageListDto}" class="position-relative d-inline-block">
+                    <img th:src="@{${'/images/' + image.storeName}}" 
+                         style="width: 200px; height: 200px; object-fit: contain; margin-right: 10px; margin-bottom: 10px;"
+                         class="border rounded p-1">
+                </div>
+            </div>
+        </div>
 
         <div class="mb-3">
-            <label for="formFileMultiple" class="form-label">파일업로드</label>
+            <label for="formFileMultiple" class="form-label" 
+                   th:text="${itemForm.itemId == null ? '상품 이미지 업로드' : '추가 이미지 업로드'}">
+            </label>
             <input class="form-control" type="file" id="formFileMultiple" name="itemImages" multiple>
         </div>
 
-        <script>
+        <script th:inline="javascript">
             document.getElementById("formFileMultiple").addEventListener("change", function(event) {
                 const fileInput = event.target;
                 const previewContainer = document.querySelector(".preview-images");
-                previewContainer.innerHTML = ""; // 이전 미리보기 초기화
+                
+                // 미리보기 섹션 제목 추가
+                previewContainer.innerHTML = "<h6 class='w-100 mb-3'>새 이미지 미리보기</h6>";
 
                 Array.from(fileInput.files).forEach(file => {
                     const reader = new FileReader();
@@ -89,6 +106,7 @@
                         img.style.objectFit = "contain";
                         img.style.marginRight = "10px";
                         img.style.marginBottom = "10px";
+                        img.classList.add("border", "rounded", "p-1");
                         previewContainer.appendChild(img);
                     };
                     reader.readAsDataURL(file);
@@ -97,17 +115,31 @@
         </script>
 
         <style>
+            .current-images {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+                margin-top: 10px;
+            }
+            
+            .current-images .position-relative {
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+            
+            .form-label {
+                display: block;
+                margin-bottom: 5px;
+            }
+            
             .preview-images {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
                 margin-top: 20px;
-            }
-
-            .preview-images img {
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                padding: 5px;
+                border-top: 1px solid #dee2e6;
+                padding-top: 20px;
             }
         </style>
 
@@ -121,8 +153,9 @@
         <br>
         <br>
         <div style="text-align:center">
-        <button class="w-50 btn btn-primary btn-lg" th:align="center" type="submit">
-            상품 등록</button>
+        <button class="w-50 btn btn-primary btn-lg" type="submit" 
+                th:text="${itemForm.itemId == null ? '상품 등록' : '상품 수정'}">
+        </button>
         </div>
         <br>
         <br>

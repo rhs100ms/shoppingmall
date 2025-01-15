@@ -2,6 +2,7 @@ package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.controller.dto.ItemForm;
 import com.dsapkl.backend.controller.dto.ItemImageDto;
+import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.ItemImage;
 import com.dsapkl.backend.entity.Member;
@@ -9,6 +10,7 @@ import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -145,17 +147,25 @@ public class ItemController {
                              @RequestParam("price") int price,
                              @RequestParam("stockQuantity") int stockQuantity,
                              @RequestParam("description") String description,
+                             @RequestParam("category") Category category,
+                             @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
                              @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages) throws IOException {
-
         // 상품 수정 로직
-        itemService.updateItem(itemId, name, price, stockQuantity, description);
+        itemService.updateItem(itemId, name, price, stockQuantity, description, category);
+
+        // 선택된 이미지 삭제
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            for (Long imageId : deleteImageIds) {
+                itemImageService.delete(imageId);
+            }
+        }
 
         // 이미지가 있다면 이미지도 수정
         if (itemImages != null && !itemImages.isEmpty() && !itemImages.get(0).isEmpty()) {
             itemImageService.updateItemImages(itemId, itemImages);
         }
 
-        return "redirect:/items/" + itemId;
+        return "redirect:/items/manage";
     }
 
     @GetMapping("/api/items/{itemId}/rating")
@@ -225,6 +235,26 @@ public class ItemController {
         }
 
         return "item/itemManage";
+    }
+
+    @GetMapping("/items/{itemId}/edit")
+    public String itemEditForm(@PathVariable("itemId") Long itemId, Model model) {
+        try {
+            ItemForm itemForm = itemService.getItemDtl(itemId);
+            List<CategoryCode> categoryCode = new ArrayList<>();
+            categoryCode.add(new CategoryCode("APPAREL", "의류"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
+            categoryCode.add(new CategoryCode("BOOKS", "서적"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            model.addAttribute("itemForm", itemForm);
+            model.addAttribute("categoryCode", categoryCode);
+            model.addAttribute("isEdit", true);  // 수정 모드임을 표시
+            return "item/itemForm";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
+            return "redirect:/items/manage";
+        }
     }
 
 }

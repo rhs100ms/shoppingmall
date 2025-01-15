@@ -414,7 +414,7 @@
                 <form th:action="@{/items/{itemId}/edit(itemId=${item.itemId})}"
                       method="post" enctype="multipart/form-data"
                       class="edit-mode" style="display: none;">
-                    <input type="hidden" th:value="${item.itemId}" name="id">
+                    <input type="hidden" th:value="${item.itemId}" name="itemId">
                     <div class="mb-3">
                         <label for="name" class="form-label">상품명</label>
                         <input type="text" class="form-control" id="name" name="name"
