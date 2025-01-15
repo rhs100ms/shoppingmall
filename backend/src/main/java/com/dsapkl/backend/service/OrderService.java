@@ -63,9 +63,6 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderDto> findOrdersDetail(Long memberId, OrderStatus orderStatus) {
         List<OrderDto> orders = orderRepository.findOrderDetail(memberId, orderStatus);
-
-        System.out.println("조회된 주문: " + orders);
-
         return orders;
     }
 

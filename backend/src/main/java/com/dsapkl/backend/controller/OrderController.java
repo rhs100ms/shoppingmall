@@ -57,7 +57,7 @@ public class OrderController {
         response.put("status", "success");
         response.put("orderId", orderId);
 
-        System.out.println(response);
+//        System.out.println(response);
 
         return ResponseEntity.ok(response);
     }
@@ -91,8 +91,6 @@ public class OrderController {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 String paymentIntentId = session.getPaymentIntent();
-                System.out.println(paymentIntentId);
-
                 CheckoutRequest checkoutRequest = objectMapper.readValue(orderInfoJson, CheckoutRequest.class);
                 model.addAttribute("checkoutRequest", checkoutRequest);
 
@@ -106,11 +104,19 @@ public class OrderController {
 
                 HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
                 ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, Map.class);
-                Map<String, Object> responseBody = response.getBody();
-                Long orderId = ((Integer) responseBody.get("orderId")).longValue();
-                System.out.println(orderId);
-                findOrders = orderService.findOrdersDetail(member.getId(), status);
 
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Map<String, Object> responseBody = response.getBody();
+
+                    if ("success".equals(responseBody.get("status"))) {
+                        System.out.println("Buy Now Success");  // 콘솔에 메시지 출력
+                        findOrders = orderService.findOrdersDetail(member.getId(), status);
+                    } else {
+                        System.out.println("Buy Now Failed");
+                    }
+                } else {
+                    System.out.println("Server error: " + response.getStatusCode());
+                }
 
             } catch (StripeException | JsonProcessingException e) {
                 e.printStackTrace();
@@ -119,8 +125,6 @@ public class OrderController {
         }   else {
             findOrders = orderService.findOrdersDetail(member.getId(), status);
         }
-
-        System.out.println(findOrders);
         return findOrders;
     }
 
@@ -148,7 +152,7 @@ public class OrderController {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok("order Success");
+        return ResponseEntity.ok("Cart Order Success");
     }
 
     /**
@@ -157,10 +161,7 @@ public class OrderController {
     @PostMapping("/order/{orderId}/cancel")
     @ResponseBody
     public ResponseEntity<String> cancelOrder(@PathVariable("orderId") Long orderId) {
-
-        System.out.println("@PostMapping(\"/order/{orderId}/cancel\")" + orderId);
         orderService.cancelOrder(orderId);
-
         return ResponseEntity.ok("Success");
     }
 }

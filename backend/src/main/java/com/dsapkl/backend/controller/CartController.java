@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -69,26 +70,19 @@ public class CartController {
                 Session session = Session.retrieve(sessionId);
                 String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
-//                System.out.println("orderInfoJson: " + orderInfoJson);
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 String paymentIntentId = session.getPaymentIntent();
-//                System.out.println("Cart에서 결제한: " + paymentIntentId);
 
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
-//                System.out.println("cartOrderList: " + cartOrderList);
                 model.addAttribute("cartOrderList", cartOrderList);
 
                 List<CartForm> cartFormList = cartOrderList.stream()
                         .map(cartQueryDto -> new CartForm(cartQueryDto.getCartItemId(), cartQueryDto.getItemId(), cartQueryDto.getCount(), paymentIntentId))
                         .collect(Collectors.toList());
-//                log.info("cartItemId 들어간 cartFormList 인가요? : {}", new ObjectMapper().writeValueAsString(cartFormList));
 
                 CartOrderDto cartOrderDto = new CartOrderDto();
                 cartOrderDto.setCartOrderDtoList(cartFormList);
-
-//                log.info("paymentIntentId 들어간 cartOrderDto 인가요? : {}", new ObjectMapper().writeValueAsString(cartOrderDto));
-                //=> paymentIntentId 들어감 ,, cartItemId 들어감
 
                 RestTemplate restTemplate = new RestTemplate();
                 HttpHeaders headers = new HttpHeaders();
@@ -96,18 +90,17 @@ public class CartController {
                 headers.add("Cookie", "JSESSIONID=" + jsessionId);
 
                 HttpEntity<CartOrderDto> requestEntity = new HttpEntity<>(cartOrderDto, headers);
-
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, String.class);
-                //=> paymentIntentId 안들어감
+                System.out.println(response.getBody());
+                cartItemListForm = cartService.findCartItems(member.getId());
+
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
             }
+        } else {
+            cartItemListForm = cartService.findCartItems(member.getId());
         }
-
-        cartItemListForm = cartService.findCartItems(member.getId());
-
-        model.addAttribute("cartItemListForm", cartItemListForm);
 
         return cartItemListForm;
     }
