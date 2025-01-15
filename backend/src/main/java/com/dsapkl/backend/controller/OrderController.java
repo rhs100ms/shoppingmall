@@ -105,7 +105,6 @@ public class OrderController {
                 headers.add("Cookie", "JSESSIONID=" + jsessionId);
 
                 HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
-//                restTemplate.postForEntity("http://localhost:8888/order", requestEntity, String.class);
                 ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, Map.class);
                 Map<String, Object> responseBody = response.getBody();
                 Long orderId = ((Integer) responseBody.get("orderId")).longValue();
@@ -144,7 +143,7 @@ public class OrderController {
         }
 
         try {
-            orderService.orders(member.getId(), cartOrderDto, paymentIntentId);
+            orderService.orders(member.getId(), cartOrderDto);
         } catch (NotEnoughStockException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

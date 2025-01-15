@@ -26,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,32 +41,54 @@ public class CartController {
     /**
      *  장바구니 조회
      */
+
     @GetMapping("/cart")
-    public String cartView(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request)
+    public String cartView(Model model, HttpServletRequest request) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(null, model, request);
+        model.addAttribute("cartItemListForm", cartViews);
+        return "cart/cartView";
+    }
+
+    @GetMapping("/cart/success")
+    public String cartSuccessView(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(sessionId, model, request);
+        model.addAttribute("cartItemListForm", cartViews);
+        return "redirect:/cart";
+    }
+
+    private List<CartQueryDto> cartViewDetails(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request)
     throws JsonProcessingException {
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+
+        Member member = getMember(request);
+
+        List<CartQueryDto> cartItemListForm = Collections.emptyList();
+
         if (sessionId != null) {
             try{
                 Session session = Session.retrieve(sessionId);
                 String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
+//                System.out.println("orderInfoJson: " + orderInfoJson);
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 String paymentIntentId = session.getPaymentIntent();
-                System.out.println("Cart에서 결제한: " + paymentIntentId);
+//                System.out.println("Cart에서 결제한: " + paymentIntentId);
 
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
+//                System.out.println("cartOrderList: " + cartOrderList);
                 model.addAttribute("cartOrderList", cartOrderList);
 
                 List<CartForm> cartFormList = cartOrderList.stream()
-                        .map(cartQueryDto -> new CartForm(cartQueryDto.getItemId(), cartQueryDto.getCartItemId(), cartQueryDto.getCount(), paymentIntentId))
+                        .map(cartQueryDto -> new CartForm(cartQueryDto.getCartItemId(), cartQueryDto.getItemId(), cartQueryDto.getCount(), paymentIntentId))
                         .collect(Collectors.toList());
+//                log.info("cartItemId 들어간 cartFormList 인가요? : {}", new ObjectMapper().writeValueAsString(cartFormList));
 
                 CartOrderDto cartOrderDto = new CartOrderDto();
                 cartOrderDto.setCartOrderDtoList(cartFormList);
 
-                log.info("paymentIntentId 들어간 cartOrderDto 인가요? : {}", new ObjectMapper().writeValueAsString(cartOrderDto));
-                //=> paymentIntentId 들어감 ,, cartItemId 안들어감
+//                log.info("paymentIntentId 들어간 cartOrderDto 인가요? : {}", new ObjectMapper().writeValueAsString(cartOrderDto));
+                //=> paymentIntentId 들어감 ,, cartItemId 들어감
 
                 RestTemplate restTemplate = new RestTemplate();
                 HttpHeaders headers = new HttpHeaders();
@@ -82,17 +105,11 @@ public class CartController {
             }
         }
 
-        Member member = getMember(request);
-
-        if (member == null) {
-            return "redirect:/members";
-        }
-
-        List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+        cartItemListForm = cartService.findCartItems(member.getId());
 
         model.addAttribute("cartItemListForm", cartItemListForm);
 
-        return "cart/cartView";
+        return cartItemListForm;
     }
 
     /**

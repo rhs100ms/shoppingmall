@@ -9,7 +9,6 @@ import com.stripe.model.LineItem;
 import com.stripe.model.StripeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionListLineItemsParams;
-import com.stripe.param.checkout.SessionListParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,18 +72,17 @@ public class OrderService {
     /**
      * 장바구니 상품들 주문
      */
-    public Long orders(Long memberId, CartOrderDto cartOrderDto, String paymentIntentId) {
+    public Long orders(Long memberId, CartOrderDto cartOrderDto) {
 
         List<OrderItem> orderItemList = new ArrayList<>();
-
 
         Member findMember = memberRepository.findById(memberId)
             .orElseThrow(() -> new
                     NoSuchElementException("Member with ID " + memberId + " not found"));
 
-
-
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
+
+        String paymentIntentId = null;
 
         for (CartForm cartForm : cartOrderDtoList) {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
@@ -92,6 +90,8 @@ public class OrderService {
 
             OrderItem orderItem = OrderItem.createOrderItem(cartForm.getCount(), orderPrice, findItem);
             orderItemList.add(orderItem);
+
+            paymentIntentId = cartForm.getPaymentIntentId();
         }
 
         OrderStatus orderStatus = OrderStatus.ORDER;
@@ -101,7 +101,7 @@ public class OrderService {
         Order save = orderRepository.save(order);
 
         //주문한 상품은 장바구니에서 제거
-//        deleteCartItem(cartOrderDto);
+        deleteCartItem(cartOrderDto);
 
         return save.getId();
 
