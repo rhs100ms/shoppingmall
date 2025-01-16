@@ -2,7 +2,9 @@ package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.entity.Cart;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.repository.CartRepository;
+import com.dsapkl.backend.repository.MemberInfoRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,6 +23,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final EmailService emailService;
+    private final MemberInfoRepository memberInfoRepository;
 
     //회원가입
     @Transactional(readOnly = false)
@@ -31,6 +34,8 @@ public class MemberService {
         Cart cart = Cart.createCart(savedMember);
         cartRepository.save(cart);
 
+        MemberInfo memberInfo = MemberInfo.createMemberInfo(savedMember);
+        memberInfoRepository.save(memberInfo);
 
         return savedMember.getId();
     }
@@ -61,7 +66,7 @@ public class MemberService {
     public List<Member> findMembers() {
         return memberRepository.findAll();
     }
-    
+
     //이메일 체크
     public boolean isEmailAvailable(String email) {
        return memberRepository.existsByEmail(email);
