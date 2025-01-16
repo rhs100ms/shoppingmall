@@ -26,7 +26,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -40,21 +42,43 @@ public class CartController {
     /**
      *  장바구니 조회
      */
+
     @GetMapping("/cart")
-    public String cartView(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request)
+    public String cartView(Model model, HttpServletRequest request) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(null, model, request);
+        model.addAttribute("cartItemListForm", cartViews);
+        return "cart/cartView";
+    }
+
+    @GetMapping("/cart/success")
+    public String cartSuccessView(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(sessionId, model, request);
+        model.addAttribute("cartItemListForm", cartViews);
+        return "redirect:/cart";
+    }
+
+    private List<CartQueryDto> cartViewDetails(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request)
     throws JsonProcessingException {
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+
+        Member member = getMember(request);
+
+        List<CartQueryDto> cartItemListForm = Collections.emptyList();
+
         if (sessionId != null) {
             try{
                 Session session = Session.retrieve(sessionId);
                 String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
                 ObjectMapper objectMapper = new ObjectMapper();
+
+                String paymentIntentId = session.getPaymentIntent();
+
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
                 model.addAttribute("cartOrderList", cartOrderList);
 
                 List<CartForm> cartFormList = cartOrderList.stream()
-                        .map(cartQueryDto -> new CartForm(cartQueryDto.getItemId(), cartQueryDto.getCartItemId(), cartQueryDto.getCount()))
+                        .map(cartQueryDto -> new CartForm(cartQueryDto.getCartItemId(), cartQueryDto.getItemId(), cartQueryDto.getCount(), paymentIntentId))
                         .collect(Collectors.toList());
 
                 CartOrderDto cartOrderDto = new CartOrderDto();
@@ -66,26 +90,19 @@ public class CartController {
                 headers.add("Cookie", "JSESSIONID=" + jsessionId);
 
                 HttpEntity<CartOrderDto> requestEntity = new HttpEntity<>(cartOrderDto, headers);
-
                 ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, String.class);
+                System.out.println(response.getBody());
+                cartItemListForm = cartService.findCartItems(member.getId());
 
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
             }
+        } else {
+            cartItemListForm = cartService.findCartItems(member.getId());
         }
 
-        Member member = getMember(request);
-
-        if (member == null) {
-            return "redirect:/members";
-        }
-
-        List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
-
-        model.addAttribute("cartItemListForm", cartItemListForm);
-
-        return "cart/cartView";
+        return cartItemListForm;
     }
 
     /**

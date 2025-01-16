@@ -73,7 +73,7 @@ public class CheckoutController {
                         .addAllLineItem(lineItems)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
                         .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(cartOrderList))
-                        .setSuccessUrl("http://localhost:8888/cart?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
+                        .setSuccessUrl("http://localhost:8888/cart/success?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
                         .build();
 
@@ -113,7 +113,7 @@ public class CheckoutController {
                         .addLineItem(lineItem)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
                         .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(request))
-                        .setSuccessUrl("http://localhost:8888/orders?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
+                        .setSuccessUrl("http://localhost:8888/orders/success?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
                         .build();
 
@@ -126,26 +126,26 @@ public class CheckoutController {
     }
 
 
-//    // 환불 처리
-//    @PostMapping("/refund")
-//    public Map<String, String> createRefund(@RequestParam String paymentIntentId) {
-//        Stripe.apiKey = secretKey;
-//
-//        Map<String, String> response = new HashMap<>();
-//        try {
-//            RefundCreateParams params = RefundCreateParams.builder()
-//                    .setPaymentIntent(paymentIntentId)
-//                    .build();
-//
-//            Refund refund = Refund.create(params);
-//            response.put("status", "success");
-//            response.put("refundId", refund.getId());
-//        } catch (StripeException e) {
-//            response.put("status", "failed");
-//            response.put("error", e.getMessage());
-//        }
-//        return response;
-//    }
+    // 환불 처리
+    @PostMapping("/refund")
+    public Map<String, String> createRefund(@RequestParam String paymentIntentId) {
+        Stripe.apiKey = secretKey;
+
+        Map<String, String> response = new HashMap<>();
+        try {
+            RefundCreateParams params = RefundCreateParams.builder()
+                    .setPaymentIntent(paymentIntentId)
+                    .build();
+
+            Refund refund = Refund.create(params);
+            response.put("status", "success");
+            response.put("refundId", refund.getId());
+        } catch (StripeException e) {
+            response.put("status", "failed");
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
 
 
 }

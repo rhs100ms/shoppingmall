@@ -9,13 +9,10 @@ import com.stripe.model.LineItem;
 import com.stripe.model.StripeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionListLineItemsParams;
-import com.stripe.param.checkout.SessionListParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -37,7 +34,7 @@ public class OrderService {
     /**
      * 단일 주문
      */
-    public Long order(Long memberId, Long itemId, int count) {
+    public Long order(Long memberId, Long itemId, int count, String paymentIntentId) {
 
         List<OrderItem> orderItemList = new ArrayList<>();
         Item findItem = itemRepository.findById(itemId).orElseGet(() -> null);
@@ -51,7 +48,7 @@ public class OrderService {
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
-        Order order = Order.createOrder(orderStatus ,findMember, orderItemList);
+        Order order = Order.createOrder(orderStatus , findMember, paymentIntentId, orderItemList);
 
         Order save = orderRepository.save(order);
 
@@ -65,8 +62,8 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public List<OrderDto> findOrdersDetail(Long memberId, OrderStatus orderStatus) {
-        return orderRepository.findOrderDetail(memberId, orderStatus);
-//        return null;
+        List<OrderDto> orders = orderRepository.findOrderDetail(memberId, orderStatus);
+        return orders;
     }
 
     /**
@@ -76,14 +73,13 @@ public class OrderService {
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
-
         Member findMember = memberRepository.findById(memberId)
             .orElseThrow(() -> new
                     NoSuchElementException("Member with ID " + memberId + " not found"));
 
-
-
         List<CartForm> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
+
+        String paymentIntentId = null;
 
         for (CartForm cartForm : cartOrderDtoList) {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
@@ -91,11 +87,13 @@ public class OrderService {
 
             OrderItem orderItem = OrderItem.createOrderItem(cartForm.getCount(), orderPrice, findItem);
             orderItemList.add(orderItem);
+
+            paymentIntentId = cartForm.getPaymentIntentId();
         }
 
         OrderStatus orderStatus = OrderStatus.ORDER;
 
-        Order order = Order.createOrder(orderStatus, findMember, orderItemList);
+        Order order = Order.createOrder(orderStatus, findMember, paymentIntentId, orderItemList);
 
         Order save = orderRepository.save(order);
 
@@ -131,5 +129,13 @@ public class OrderService {
         StripeCollection<LineItem> lineItemCollection = session.listLineItems(params);
 
         return lineItemCollection.getData();
+    }
+
+    public List<OrderDto> findOrderById(Long orderId) {
+
+        Optional<Order> findOrder = Optional.ofNullable(orderRepository.findById(orderId).orElseGet(() -> null));
+
+        return findOrder.map(order -> List.of(new OrderDto(order.getId(), order.getTotalPrice(),order.getOrderDate(),order.getStatus(), order.getPaymentIntentId())))
+                .orElseGet(Collections::emptyList);
     }
 }
