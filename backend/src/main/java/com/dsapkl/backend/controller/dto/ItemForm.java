@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,10 @@ public class ItemForm {
 
     private int reviewCount;
 
+    private LocalDateTime createdDate;
+
+    private LocalDateTime modifiedDate;
+
     @Builder
     public ItemForm(String name, int price, int stockQuantity, String description) {
         this.name = name;
@@ -54,18 +59,20 @@ public class ItemForm {
         ItemForm form = new ItemForm();
         form.setItemId(item.getId());
         form.setName(item.getName());
-        form.setCategory(item.getCategory());
         form.setPrice(item.getPrice());
         form.setStockQuantity(item.getStockQuantity());
         form.setDescription(item.getDescription());
+        form.setCategory(item.getCategory());
         form.setAverageRating(item.getAverageRating());
         form.setReviewCount(item.getReviewCount());
+        form.setCreatedDate(item.getCreatedDate());
+        form.setModifiedDate(item.getModifiedDate());
         return form;
     }
 
     public ItemServiceDTO toServiceDTO() {
         return ItemServiceDTO.builder()
-                .id(itemId)
+                .itemId(itemId)
                 .name(name)
                 .category(category)
                 .price(price)

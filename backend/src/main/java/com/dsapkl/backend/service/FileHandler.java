@@ -1,6 +1,7 @@
 package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.entity.ItemImage;
+import com.dsapkl.backend.entity.ReviewImage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,5 +79,21 @@ public class FileHandler {
                 throw new RuntimeException("Failed to delete file: " + filePath);
             }
         }
+    }
+
+    public List<ReviewImage> storeFiles(List<MultipartFile> files) throws IOException {
+        List<ReviewImage> reviewImages = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                String originalFilename = file.getOriginalFilename();
+                String storeFileName = createStoreImageName(originalFilename);
+                file.transferTo(new File(getFullPath(storeFileName)));
+                reviewImages.add(ReviewImage.builder()
+                        .originalFileName(originalFilename)
+                        .storeFileName(storeFileName)
+                        .build());
+            }
+        }
+        return reviewImages;
     }
 }

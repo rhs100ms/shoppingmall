@@ -6,16 +6,22 @@ import com.dsapkl.backend.entity.ItemImage;
 import com.dsapkl.backend.repository.ItemImageRepository;
 import com.dsapkl.backend.repository.ItemRepository;
 import com.dsapkl.backend.service.dto.ItemServiceDTO;
+import com.dsapkl.backend.controller.dto.ItemForm;
+import com.dsapkl.backend.controller.dto.ItemImageDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +63,7 @@ public class ItemService {
     //상품 정보 업데이트 (Dirty Checking, 변경감지)
     @Transactional
     public void updateItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
-        Item findItem = itemRepository.findById(itemServiceDTO.getId())
+        Item findItem = itemRepository.findById(itemServiceDTO.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
         findItem.updateItem(
@@ -74,16 +80,16 @@ public class ItemService {
         }
 
         //대표 이미지 재설정
-        List<ItemImage> itemImageList = itemImageRepository.findByItemIdAndDeleteYN(itemServiceDTO.getId(), "N");
+        List<ItemImage> itemImageList = itemImageRepository.findByItemIdAndDeleteYN(itemServiceDTO.getItemId(), "N");
         itemImageList.get(0).isFirstImage("Y");
     }
 
     @Transactional
-    public void updateItem(Long itemId, String name, int price, int stockQuantity, String description) {
+    public void updateItem(Long itemId, String name, int price, int stockQuantity, String description, Category category) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-        item.updateItem(name, price, stockQuantity, description, item.getCategory());
+        item.updateItem(name, price, stockQuantity, description, category);
     }
 
     // 통합 검색 기능
@@ -143,5 +149,68 @@ public class ItemService {
 
         // 상품 삭제
         itemRepository.delete(item);
+    }
+
+    public Page<Item> findItemsPage(Pageable pageable) {
+        return itemRepository.findAll(pageable);
+    }
+
+    public Page<Item> searchItems(String query, String categoryStr, String status, Pageable pageable) {
+        final Category selectedCategory = (categoryStr != null && !categoryStr.isEmpty()) ? 
+            Category.valueOf(categoryStr) : null;
+
+        Specification<Item> spec = Specification.where(null);
+        
+        if (selectedCategory != null) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("category"), selectedCategory)
+            );
+        }
+
+        if (query != null && !query.isEmpty()) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + query.toLowerCase() + "%"),
+                    criteriaBuilder.like(root.get("id").as(String.class), "%" + query + "%")
+                )
+            );
+        }
+
+        if (status != null) {
+            switch (status) {
+                case "SELLING":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.greaterThan(root.get("stockQuantity"), 10));
+                    break;
+                case "LOW_STOCK":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.and(
+                            criteriaBuilder.greaterThan(root.get("stockQuantity"), 0),
+                            criteriaBuilder.lessThanOrEqualTo(root.get("stockQuantity"), 10)
+                        ));
+                    break;
+                case "SOLDOUT":
+                    spec = spec.and((root, criteriaQuery, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("stockQuantity"), 0));
+                    break;
+            }
+        }
+
+        return itemRepository.findAll(spec, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemForm getItemDtl(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(EntityNotFoundException::new);
+        ItemForm itemForm = ItemForm.from(item);
+        
+        List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(itemId, "N");
+        List<ItemImageDto> itemImageDtos = itemImages.stream()
+                .map(ItemImageDto::new)
+                .collect(Collectors.toList());
+        
+        itemForm.setItemImageListDto(itemImageDtos);
+        return itemForm;
     }
 }

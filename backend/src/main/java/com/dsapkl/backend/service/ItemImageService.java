@@ -75,4 +75,12 @@ public class ItemImageService {
     public List<ItemImage> findByItemIdAndRepImgYn(Long itemId, String repImgYn) {
         return itemImageRepository.findByItemIdAndRepImgYn(itemId, repImgYn);
     }
+
+    public void deleteItemImage(String storeName) throws IOException {
+        fileHandler.deleteImage(storeName);
+    }
+
+    public List<ItemImage> uploadItemImages(List<MultipartFile> itemImageFiles) throws IOException {
+        return fileHandler.storeImages(itemImageFiles);
+    }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class ItemServiceDTO {
 
-    private Long id;
+    private Long itemId;
     private String name;
     private int price;
     private int stockQuantity;

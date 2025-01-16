@@ -36,6 +36,8 @@ public class HomeController {
     private final ItemService itemService;
     private final CartService cartService;
     private final OrderService orderService;
+    private final MemberInfoRepository memberInfoRepository;
+    private final ClusterItemPreferenceRepository clusterItemPreferenceRepository;
 
     @GetMapping("/")
     public String home(@RequestParam(value = "query", required = false) String query,
