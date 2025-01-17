@@ -124,11 +124,12 @@
         <br>
         &nbsp
         <select name="role" id="role" class="formcontrol">
-            <option value="">판매자, 구매자 등록</option>
+            <option value="">회원 등록</option>
             <option th:each="roleCode : ${roleCodes}"
                     th:value="${roleCode.code}"
                     th:text="${roleCode.displayName}" />
         </select>
+<!--        <input type="hidden" id="role" class="formcontrol" th:value="${roleCodes.code}">-->
         <hr class="my-4">
         <div class="row">
             <div class="col" style="text-align: center">

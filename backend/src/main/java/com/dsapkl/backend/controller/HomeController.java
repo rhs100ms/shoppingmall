@@ -89,7 +89,7 @@ public class HomeController {
                 .count();
         model.addAttribute("orderCount", orderCount);
 
-        return "index";
+        return "user";
     }
 
     // 아이템의 선호도 점수를 조회하는 메서드
