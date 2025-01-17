@@ -36,7 +36,7 @@
             type: 'POST',
             contentType: 'application/json',
             success: function (result) {
-                alert("주문이 취소되었습니다.");
+                alert("The order has been canceled.");
                 location.href="/orders"
             },
             error: function (jqXHR) {
@@ -63,23 +63,23 @@
                     })
                         .then(response => {
                             if (response.ok) {
-                                alert('주문이 취소되었습니다.');
+                                alert('The order has been canceled.');
                                 window.location.reload();
                             } else {
-                                alert('주문 취소에 실패하였습니다.');
+                                alert('Failed to cancel the order.');
                             }
                         })
                         .catch(error => {
                             console.error('Error', error);
-                            alert('주문 취소 중 오류가 발생했습니다.');
+                            alert('An error occurred while canceling the order.');
                         });
                 } else {
-                    alert('환불 처리에 실패하였습니다: ' + data.error);
+                    alert('Failed to process the refund: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error: ', error);
-                alert('환불 처리 중 오류가 발생했습니다.');
+                alert('An error occurred while processing the refund.');
             });
     }
 
@@ -112,7 +112,9 @@
 
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <p class="lead fw-normal mb-0" id="date" th:field="${order.orderDate}" th:value="${order.orderDate}" th:text="${order.orderDate} + ' 결제'" style="color: #36808f;">Receipt</p>
+                                    <p class="lead fw-normal mb-0" id="date" 
+                                       th:text="${order.orderDate} + ' Payment'" 
+                                       style="color: #36808f;">Receipt</p>
                                 </div>
 
                                 <div th:each="orderItem : ${order.getOrderItemDtoList()}" class="card shadow-0 border mb-4">
@@ -126,11 +128,11 @@
                                                 <p class="text-muted mb-0" th:id="itemName"  th:text="${orderItem.itemName}">iPad</p>
                                             </div>
                                             <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                                <p class="text-muted mb-0 small" th:field="${orderItem.count}" th:text="'주문 수량 : ' + ${orderItem.count}">주문 수량: 1</p>
+                                                <p class="text-muted mb-0 small" th:field="${orderItem.count}" th:text="'Quantity: ' + ${orderItem.count}">Quantity: 1</p>
                                             </div>
                                             <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                                                 <p class="text-muted mb-0 small" th:field="${orderItem.orderPrice}" 
-                                                   th:text="|${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')}원|">$399</p>
+                                                   th:text="|${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')}₩|">$399</p>
                                             </div>
                                         </div>
                                         <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
@@ -157,8 +159,8 @@
                             <div class="card-footer border-0 px-4 py-5"
                                  style=" border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="text-uppercase mb-0">Total Order Price: 
-                                        <span th:text="|${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}원|" class="h2 mb-0 ms-2">$1040</span>
+                                    <h6 class="text-uppercase mb-0">Total Amount: 
+                                        <span th:text="|${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}₩|" class="h2 mb-0 ms-2">$1040</span>
                                     </h6>
 
                                     <th:block th:if="${order.orderStatus.name() == 'ORDER'}">

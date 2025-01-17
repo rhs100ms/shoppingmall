@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Data
 @EqualsAndHashCode(of = "orderId")
@@ -25,7 +26,9 @@ public class OrderDto {
     public OrderDto(Long orderId, int totalPrice, LocalDateTime orderDate, OrderStatus orderStatus, String paymentIntentId) {
         this.orderId = orderId;
         this.totalPrice = totalPrice;
-        this.orderDate = orderDate.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));  //보기 좋게 format
+        this.orderDate = orderDate.format(
+            DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a", Locale.ENGLISH)
+        );  // Format in English
         this.orderStatus = orderStatus;
         this.paymentIntentId = paymentIntentId;
     }
