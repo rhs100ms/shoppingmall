@@ -101,7 +101,8 @@ public class MemberController {
     @PostMapping("/members")
     public String login(@Valid @ModelAttribute LoginForm form
             , BindingResult bindingResult
-            , HttpServletRequest request){
+            , HttpServletRequest request) {
+        log.info("RECEIVED: {}", form);
 
         //이메일 또는 비밀번호를 누락시
         if (bindingResult.hasErrors()) {
@@ -121,6 +122,14 @@ public class MemberController {
     */
         HttpSession session = request.getSession();  //만약 세션이 있으면 기존 세션을 반환하고, 없으면 신규 세션 생성
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);  //세션에 회원 정보 보관
+//        log.info("세션에 저장된 회원 정보: {}", session.getAttribute(SessionConst.LOGIN_MEMBER));
+//        System.out.println(loginMember);
+
+        if ("ROLE_ADMIN".equals(loginMember.getRole().name())) {
+            return "redirect:/admin";
+        } else if ("ROLE_USER".equals(loginMember.getRole().name())) {
+            return "redirect:/user";
+        }
 
         return "redirect:/";
     }

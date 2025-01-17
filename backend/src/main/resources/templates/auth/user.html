@@ -18,7 +18,7 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/}">PKLshop</a>
+        <a class="navbar-brand" th:href="@{/static}">PKLshop</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
@@ -42,7 +42,7 @@
                 </button>
             </form>
             &nbsp;
-            <form th:action="@{/cart}" class="d-flex" method="get">
+            <form th:action="@{/templates/cart}" class="d-flex" method="get">
                 <button class="btn btn-outline-dark" type="submit">
                     <i class="bi-cart-fill me-1"></i>
                     Cart
@@ -83,7 +83,7 @@
 <!-- 검색 -->
 <div class="container px-4 px-lg-5 mt-3">
     <div class="d-flex justify-content-end">
-        <form th:action="@{/}" method="get" class="d-flex" style="width: 600px;">
+        <form th:action="@{/static}" method="get" class="d-flex" style="width: 600px;">
             <select class="form-select me-2" name="category" style="width: 150px;">
                 <option value="">카테고리 선택</option>
                 <option value="APPAREL">의류</option>

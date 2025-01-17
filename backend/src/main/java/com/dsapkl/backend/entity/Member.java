@@ -48,9 +48,9 @@ public class Member {
 
     public void changeRole(String role) {
         if (role.equals("admin")) {
-            this.role = Role.ADMIN;
+            this.role = Role.ROLE_ADMIN;
         } else {
-            this.role = Role.USER;
+            this.role = Role.ROLE_USER;
         }
     }
 

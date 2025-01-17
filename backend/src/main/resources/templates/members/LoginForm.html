@@ -21,7 +21,7 @@
 <div layout:fragment="content">
 <!--    <div class="py-5 text-center">-->
 <!--    </div>-->
-    <form th:action th:object="${loginForm}" method="post">
+    <form th:action="@{/members}" th:object="${loginForm}" method="post">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
                th:text="${err}">전체 오류 메시지</p>
@@ -29,7 +29,7 @@
         <div>
             <label for="email">&nbsp Email</label>
             <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="이메일 형식으로 입력해주세요"
-                   th:errorclass="field-error">
+                   th:errorclass="field-error" name="email">
             <div class="field-error" th:errors="*{email}" />
         </div>
         <br>
@@ -37,7 +37,7 @@
             <label for="password">&nbsp 비밀번호 &nbsp&nbsp</label>
             <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요"
                    class="form-control"
-                   th:errorclass="field-error">
+                   th:errorclass="field-error" name="password">
             <div class="field-error" th:errors="*{password}" />
         </div>
 
