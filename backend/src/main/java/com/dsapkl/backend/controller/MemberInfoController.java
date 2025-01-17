@@ -1,12 +1,11 @@
 package com.dsapkl.backend.controller;
 
-import com.dsapkl.backend.controller.dto.MemberInfoCreateDto;
-import com.dsapkl.backend.controller.dto.MemberInfoResponseDto;
+import com.dsapkl.backend.dto.MemberInfoCreateDto;
+import com.dsapkl.backend.dto.MemberInfoResponseDto;
 import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.service.MemberInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

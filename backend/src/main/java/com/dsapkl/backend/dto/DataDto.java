@@ -1,4 +1,4 @@
-package com.dsapkl.backend.controller.dto;
+package com.dsapkl.backend.dto;
 
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import lombok.Getter;

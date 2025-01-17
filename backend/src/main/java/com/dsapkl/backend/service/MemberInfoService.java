@@ -1,6 +1,6 @@
 package com.dsapkl.backend.service;
 
-import com.dsapkl.backend.controller.dto.MemberInfoCreateDto;
+import com.dsapkl.backend.dto.MemberInfoCreateDto;
 import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.repository.MemberInfoRepository;

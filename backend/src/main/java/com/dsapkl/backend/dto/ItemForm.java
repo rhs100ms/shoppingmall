@@ -1,8 +1,7 @@
-package com.dsapkl.backend.controller.dto;
+package com.dsapkl.backend.dto;
 
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.Category;
-import com.dsapkl.backend.service.dto.ItemServiceDTO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

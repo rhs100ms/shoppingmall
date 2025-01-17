@@ -1,7 +1,7 @@
 package com.dsapkl.backend.controller;
 
-import com.dsapkl.backend.controller.dto.ItemForm;
-import com.dsapkl.backend.controller.dto.ItemImageDto;
+import com.dsapkl.backend.dto.ItemForm;
+import com.dsapkl.backend.dto.ItemImageDto;
 import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.Item;
 import com.dsapkl.backend.entity.ItemImage;
@@ -16,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;

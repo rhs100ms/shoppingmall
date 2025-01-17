@@ -1,4 +1,4 @@
-package com.dsapkl.backend.controller.dto;
+package com.dsapkl.backend.dto;
 
 import lombok.Getter;
 import lombok.Setter;

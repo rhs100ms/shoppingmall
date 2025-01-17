@@ -1,13 +1,10 @@
 package com.dsapkl.backend.controller;
 
-import com.dsapkl.backend.controller.dto.ItemSearchCondition;
 import com.dsapkl.backend.entity.*;
 import com.dsapkl.backend.repository.ClusterItemPreferenceRepository;
 import com.dsapkl.backend.repository.MemberInfoRepository;
 import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.repository.query.CartQueryDto;
-import com.dsapkl.backend.repository.query.MainItemDto;
-import com.dsapkl.backend.repository.query.MainItemQueryRepository;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemService;
 import com.dsapkl.backend.service.OrderService;
@@ -16,16 +13,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.dsapkl.backend.controller.CartController.getMember;
 
