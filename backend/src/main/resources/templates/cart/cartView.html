@@ -38,7 +38,7 @@
         var price = $("#price_" + itemId).val();
 
         var totalPrice = price*count;
-        $("#resultPrice_" + itemId).html(totalPrice + '원');
+        $("#resultPrice_" + itemId).html('₩ ' + totalPrice.toLocaleString());
     }
 
     function changeCount(itemId) {
@@ -84,7 +84,7 @@
             var count = $("#count_" + id).val();
             totalPrice += price*count;
         })
-        $("#orderPrice").html(totalPrice+ '원');
+        $("#orderPrice").html('₩ ' + totalPrice.toLocaleString());
     }
 
     <!-- 전체 선택, 해제 -->
@@ -204,7 +204,7 @@
                             &nbsp
                             <div class="col-md-3 col-lg-2 col-xl-2">
                                 <input type="hidden" th:value="${cartItem.price}" th:id="'price_' + ${cartItem.cartItemId}" name="price">
-                                <h5 class="mb-0" th:id="'resultPrice_' + ${cartItem.cartItemId}" th:text="${cartItem.price}*${cartItem.count}+'원'">$499.00</h5>
+                                <h5 class="mb-0" th:id="'resultPrice_' + ${cartItem.cartItemId}" th:text="'₩ ' + ${#numbers.formatInteger(cartItem.price*cartItem.count, 0, 'COMMA')}">$499.00</h5>
                             </div>
                             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                 <button type="button" th:cartItemId="${cartItem.cartItemId}" th:onclick="deleteCartItem(this.getAttribute('cartItemId'))">
@@ -218,7 +218,7 @@
 
                 <div class="card">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                        <h5 class="mb-0" style="font-size: 18px;">Total Order Amount : <span th:id="orderPrice" th:text='0원' style="font-size: 24px; font-weight: bold;">$499.00</span></h5>
+                        <h5 class="mb-0" style="font-size: 18px;">Total Order Amount : <span th:id="orderPrice" th:text="'₩ 0'" style="font-size: 24px; font-weight: bold;">$499.00</span></h5>
                         <br>
                         <button type="button" th:onclick="initiateCheckout()" class="btn btn-warning btn-lg">Place Order</button>
                     </div>
