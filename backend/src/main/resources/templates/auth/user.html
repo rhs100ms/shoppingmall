@@ -22,18 +22,18 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <!--                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>-->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">상품 메뉴</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" th:href="@{/items/new}">상품 등록</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" th:href="@{/items/manage}">상품 관리</a></li>
-                    </ul>
-                </li>
-            </ul>
-            &nbsp
+<!--            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">-->
+<!--                &lt;!&ndash;                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>&ndash;&gt;-->
+<!--                <li class="nav-item dropdown">-->
+<!--                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">상품 메뉴</a>-->
+<!--                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--                        <li><a class="dropdown-item" th:href="@{/items/new}">상품 등록</a></li>-->
+<!--                        <li><hr class="dropdown-divider" /></li>-->
+<!--                        <li><a class="dropdown-item" th:href="@{/items/manage}">상품 관리</a></li>-->
+<!--                    </ul>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--            &nbsp-->
 
             <form th:action="@{/logout}" class="d-flex" method="post">
                 <button class="btn btn-outline-dark"
@@ -42,7 +42,7 @@
                 </button>
             </form>
             &nbsp;
-            <form th:action="@{/templates/cart}" class="d-flex" method="get">
+            <form th:action="@{/user/cart}" class="d-flex" method="get">
                 <button class="btn btn-outline-dark" type="submit">
                     <i class="bi-cart-fill me-1"></i>
                     Cart
@@ -59,7 +59,7 @@
             </form>
 
             <!-- 회원 정보 수정 버튼 추가 -->
-            <form th:action="@{/api/member-info/update/{memberId}(memberId=${session.loginMember.id})}" 
+            <form th:action="@{/api/member-info/update/{memberId}(memberId=${#authentication.principal.email})}"
                   class="d-flex" method="get">
                 <button class="btn btn-outline-dark" type="submit">
                     <i class="bi-person-fill me-1"></i>
