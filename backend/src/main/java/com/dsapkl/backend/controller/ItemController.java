@@ -47,11 +47,11 @@ public class ItemController {
     @GetMapping("/items/new")
     public String createItemForm(Model model) {
         List<CategoryCode> categoryCode = new ArrayList<>();
-        categoryCode.add(new CategoryCode("APPAREL", "의류"));
-        categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-        categoryCode.add(new CategoryCode("BOOKS", "서적"));
-        categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-        categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+        categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+        categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+        categoryCode.add(new CategoryCode("BOOKS", "Books"));
+        categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+        categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
         model.addAttribute("categoryCode", categoryCode);
         model.addAttribute("itemForm", new ItemForm());
         return "item/itemForm";
@@ -72,18 +72,18 @@ public class ItemController {
 
         if (bindingResult.hasErrors()) {
             List<CategoryCode> categoryCode = new ArrayList<>();
-            categoryCode.add(new CategoryCode("APPAREL", "의류"));
-            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-            categoryCode.add(new CategoryCode("BOOKS", "서적"));
-            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+            categoryCode.add(new CategoryCode("BOOKS", "Books"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
             model.addAttribute("categoryCode", categoryCode);
             return "item/itemForm";
         }
 
         //상품 이미지를 등록안하면
         if (multipartFiles.get(0).isEmpty()) {
-            model.addAttribute("errorMessage", "상품 사진을 등록해주세요!");
+            model.addAttribute("errorMessage", "Please upload product images!");
             return "item/itemForm";
         }
 
@@ -241,17 +241,17 @@ public class ItemController {
         try {
             ItemForm itemForm = itemService.getItemDtl(itemId);
             List<CategoryCode> categoryCode = new ArrayList<>();
-            categoryCode.add(new CategoryCode("APPAREL", "의류"));
-            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-            categoryCode.add(new CategoryCode("BOOKS", "서적"));
-            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+            categoryCode.add(new CategoryCode("BOOKS", "Books"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
             model.addAttribute("itemForm", itemForm);
             model.addAttribute("categoryCode", categoryCode);
             model.addAttribute("isEdit", true);  // 수정 모드임을 표시
             return "item/itemForm";
         } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
+            model.addAttribute("errorMessage", "Product does not exist.");
             return "redirect:/items/manage";
         }
     }

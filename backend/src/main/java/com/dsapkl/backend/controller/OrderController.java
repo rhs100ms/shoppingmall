@@ -43,7 +43,7 @@ public class OrderController {
         Member member = CartController.getMember(request);
 
         if (member == null) {
-            return new ResponseEntity<>(Map.of("status", "fail", "message", "로그인이 필요한 서비스입니다."), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Map.of("status", "fail", "message", "Login required for this service."), HttpStatus.UNAUTHORIZED);
         }
         Long orderId;
         try {
@@ -120,7 +120,7 @@ public class OrderController {
 
             } catch (StripeException | JsonProcessingException e) {
                 e.printStackTrace();
-                model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
+                model.addAttribute("error", "Failed to retrieve payment information.");
             }
         }   else {
             findOrders = orderService.findOrdersDetail(member.getId(), status);
@@ -137,13 +137,13 @@ public class OrderController {
 
         //장바구니에서 아무 상품도 체크하지 않을 경우
         if (cartOrderDto.getCartOrderDtoList().isEmpty()) {
-            return new ResponseEntity<>("하나 이상의 상품을 주문하셔야 합니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Please select at least one product to order.", HttpStatus.FORBIDDEN);
         }
 
         //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
         Member member = CartController.getMember(request);
         if (member == null) {
-            return new ResponseEntity<>("로그인이 필요한 서비스입니다.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Login required for this service.", HttpStatus.UNAUTHORIZED);
         }
 
         try {

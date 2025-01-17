@@ -111,7 +111,7 @@ public class CartController {
         Member member = getMember(request);
         //비로그인 회원은 장바구니를 가질 수 없다.
         if (member == null) {
-            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Login required.", HttpStatus.BAD_REQUEST);
         }
 
         cartService.addCart(member.getId(), cartForm.getItemId(), cartForm.getCount());
@@ -125,7 +125,7 @@ public class CartController {
 //        log.info("itemId={}", form.getCartItemId());
 
         if (cartService.findCartItem(form.getCartItemId()) == null) {
-            return new ResponseEntity<String>("다시 시도해주세요.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Please try again.", HttpStatus.NOT_FOUND);
         }
 
         cartService.deleteCartItem(form.getCartItemId());

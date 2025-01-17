@@ -115,7 +115,7 @@ public class MemberController {
         log.info("login? {}", loginMember);
 
         if (loginMember == null) {
-            bindingResult.reject("loginfail", "이메일 또는 비밀번호가 맞지 않습니다.");
+            bindingResult.reject("loginfail", "Invalid email or password.");
             return "members/loginForm";
         }
     /*
@@ -176,7 +176,7 @@ public class MemberController {
             model.addAttribute("foundEmail", email);
             return "members/findEmailResult";
         } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", "일치하는 회원정보가 없습니다.");
+            model.addAttribute("errorMessage", "No matching member information found.");
             return "members/findEmail";
         }
     }
@@ -190,7 +190,7 @@ public class MemberController {
             memberService.sendTemporaryPassword(requestDto.getEmail(),requestDto.getPhoneNumber());
             return "members/findPasswordResult";
         } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage","일치하는 회원정보가 없습니다.");
+            model.addAttribute("errorMessage", "No matching member information found.");
             return "members/findPassword";
         }
     }
