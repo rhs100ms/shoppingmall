@@ -15,7 +15,7 @@
 
 <div layout:fragment="content">
     <div class="container">
-        <h2 class="text-center mb-4">회원정보 관리</h2>
+        <h2 class="text-center mb-4">Manage Member Information</h2>
 
         <form th:action="@{/api/member-info/update/{memberId}(memberId=${memberInfo.memberId})}"
               th:object="${memberInfoCreateDto}"
@@ -24,42 +24,42 @@
             <!-- 기본 정보 카드 -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h4 class="mb-0">기본 정보</h4>
+                    <h4 class="mb-0">Basic Information</h4>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="name" class="form-label">이름</label>
+                        <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" th:value="${member.name}" readonly>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="email" class="form-label">이메일</label>
+                            <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" th:value="${member.email}" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label for="phone" class="form-label">휴대전화</label>
+                            <label for="phone" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="phone" th:value="${member.phoneNumber}" readonly>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="birthDate" class="form-label">생년월일</label>
+                            <label for="birthDate" class="form-label">Date of Birth</label>
                             <input type="text" class="form-control" id="birthDate" th:value="${member.birthDate}" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">성별</label>
+                            <label class="form-label">Gender</label>
                             <div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="gender" id="male"
                                            value="MALE" th:field="*{gender}">
-                                    <label class="form-check-label" for="male">남성</label>
+                                    <label class="form-check-label" for="male">Male</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="gender" id="female"
                                            value="FEMALE" th:field="*{gender}">
-                                    <label class="form-check-label" for="female">여성</label>
+                                    <label class="form-check-label" for="female">Female</label>
                                 </div>
                             </div>
                         </div>
@@ -70,20 +70,20 @@
             <!-- 주소 정보 카드 -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h4 class="mb-0">주소 정보</h4>
+                    <h4 class="mb-0">Address Information</h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <label for="city" class="form-label">도시</label>
+                            <label for="city" class="form-label">City</label>
                             <input type="text" class="form-control" id="city" th:value="${member.address?.city}" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label for="street" class="form-label">거리</label>
+                            <label for="street" class="form-label">Street</label>
                             <input type="text" class="form-control" id="street" th:value="${member.address?.street}" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label for="zipcode" class="form-label">우편번호</label>
+                            <label for="zipcode" class="form-label">Zip Code</label>
                             <input type="text" class="form-control" id="zipcode" th:value="${member.address?.zipcode}" readonly>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
             <!-- 관심사 카드 -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h4 class="mb-0">관심사</h4>
+                    <h4 class="mb-0">Interests</h4>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -130,8 +130,8 @@
             <div class="row mt-4">
                 <div class="col text-end">
                     <button type="button" class="btn btn-secondary"
-                            th:onclick="|location.href='@{/}'|">취소</button>
-                    <button type="submit" class="btn btn-dark">저장</button>
+                            th:onclick="|location.href='@{/}'|">Cancel</button>
+                    <button type="submit" class="btn btn-dark">Save</button>
                 </div>
             </div>
         </form>

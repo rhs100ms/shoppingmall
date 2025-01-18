@@ -40,8 +40,8 @@ public class MemberController {
     @GetMapping("/members/new")
     public String createMemberForm(@ModelAttribute("memberForm") MemberForm memberForm, Model model) {
         List<RoleCode> roleCodes = new ArrayList<>();
-        roleCodes.add(new RoleCode("admin","판매자"));
-        roleCodes.add(new RoleCode("user","구매자"));
+        roleCodes.add(new RoleCode("admin","Seller"));
+        roleCodes.add(new RoleCode("user","Buyer"));
         model.addAttribute("roleCodes", roleCodes);
 
         return "members/createMemberForm";
@@ -65,8 +65,8 @@ public class MemberController {
         //memberForm 객체에 binding 했을 때 에러
         if(bindingResult.hasErrors()) {
             List<RoleCode> roleCodes = new ArrayList<>();
-            roleCodes.add(new RoleCode("admin", "판매자"));
-            roleCodes.add(new RoleCode("user", "구매자"));
+            roleCodes.add(new RoleCode("admin", "Seller"));
+            roleCodes.add(new RoleCode("user", "Buyer"));
             model.addAttribute("roleCodes", roleCodes);
             return "members/createMemberForm";
         }
