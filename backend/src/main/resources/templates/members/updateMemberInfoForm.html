@@ -63,18 +63,6 @@
             <p>성별: <span th:text="${memberInfo.gender != null ? memberInfo.gender : '미입력'}"></span></p>
             <p>관심사: <span th:text="${memberInfo.interests != null ? memberInfo.interests : '미입력'}"></span></p>
             <hr>
-            <h5>활동 정보</h5>
-            <p>마지막 로그인: <span th:text="${#temporals.format(memberInfo.lastLoginDay, 'yyyy-MM-dd')}"></span></p>
-            <p>구매 횟수: <span th:text="${memberInfo.purchaseFrequency}"></span></p>
-            <p>평균 주문 금액: <span th:text="${memberInfo.averageOrderValue}"></span></p>
-            <p>총 구매 금액: <span th:text="${memberInfo.totalSpending}"></span></p>
-            <p>선호 카테고리: <span th:text="${memberInfo.productCategoryPreference}"></span></p>
-            <hr>
-            <h5>기타 정보</h5>
-            <p>거주지역: <span th:text="${memberInfo.location}"></span></p>
-            <p>소득수준: <span th:text="${memberInfo.income}"></span></p>
-            <p>평균 체류시간(분): <span th:text="${memberInfo.timeSpentOnSiteMinutes}"></span></p>
-            <p>페이지 조회수: <span th:text="${memberInfo.pagesViewed}"></span></p>
         </div>
 
         <hr class="my-4">
@@ -87,7 +75,7 @@
             <div class="col" style="text-align: center">
                 <button class="w-100 btn btn-secondary btn-lg"
                         onclick="location.href='home.html'"
-                        th:onclick="|location.href='@{/members}'|"
+                        th:onclick="|location.href='@{/}'|"
                         type="button">취소</button>
             </div>
         </div>
