@@ -1,9 +1,6 @@
 package com.dsapkl.backend.controller;
 
-import com.dsapkl.backend.dto.FindEmailRequestDto;
-import com.dsapkl.backend.dto.FindPasswordRequestDto;
-import com.dsapkl.backend.dto.LoginForm;
-import com.dsapkl.backend.dto.MemberForm;
+import com.dsapkl.backend.dto.*;
 import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.service.CartService;
@@ -45,12 +42,6 @@ public class MemberController {
         return "members/createMemberForm";
     }
 
-    @Data
-    @AllArgsConstructor
-    static class RoleCode {
-        private String code;
-        private String displayName;
-    }
 
     //회원가입
     @PostMapping("/members/new")
@@ -156,23 +147,7 @@ public class MemberController {
         return "members/findPassword";
     }
 
-    @GetMapping("/api/members/check-email")
-    @ResponseBody
-    public Map<String, Boolean> checkEmailDuplicate(@RequestParam("email") String email) {
-        boolean isAvailable = memberService.isEmailAvailable(email);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("isAvailable", isAvailable);
-        return response;
-    }
 
-    @GetMapping("/api/members/check-phone")
-    @ResponseBody
-    public Map<String, Boolean> checkPhoneDuplicate(@RequestParam("phoneNumber") String phoneNumber) {
-        boolean isAvailable = memberService.isPhoneAvailable(phoneNumber);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("isAvailable", isAvailable);
-        return response;
-    }
 
     @PostMapping("/members/find-email")
     public String findEmail(@Valid @ModelAttribute FindEmailRequestDto requestDto, BindingResult bindingResult, Model model) {

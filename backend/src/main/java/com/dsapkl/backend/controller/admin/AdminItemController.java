@@ -1,5 +1,6 @@
-package com.dsapkl.backend.controller;
+package com.dsapkl.backend.controller.admin;
 
+import com.dsapkl.backend.dto.CategoryCode;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
 import com.dsapkl.backend.entity.Category;
@@ -14,12 +15,9 @@ import com.dsapkl.backend.util.SessionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,21 +26,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Controller
-//@Slf4j
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class ItemController {
+public class AdminItemController {
+
     private final ItemService itemService;
     private final ItemImageService itemImageService;
     private final CartService cartService;
-
-//    APPAREL, ELECTRONICS, BOOKS, HOME_AND_KITCHEN, HEALTH_AND_BEAUTY
 
     @GetMapping("/items/new")
     public String createItemForm(Model model) {
@@ -55,13 +49,6 @@ public class ItemController {
         model.addAttribute("categoryCode", categoryCode);
         model.addAttribute("itemForm", new ItemForm());
         return "item/itemForm";
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class CategoryCode {
-        private String code;
-        private String displayName;
     }
 
     @PostMapping("/items/new")
@@ -136,8 +123,6 @@ public class ItemController {
     public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
         return "redirect:/"; // 삭제 후 메인 페이지로 이동
-
-
     }
 
     @PostMapping("/items/{itemId}/edit")
@@ -167,44 +152,34 @@ public class ItemController {
         return "redirect:/items/manage";
     }
 
-    @GetMapping("/api/items/{itemId}/rating")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getItemRating(@PathVariable Long itemId) {
-        Item item = itemService.findItem(itemId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("averageRating", item.getAverageRating());
-        response.put("reviewCount", item.getReviewCount());
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/items/manage")
-    public String manageItems(Model model, 
-                             @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "10") int size,
-                             @RequestParam(required = false) String query,
-                             @RequestParam(required = false) String category,
-                             @RequestParam(required = false) String status,
-                             HttpServletRequest request) {
-        
+    public String manageItems(Model model,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              @RequestParam(required = false) String query,
+                              @RequestParam(required = false) String category,
+                              @RequestParam(required = false) String status,
+                              HttpServletRequest request) {
+
         Page<Item> itemPage;
         if (query != null || category != null || status != null) {
             itemPage = itemService.searchItems(query, category, status, PageRequest.of(page, size));
         } else {
             itemPage = itemService.findItemsPage(PageRequest.of(page, size));
         }
-        
+
         // ItemForm으로 변환
         List<ItemForm> itemForms = itemPage.getContent().stream()
-            .map(item -> {
-                ItemForm form = ItemForm.from(item);
-                List<ItemImage> images = itemImageService.findItemImageDetail(item.getId(), "N");
-                form.setItemImageListDto(images.stream()
-                    .map(ItemImageDto::new)
-                    .collect(Collectors.toList()));
-                return form;
-            })
-            .collect(Collectors.toList());
-            
+                .map(item -> {
+                    ItemForm form = ItemForm.from(item);
+                    List<ItemImage> images = itemImageService.findItemImageDetail(item.getId(), "N");
+                    form.setItemImageListDto(images.stream()
+                            .map(ItemImageDto::new)
+                            .collect(Collectors.toList()));
+                    return form;
+                })
+                .collect(Collectors.toList());
+
         // 통계 계산
         long totalItems = itemForms.size();
         long lowStockItems = itemForms.stream()
@@ -255,5 +230,6 @@ public class ItemController {
             return "redirect:/items/manage";
         }
     }
+
 
 }

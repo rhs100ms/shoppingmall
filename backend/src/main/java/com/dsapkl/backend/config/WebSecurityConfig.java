@@ -26,10 +26,8 @@ public class WebSecurityConfig {
             , "/images/**"          //이미지 경로
             , "/css/**"             //CSS파일들
             , "/js/**"              //JavaSCript 파일들
-            , "/members/new"        //회원가입
-            , "members/find-email"
-            , "/members/find-password"
-            , "items/{itemId}"
+            , "/members/**"        //회원가입
+            , "/guest/**"
     };
 
     @Bean
