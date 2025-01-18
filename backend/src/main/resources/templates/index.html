@@ -35,6 +35,14 @@
             </ul>
             &nbsp
 
+            <!-- 사용자 환영 메시지 추가 -->
+
+            <span class="navbar-text me-3">
+
+                Welcome <span class="fw-bold" th:text="${session.loginMember.name}">User</span>!
+
+            </span>
+
             <form th:action="@{/logout}" class="d-flex" method="post">
                 <button class="btn btn-outline-dark"
                         type="submit">
