@@ -28,7 +28,7 @@ public class ReviewImage extends BaseTimeEntity {
     private String storeFileName;
 
     @Column(name = "deleteyn")
-    private String deleteYN;
+    private String deleteYN = "N";
 
     @Builder
     public ReviewImage(String originalFileName, String storeFileName) {
