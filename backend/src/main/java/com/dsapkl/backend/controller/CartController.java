@@ -1,6 +1,7 @@
 package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.dto.CartForm;
+import com.dsapkl.backend.dto.CartItemDto;
 import com.dsapkl.backend.dto.CartItemForm;
 import com.dsapkl.backend.dto.CartOrderDto;
 import com.dsapkl.backend.entity.Member;
@@ -26,6 +27,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.security.Principal;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -106,16 +109,20 @@ public class CartController {
      */
     @PostMapping("/cart")
     @ResponseBody
-    public ResponseEntity<String> addCart(@ModelAttribute CartForm cartForm, HttpServletRequest request) {
-
+    public ResponseEntity<?> addCart(@RequestBody CartItemDto cartItemDto, HttpServletRequest request) {
         Member member = getMember(request);
-        //비로그인 회원은 장바구니를 가질 수 없다.
+        
+        // 비로그인 회원 체크
         if (member == null) {
-            return new ResponseEntity<String>("Login required.", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Login is required.");
         }
 
-        cartService.addCart(member.getId(), cartForm.getItemId(), cartForm.getCount());
-        return ResponseEntity.ok("success");
+        // 장바구니 추가 로직
+        cartService.addCart(cartItemDto, member.getEmail());
+        int totalCount = cartService.getCartItemCount(member.getEmail());
+        
+        return ResponseEntity.ok(Collections.singletonMap("count", totalCount));
     }
 
     @DeleteMapping("/cart")

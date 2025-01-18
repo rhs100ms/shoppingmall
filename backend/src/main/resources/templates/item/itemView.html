@@ -148,19 +148,18 @@
     }
 
     function addCart() {
-        const count = parseInt($("#orderCount").val());
         const itemId = parseInt($("#orderItemId").val());
 
         var cartForm = {
             itemId: itemId,
-            count: count
+            count: 1
         };
 
         $.ajax({
             url: "/cart",
-            data: cartForm,
+            data: JSON.stringify(cartForm),
             type: 'POST',
-            dataType: 'json',
+            contentType: 'application/json',
             success: function (response) {
                 alert("Item added to cart.");
                 $(".badge.bg-dark.text-white.ms-1.rounded-pill").text(response.count);
@@ -378,7 +377,7 @@
                         <!-- 이미지가 없을 경우 기본 이미지 표시 -->
                         <div th:if="${item.getItemImageListDto().isEmpty()}" class="carousel-item active">
                             <img src="/images/default-image.jpg" class="d-block w-100"
-                                 style="width: 100%; height: 500px; object-fit: contain; background-color: #f8f9fa;" alt="기본 이미지">
+                                 style="width: 100%; height: 500px; object-fit: contain; background-color: #f8f9fa;" alt="Default Image">
                         </div>
                         <!-- 이미지 리스트 순회 -->
                         <div th:each="image, iterStat : ${item.getItemImageListDto()}"
@@ -783,7 +782,7 @@
                     <div class="review-images d-flex gap-2 mt-2">
                         ${review.reviewImages ? review.reviewImages.map(img => `
                             <img src="/images/${img.storeFileName}"
-                                 alt="리뷰 이미지"
+                                 alt="Review Image"
                                  style="width: 200px; height: 200px; object-fit: contain;"
                                  class="rounded border">
                         `).join('') : ''}
