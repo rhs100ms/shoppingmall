@@ -53,7 +53,7 @@ public class ReviewController {
             Member member = getMember(request);
             if (member == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("로그인이 필요합니다.");
+                        .body("Login required.");
             }
             reviewService.updateReview(reviewId, requestDto, member.getId(), images);
             return ResponseEntity.ok().build();
