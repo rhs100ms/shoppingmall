@@ -21,9 +21,14 @@ public class AuthenticatedUserDetailsService implements UserDetailsService {
         });
 
         AuthenticatedUser user = AuthenticatedUser.builder()
+                .id(member.getId())
+                .name(member.getName())
                 .email(member.getEmail())
                 .password(member.getPassword())
+                .address(member.getAddress())
                 .role(member.getRole())
+                .birthDate(member.getBirthDate())
+                .phoneNumber(member.getPhoneNumber())
                 .build();
 
         return user;

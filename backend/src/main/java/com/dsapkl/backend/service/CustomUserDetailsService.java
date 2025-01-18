@@ -22,7 +22,7 @@
 //        return User.builder()
 //            .username(member.getEmail())
 //            .password(member.getPassword())
-//            .roles("USER")
+//            .roles(member.getRole().name())
 //            .build();
 //    }
 //}

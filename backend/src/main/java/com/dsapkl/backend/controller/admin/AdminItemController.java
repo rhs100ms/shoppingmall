@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/items")
 @RequiredArgsConstructor
 public class AdminItemController {
 
@@ -38,7 +38,7 @@ public class AdminItemController {
     private final ItemImageService itemImageService;
     private final CartService cartService;
 
-    @GetMapping("/items/new")
+    @GetMapping("/new")
     public String createItemForm(Model model) {
         List<CategoryCode> categoryCode = new ArrayList<>();
         categoryCode.add(new CategoryCode("APPAREL", "의류"));
@@ -51,7 +51,7 @@ public class AdminItemController {
         return "item/itemForm";
     }
 
-    @PostMapping("/items/new")
+    @PostMapping("/new")
     public String createItem(@Valid @ModelAttribute ItemForm itemForm, BindingResult bindingResult, Model model,
                              @RequestParam("category") String category,
                              @RequestPart(name = "itemImages") List<MultipartFile> multipartFiles
@@ -78,13 +78,13 @@ public class AdminItemController {
 
         itemService.saveItem(itemForm.toServiceDTO(), multipartFiles);
 
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
     /**
      * 상품 상세 조회
      */
-    @GetMapping("items/{itemId}")
+    @GetMapping("/{itemId}")
     public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
         Item item = itemService.findItem(itemId);
         if (item == null) {
@@ -116,16 +116,39 @@ public class AdminItemController {
         return "item/itemView";
     }
 
+
+
     /**
      * 상품 삭제
      */
-    @PostMapping("/items/{itemId}/delete")
+    @PostMapping("/{itemId}/delete")
     public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
         return "redirect:/"; // 삭제 후 메인 페이지로 이동
     }
 
-    @PostMapping("/items/{itemId}/edit")
+    @GetMapping("/{itemId}/edit")
+    public String itemEditForm(@PathVariable("itemId") Long itemId, Model model) {
+        try {
+            ItemForm itemForm = itemService.getItemDtl(itemId);
+            List<CategoryCode> categoryCode = new ArrayList<>();
+            categoryCode.add(new CategoryCode("APPAREL", "의류"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
+            categoryCode.add(new CategoryCode("BOOKS", "서적"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            model.addAttribute("itemForm", itemForm);
+            model.addAttribute("categoryCode", categoryCode);
+            model.addAttribute("isEdit", true);  // 수정 모드임을 표시
+            return "item/itemForm";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
+            return "redirect:/items/manage";
+        }
+    }
+
+
+    @PostMapping("/{itemId}/edit")
     public String updateItem(@PathVariable("itemId") Long itemId,
                              @RequestParam("name") String name,
                              @RequestParam("price") int price,
@@ -152,7 +175,7 @@ public class AdminItemController {
         return "redirect:/items/manage";
     }
 
-    @GetMapping("/items/manage")
+    @GetMapping("/manage")
     public String manageItems(Model model,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
@@ -211,25 +234,9 @@ public class AdminItemController {
         return "item/itemManage";
     }
 
-    @GetMapping("/items/{itemId}/edit")
-    public String itemEditForm(@PathVariable("itemId") Long itemId, Model model) {
-        try {
-            ItemForm itemForm = itemService.getItemDtl(itemId);
-            List<CategoryCode> categoryCode = new ArrayList<>();
-            categoryCode.add(new CategoryCode("APPAREL", "의류"));
-            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-            categoryCode.add(new CategoryCode("BOOKS", "서적"));
-            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
-            model.addAttribute("itemForm", itemForm);
-            model.addAttribute("categoryCode", categoryCode);
-            model.addAttribute("isEdit", true);  // 수정 모드임을 표시
-            return "item/itemForm";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
-            return "redirect:/items/manage";
-        }
-    }
+
+
+
 
 
 }

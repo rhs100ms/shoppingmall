@@ -28,7 +28,7 @@ public class RecommendationService {
 
     public Integer getClusterPrediction(Long memberId) {
         // MemberInfo 조회
-        MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+        MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
         // 회원 데이터 가공

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/guest")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class GuestItemRestController {
 
@@ -23,7 +23,7 @@ public class GuestItemRestController {
     private final ItemImageService itemImageService;
     private final CartService cartService;
 
-    @GetMapping("/api/items/{itemId}/rating")
+    @GetMapping("/items/{itemId}/rating")
     public ResponseEntity<Map<String, Object>> getItemRating(@PathVariable Long itemId) {
         Item item = itemService.findItem(itemId);
         Map<String, Object> response = new HashMap<>();

@@ -157,7 +157,7 @@
         };
 
         $.ajax({
-            url: "/cart",
+            url: "/user/cart",
             data: cartForm,
             type: 'POST',
             dataType: 'json',
@@ -198,7 +198,7 @@
             itemName: itemName
         };
 
-        fetch('/api/checkout/create-checkout-session-single', {
+        fetch('/user/api/checkout/create-checkout-session-single', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -323,7 +323,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
 
             </ul>
-            <form class="d-flex" method="get" th:action="@{/cart}">
+            <form class="d-flex" method="get" th:action="@{/user/cart}">
                 <button class="btn btn-light btn-outline-secondary" type="submit">
 
                     <i class="bi-cart-fill me-1"></i>
@@ -427,7 +427,7 @@
                     </div>
                 </div>
 
-                <form th:action="@{/items/{itemId}/edit(itemId=${item.itemId})}"
+                <form th:action="@{/admin/items/{itemId}/edit(itemId=${item.itemId})}"
                       method="post" enctype="multipart/form-data"
                       class="edit-mode" style="display: none;">
                     <input type="hidden" th:value="${item.itemId}" name="itemId">
@@ -473,16 +473,16 @@
                     </button>
 
                     &nbsp;
-                    <button class="btn btn-primary flex-shrink-0 view-mode"
-                            onclick="toggleEditMode()">
-                        수정하기
-                    </button>
+<!--                    <button class="btn btn-primary flex-shrink-0 view-mode"-->
+<!--                            onclick="toggleEditMode()">-->
+<!--                        수정하기-->
+<!--                    </button>-->
                     &nbsp;
-                    <form th:action="@{/items/{itemId}/delete(itemId=${item.itemId})}" method="post" class="view-mode">
-                        <button class="btn btn-danger flex-shrink-0" type="submit">
-                            삭제하기
-                        </button>
-                    </form>
+<!--                    <form th:action="@{/admin/items/{itemId}/delete(itemId=${item.itemId})}" method="post" class="view-mode">-->
+<!--                        <button class="btn btn-danger flex-shrink-0" type="submit">-->
+<!--                            삭제하기-->
+<!--                        </button>-->
+<!--                    </form>-->
                 </div>
             </div>
         </div>

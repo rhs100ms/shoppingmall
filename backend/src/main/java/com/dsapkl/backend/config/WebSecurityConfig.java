@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -27,16 +28,23 @@ public class WebSecurityConfig {
             , "/css/**"             //CSS파일들
             , "/js/**"              //JavaSCript 파일들
             , "/members/**"        //회원가입
-            , "/guest/**"
+            , "/api/members/**"
+            , "/redir"
     };
 
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         http
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                        .expiredUrl("/login?expired")
+                )
                 .authorizeHttpRequests(author -> author
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/user/**").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
@@ -51,6 +59,7 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
+                        .deleteCookies("JSESSIONID")
                 );
 
         http

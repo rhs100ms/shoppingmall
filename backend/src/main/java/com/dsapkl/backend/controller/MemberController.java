@@ -117,11 +117,11 @@ public class MemberController {
 //        log.info("세션에 저장된 회원 정보: {}", session.getAttribute(SessionConst.LOGIN_MEMBER));
 //        System.out.println(loginMember);
 
-        if ("ROLE_ADMIN".equals(loginMember.getRole().name())) {
-            return "redirect:/admin";
-        } else if ("ROLE_USER".equals(loginMember.getRole().name())) {
-            return "redirect:/user";
-        }
+//        if ("ROLE_ADMIN".equals(loginMember.getRole().name())) {
+//            return "redirect:/admin";
+//        } else if ("ROLE_USER".equals(loginMember.getRole().name())) {
+//            return "redirect:/user";
+//        }
 
         return "redirect:/";
     }

@@ -1,5 +1,6 @@
 package com.dsapkl.backend.config;
 
+import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,9 +16,15 @@ import java.util.Collections;
 @AllArgsConstructor
 @ToString
 public class AuthenticatedUser implements UserDetails {
+    private Long id;
+    private String name;
     private String email;
     private String password;
+    private Address address;
     private Role role;
+    private String birthDate;
+    private String phoneNumber;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

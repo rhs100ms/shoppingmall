@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.user;
 
+import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CartForm;
 import com.dsapkl.backend.dto.CartItemForm;
 import com.dsapkl.backend.dto.CartOrderDto;
@@ -18,6 +19,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,35 +46,37 @@ public class CartController {
      */
 
     @GetMapping("/cart")
-    public String cartView(Model model, HttpServletRequest request) throws JsonProcessingException {
-        List<CartQueryDto> cartViews = cartViewDetails(null, model, request);
+    public String cartView(Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(null, model, user);
         model.addAttribute("cartItemListForm", cartViews);
         return "cart/cartView";
     }
 
     @GetMapping("/cart/success")
-    public String cartSuccessView(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request) throws JsonProcessingException {
-        List<CartQueryDto> cartViews = cartViewDetails(sessionId, model, request);
+    public String cartSuccessView(@RequestParam(required = false) String sessionId, Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
+        List<CartQueryDto> cartViews = cartViewDetails(sessionId, model, user);
         model.addAttribute("cartItemListForm", cartViews);
-        return "redirect:/cart";
+        return "redirect:../cart";
     }
 
-    private List<CartQueryDto> cartViewDetails(@RequestParam(required = false) String sessionId, Model model, HttpServletRequest request)
+    private List<CartQueryDto> cartViewDetails(@RequestParam(required = false) String sessionId, Model model, AuthenticatedUser user)
     throws JsonProcessingException {
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
 
-        Member member = SessionUtil.getMember(request);
+        if (user == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
 
         List<CartQueryDto> cartItemListForm = Collections.emptyList();
 
         if (sessionId != null) {
             try{
                 Session session = Session.retrieve(sessionId);
-                String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 String paymentIntentId = session.getPaymentIntent();
+
 
                 List<CartQueryDto> cartOrderList = objectMapper.readValue(orderInfoJson, new TypeReference<List<CartQueryDto>>() {});
                 model.addAttribute("cartOrderList", cartOrderList);
@@ -81,22 +88,26 @@ public class CartController {
                 CartOrderDto cartOrderDto = new CartOrderDto();
                 cartOrderDto.setCartOrderDtoList(cartFormList);
 
+                // SecurityContextHolder 에서 현재 인증 정보 가져오기
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                String jsessionId = ((WebAuthenticationDetails)authentication.getDetails()).getSessionId();
+
                 RestTemplate restTemplate = new RestTemplate();
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 headers.add("Cookie", "JSESSIONID=" + jsessionId);
 
                 HttpEntity<CartOrderDto> requestEntity = new HttpEntity<>(cartOrderDto, headers);
-                ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/orders", requestEntity, String.class);
-                System.out.println(response.getBody());
-                cartItemListForm = cartService.findCartItems(member.getId());
+                ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8888/user/orders", requestEntity, String.class);
+                log.debug("Order response: {}", response.getBody());
+                cartItemListForm = cartService.findCartItems(user.getId());
 
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
             }
         } else {
-            cartItemListForm = cartService.findCartItems(member.getId());
+            cartItemListForm = cartService.findCartItems(user.getId());
         }
 
         return cartItemListForm;

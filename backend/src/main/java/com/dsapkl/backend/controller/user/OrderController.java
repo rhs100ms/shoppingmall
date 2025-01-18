@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.user;
 
+import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CartForm;
 import com.dsapkl.backend.dto.CheckoutRequest;
 import com.dsapkl.backend.repository.OrderDto;
@@ -14,7 +15,12 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -35,64 +42,84 @@ public class OrderController {
      * 주문 내역 조회
      */
     @GetMapping("/orders")
-    public String findOrder(OrderStatus status, Model model, HttpServletRequest request) {
-        List<OrderDto> findOrders = getOrderDetails(null, status, model, request);
+    public String findOrder(OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+        List<OrderDto> findOrders = getOrderDetails(null, status, model, user);
         model.addAttribute("orderDetails", findOrders);
         return "order/orderList";
     }
 
     @GetMapping("/orders/success")
-    public String findOrderSuccess(@RequestParam(required = false) String sessionId, OrderStatus status, Model model, HttpServletRequest request) throws JsonProcessingException {
-        List<OrderDto> findOrders = getOrderDetails(sessionId, status, model, request);
+    public String findOrderSuccess(@RequestParam(required = false) String sessionId, OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
+        List<OrderDto> findOrders = getOrderDetails(sessionId, status, model, user);
         model.addAttribute("orderDetails", findOrders);
-        return "redirect:/orders";
+        return "redirect:../orders";
     }
 
-    private List<OrderDto> getOrderDetails(String sessionId, OrderStatus status, Model model, HttpServletRequest request) {
+    private List<OrderDto> getOrderDetails(String sessionId, OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
-        Member member = SessionUtil.getMember(request);
+//        Member member = SessionUtil.getMember(request);
         List<OrderDto> findOrders = Collections.emptyList();
+
         if (sessionId != null) {
             try {
+                // 1. Stripe 세션에서 정보 가져오기
                 Session session = Session.retrieve(sessionId);
-                String jsessionId = request.getSession().getId();
                 String orderInfoJson = session.getMetadata().get("orderInfo");
-                ObjectMapper objectMapper = new ObjectMapper();
-
                 String paymentIntentId = session.getPaymentIntent();
+
+                // 2. 주문 정보 파싱
+                ObjectMapper objectMapper = new ObjectMapper();
                 CheckoutRequest checkoutRequest = objectMapper.readValue(orderInfoJson, CheckoutRequest.class);
                 model.addAttribute("checkoutRequest", checkoutRequest);
 
-                CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount(), paymentIntentId);
-                model.addAttribute("cartForm", cartForm);
-
-                RestTemplate restTemplate = new RestTemplate();
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.add("Cookie", "JSESSIONID=" + jsessionId);
-
-                HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
-                ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/order", requestEntity, Map.class);
-
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    Map<String, Object> responseBody = response.getBody();
-
-                    if ("success".equals(responseBody.get("status"))) {
-                        System.out.println("Buy Now Success");  // 콘솔에 메시지 출력
-                        findOrders = orderService.findOrdersDetail(member.getId(), status);
+                // 3. RestTemplate 대신 직접 OrderService 호출
+                try {
+                    Long orderId = orderService.order(user.getId(), checkoutRequest.getItemId(), checkoutRequest.getCount(), paymentIntentId);
+                    if (orderId != null) {
+                        log.info("주문 성공:" + orderId );
+                        findOrders = orderService.findOrdersDetail(user.getId(), status);
                     } else {
-                        System.out.println("Buy Now Failed");
+                        log.warn("주문 실패");
                     }
-                } else {
-                    System.out.println("Server error: " + response.getStatusCode());
+                } catch (Exception e) {
+                    log.error("주문 처리 중 오류 발생", e);
+                    model.addAttribute("error", "주문 처리 중 오류가 발생했습니다.");
                 }
 
+//                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//                String jsessionId = ((WebAuthenticationDetails)authentication.getDetails()).getSessionId();
+//
+//
+//                CartForm cartForm = new CartForm(checkoutRequest.getItemId(), checkoutRequest.getCount(), paymentIntentId);
+//                model.addAttribute("cartForm", cartForm);
+//
+//                RestTemplate restTemplate = new RestTemplate();
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.setContentType(MediaType.APPLICATION_JSON);
+//                headers.add("Cookie", "JSESSIONID=" + jsessionId);
+//
+//                HttpEntity<CartForm> requestEntity = new HttpEntity<>(cartForm, headers);
+//                ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:8888/user/order", requestEntity, Map.class);
+//
+//                if (response.getStatusCode().is2xxSuccessful()) {
+//                    Map<String, Object> responseBody = response.getBody();
+//
+//                    if ("success".equals(responseBody.get("status"))) {
+//                        System.out.println("Buy Now Success");  // 콘솔에 메시지 출력
+//                        findOrders = orderService.findOrdersDetail(user.getId(), status);
+//                    } else {
+//                        System.out.println("Buy Now Failed");
+//                    }
+//                } else {
+//                    System.out.println("Server error: " + response.getStatusCode());
+//                }
+
             } catch (StripeException | JsonProcessingException e) {
-                e.printStackTrace();
+                log.error("결제 정보 처리 중 오류 발생", e);
                 model.addAttribute("error", "결제 정보를 불러오는 데 실패했습니다.");
             }
         }   else {
-            findOrders = orderService.findOrdersDetail(member.getId(), status);
+            findOrders = orderService.findOrdersDetail(user.getId(), status);
         }
         return findOrders;
     }

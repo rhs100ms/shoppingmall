@@ -182,7 +182,7 @@ public class OrderService {
     private void updateClusterItemPreference(Long memberId, Item item) {
         try {
             // MemberInfo에서 cluster_id 가져오기
-            MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+            MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
                     .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
             Cluster cluster = memberInfo.getCluster_id();

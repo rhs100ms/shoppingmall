@@ -62,7 +62,7 @@ public class UserItemController {
 
         model.addAttribute("currentMemberId", member != null ? member.getId() : null);
 
-        return "item/itemView";
+        return "item/itemViewUser";
     }
 
 
