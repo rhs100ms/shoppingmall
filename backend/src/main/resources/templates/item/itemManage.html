@@ -151,7 +151,9 @@
                                      class="rounded"
                                      alt="Default Image">
                                 <div class="ms-3">
-                                    <p class="fw-bold mb-0" th:text="${item.name}">Product Name</p>
+                                    <a th:href="@{/items/{id}(id=${item.itemId})}" class="fw-bold mb-0 text-primary text-decoration-none">
+                                        <p class="fw-bold mb-0" th:text="${item.name}">Product Name</p>
+                                    </a>
                                 </div>
                             </div>
                         </td>
@@ -167,7 +169,7 @@
                         <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
                         <td>
                             <div class="btn-group">
-                                <a th:href="@{/items/{itemId}/edit(itemId=${item.itemId})}" class="btn btn-sm btn-outline-dark">
+                                <a th:href="@{/items/{itemId}/edit(itemId=${item.itemId}, redirectUrl='manage')}" class="btn btn-sm btn-outline-dark">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" 
