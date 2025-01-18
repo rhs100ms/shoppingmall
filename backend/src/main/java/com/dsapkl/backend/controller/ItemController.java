@@ -148,7 +148,8 @@ public class ItemController {
                              @RequestParam("description") String description,
                              @RequestParam("category") Category category,
                              @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                             @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages) throws IOException {
+                             @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages,
+                             HttpServletRequest request) throws IOException {
         // 상품 수정 로직
         itemService.updateItem(itemId, name, price, stockQuantity, description, category);
 
@@ -164,7 +165,15 @@ public class ItemController {
             itemImageService.updateItemImages(itemId, itemImages);
         }
 
-        return "redirect:/items/manage";
+        // Referer 헤더를 통해 이전 페이지 URL 확인
+        String referer = request.getHeader("Referer");
+        // itemForm.html에서 온 요청인지 확인 (상품 관리 페이지에서의 수정)
+        if (referer != null && referer.contains("/items/" + itemId + "/edit")) {
+            return "redirect:/items/manage";
+        } else {
+            // itemView.html에서의 수정
+            return "redirect:/items/" + itemId;
+        }
     }
 
     @GetMapping("/api/items/{itemId}/rating")
