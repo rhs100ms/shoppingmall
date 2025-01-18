@@ -63,12 +63,27 @@ public class ReviewService {
     }
 
     // 리뷰 수정
-    public void updateReview(Long reviewId, ReviewRequestDto requestDto, Long memberId) {
+    @Transactional
+    public void updateReview(Long reviewId, ReviewRequestDto requestDto, Long memberId, List<MultipartFile> images) throws IOException {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("Review does not exist."));
 
         if (!review.getMember().getId().equals(memberId)) {
             throw new IllegalStateException("Only the author can update the review.");
+        }
+
+        // 새 이미지가 있는 경우에만 기존 이미지 삭제 처리
+        if (images != null && !images.isEmpty()) {
+            // 기존 이미지들을 물리적으로 삭제
+            List<ReviewImage> existingImages = reviewImageRepository.findByReviewIdAndDeleteYN(reviewId, "N");
+            reviewImageRepository.deleteAll(existingImages);
+            review.getReviewImages().clear();  // 리뷰의 이미지 컬렉션 초기화
+
+            // 새 이미지 추가
+            List<ReviewImage> reviewImages = fileHandler.storeFiles(images);
+            for (ReviewImage image : reviewImages) {
+                review.addReviewImage(image);
+            }
         }
 
         review.update(requestDto.getContent(), requestDto.getRating());

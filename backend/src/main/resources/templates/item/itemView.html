@@ -263,9 +263,9 @@
         $.ajax({
             url: `/api/reviews/${reviewId}`,
             method: "PUT",
+            data: formData,
             processData: false,
             contentType: false,
-            data: formData,
             success: function() {
                 alert("Review has been updated.");
                 loadReviews();
@@ -308,6 +308,39 @@
             }
         });
     }
+
+    // 이미지 미리보기 기능 추가
+    $(document).on('change', '.edit-images', function(e) {
+        const previewContainer = $(this).siblings('.edit-image-preview');
+        const currentImages = $(this).siblings('.current-images');
+        previewContainer.empty();
+        
+        // 새 이미지가 선택되면 기존 이미지 숨기기
+        if (e.target.files.length > 0) {
+            currentImages.hide();
+        } else {
+            currentImages.show();
+        }
+
+        Array.from(e.target.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = $('<img>')
+                    .attr('src', e.target.result)
+                    .css({
+                        'width': '200px',
+                        'height': '200px',
+                        'object-fit': 'contain',
+                        'margin': '10px',
+                        'border': '1px solid #dee2e6',
+                        'border-radius': '4px',
+                        'background-color': '#f8f9fa'
+                    });
+                previewContainer.append(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
     /*]]>*/
 </script>
 
@@ -811,12 +844,20 @@
         reviewItem.find('.edit-content').val(content);
         reviewItem.find(`input[name="edit-rating-${reviewId}"][value="${rating}"]`).prop('checked', true);
         reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').hide();
+        
+        // 이미지 수정 시 기존 이미지 미리보기 숨기기
+        reviewItem.find('.edit-images').on('change', function() {
+            reviewItem.find('.current-images').hide();
+        });
     }
 
     function cancelEdit(reviewId) {
         const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
         reviewItem.find('.edit-form').hide();
         reviewItem.find('.review-content, .edit-btn, .btn-outline-danger').show();
+        reviewItem.find('.edit-images').val('');  // 파일 입력 초기화
+        reviewItem.find('.edit-image-preview').empty();  // 미리보기 초기화
+        reviewItem.find('.current-images').show();  // 기존 이미지 다시 표시
     }
 
     function deleteReview(reviewId) {
