@@ -82,6 +82,8 @@ public class PageController {
 
         return "auth/user";
     }
+
+
 //    @GetMapping("/home")
 //    public String homePage() {
 //        return "home";

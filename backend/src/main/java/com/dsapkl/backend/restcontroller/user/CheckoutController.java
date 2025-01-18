@@ -1,4 +1,4 @@
-package com.dsapkl.backend.controller;
+package com.dsapkl.backend.restcontroller.user;
 
 import com.dsapkl.backend.dto.DataDto;
 import com.dsapkl.backend.dto.CheckoutRequest;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user/api")
 public class CheckoutController {
 
     @Value("${stripe.secret.key}")

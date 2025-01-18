@@ -10,6 +10,7 @@ import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
+import com.dsapkl.backend.util.SessionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dsapkl.backend.controller.CartController.getMember;
 
 @Controller
 //@Slf4j
@@ -116,7 +116,7 @@ public class ItemController {
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 
-        Member member = getMember(request);
+        Member member = SessionUtil.getMember(request);
         if (member != null) {
             List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
             int cartItemCount = cartItemListForm.size();
@@ -227,7 +227,7 @@ public class ItemController {
         model.addAttribute("totalPages", itemPage.getTotalPages());
 
         // 카트 아이템 카운트
-        Member member = getMember(request);
+        Member member = SessionUtil.getMember(request);
         if (member != null) {
             List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
             model.addAttribute("cartItemCount", cartItemListForm.size());

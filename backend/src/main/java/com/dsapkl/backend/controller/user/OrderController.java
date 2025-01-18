@@ -1,13 +1,12 @@
-package com.dsapkl.backend.controller;
+package com.dsapkl.backend.controller.user;
 
 import com.dsapkl.backend.dto.CartForm;
-import com.dsapkl.backend.dto.CartOrderDto;
 import com.dsapkl.backend.dto.CheckoutRequest;
 import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.OrderStatus;
-import com.dsapkl.backend.exception.NotEnoughStockException;
 import com.dsapkl.backend.service.OrderService;
+import com.dsapkl.backend.util.SessionUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
@@ -22,45 +21,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
-
-    /**
-     * 단일 상품 바로 주문
-     */
-    @PostMapping("/order")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> order(@RequestBody CartForm cartForm, HttpServletRequest request) {
-
-        //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
-        Member member = CartController.getMember(request);
-
-        if (member == null) {
-            return new ResponseEntity<>(Map.of("status", "fail", "message", "로그인이 필요한 서비스입니다."), HttpStatus.UNAUTHORIZED);
-        }
-        Long orderId;
-        try {
-            // 주문 저장 후 저장된 orderId 반환
-            orderId = orderService.order(member.getId(), cartForm.getItemId(), cartForm.getCount(), cartForm.getPaymentIntentId());
-        } catch (NotEnoughStockException e) {
-            return new ResponseEntity<>(Map.of("status", "fail", "message", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("orderId", orderId);
-
-//        System.out.println(response);
-
-        return ResponseEntity.ok(response);
-    }
 
     /**
      * 주문 내역 조회
@@ -81,7 +50,7 @@ public class OrderController {
 
     private List<OrderDto> getOrderDetails(String sessionId, OrderStatus status, Model model, HttpServletRequest request) {
         Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
-        Member member = CartController.getMember(request);
+        Member member = SessionUtil.getMember(request);
         List<OrderDto> findOrders = Collections.emptyList();
         if (sessionId != null) {
             try {
@@ -128,40 +97,4 @@ public class OrderController {
         return findOrders;
     }
 
-    /**
-     * 장바구니 상품 주문
-     */
-    @PostMapping("/orders")
-    @ResponseBody
-    public ResponseEntity<String> orders(@RequestBody CartOrderDto cartOrderDto, HttpServletRequest request, String paymentIntentId) {
-
-        //장바구니에서 아무 상품도 체크하지 않을 경우
-        if (cartOrderDto.getCartOrderDtoList().isEmpty()) {
-            return new ResponseEntity<>("하나 이상의 상품을 주문하셔야 합니다.", HttpStatus.FORBIDDEN);
-        }
-
-        //CartController 에 작성해둔 세션 정보 조회하는 기능 공용으로 사용
-        Member member = CartController.getMember(request);
-        if (member == null) {
-            return new ResponseEntity<>("로그인이 필요한 서비스입니다.", HttpStatus.UNAUTHORIZED);
-        }
-
-        try {
-            orderService.orders(member.getId(), cartOrderDto);
-        } catch (NotEnoughStockException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        return ResponseEntity.ok("Cart Order Success");
-    }
-
-    /**
-     * 주문 취소
-     */
-    @PostMapping("/order/{orderId}/cancel")
-    @ResponseBody
-    public ResponseEntity<String> cancelOrder(@PathVariable("orderId") Long orderId) {
-        orderService.cancelOrder(orderId);
-        return ResponseEntity.ok("Success");
-    }
 }

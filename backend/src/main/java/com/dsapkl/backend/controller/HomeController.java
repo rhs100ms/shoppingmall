@@ -8,6 +8,8 @@ import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemService;
 import com.dsapkl.backend.service.OrderService;
+import com.dsapkl.backend.util.SessionConst;
+import com.dsapkl.backend.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.dsapkl.backend.controller.CartController.getMember;
 
 @Controller
 @Slf4j
@@ -49,7 +50,7 @@ public class HomeController {
         //로그인된 사용자
 
         // 로그인된 사용자
-        Member member = getMember(request);
+        Member member = SessionUtil.getMember(request);
 
         try {
             // 회원의 클러스터 정보 조회
