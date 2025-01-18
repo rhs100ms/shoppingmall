@@ -24,6 +24,7 @@ public class Item {
     private int price;
     private int stockQuantity;
     private String description;
+    private int sales_count;
 
     @Enumerated(value = EnumType.STRING)
     private Category category;
@@ -103,6 +104,14 @@ public class Item {
     // 리뷰 수 조회 메서드
     public int getReviewCount() {
         return reviews.size();
+    }
+
+    // sales_count 증가 메서드 추가
+
+    public void increaseSalesCount(int quantity) {
+
+        this.sales_count += quantity;
+
     }
 
 }
