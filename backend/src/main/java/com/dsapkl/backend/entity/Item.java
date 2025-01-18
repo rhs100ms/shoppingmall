@@ -29,6 +29,9 @@ public class Item {
     @Enumerated(value = EnumType.STRING)
     private Category category;
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<ClusterItemPreference> score = new ArrayList<>();
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImageList = new ArrayList<>();
 
@@ -113,5 +116,6 @@ public class Item {
         this.sales_count += quantity;
 
     }
+
 
 }

@@ -132,7 +132,9 @@
                 </div>
             </div>
 
-            <div class="col mb-5" th:each="item : ${items}">
+            <div class="col mb-5" th:each="item : ${items}"
+                 th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore}"
+                 th:style="${currentScore >= 12 && currentScore == maxScore ? 'border: 2px solid red;' : ''}">
                 <div class="card h-100">
 
                     <!-- Product image -->

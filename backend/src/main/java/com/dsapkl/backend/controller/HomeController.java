@@ -46,30 +46,37 @@ public class HomeController {
             model.addAttribute("items", items);
             return "home";
         }
-        //로그인된 사용자
 
         // 로그인된 사용자
         Member member = getMember(request);
 
         try {
-            // 회원의 클러스터 정보 조회
             MemberInfo memberInfo = memberInfoRepository.findById(member.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Member information not found."));
 
             Cluster cluster = memberInfo.getCluster_id();
             if (cluster != null) {
-                // 검색된 아이템들의 선호도 정보를 조회하고 정렬
+                // 최대 선호도 점수 계산
+                int maxScore = 0;
+                for (Item item : items) {
+                    if (!item.getScore().isEmpty()) {
+                        maxScore = Math.max(maxScore, item.getScore().get(0).getPreferenceScore());
+                    }
+                }
+                
+                model.addAttribute("maxScore", maxScore);
+                
+                // 정렬 로직은 유지
                 List<Item> sortedItems = items.stream()
                     .sorted((item1, item2) -> {
                         Integer score1 = getPreferenceScore(cluster, item1);
                         Integer score2 = getPreferenceScore(cluster, item2);
-                        return score2.compareTo(score1); // 내림차순 정렬
+                        return score2.compareTo(score1);
                     })
                     .toList();
                 items = sortedItems;
             }
         } catch (Exception e) {
-            // 오류 발생 시 기본 검색 결과 유지
             System.err.println("Error occurred while sorting preferences: " + e.getMessage());
         }
 
