@@ -72,19 +72,22 @@
 
             <div class="col mb-5" th:each="item : ${items}">
                 <div class="card h-100">
-                    <!-- Product image-->
+
+                    <!-- Product image -->
                     <div style="height: 300px; overflow: hidden;">
-                        <img class="card-img-top product-image"
-                             th:if="${item.getItemImageList().size() > 0}"
-                             th:src="|/images/${item.getItemImageList().get(0).getStoreName()}|" 
-                             alt="..."
-                             style="width: 100%; height: 300px; object-fit: contain; background-color: #f8f9fa;" />
-                        <img class="card-img-top product-image" 
-                             th:unless="${item.getItemImageList().size() > 0}"
-                             src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" 
-                             alt="..."
-                             style="width: 100%; height: 300px; object-fit: contain; background-color: #f8f9fa;" />
+                        <div th:if="${item.getItemImageList() != null and item.getItemImageList().size() > 0}">
+                            <div th:if="${#strings.substring(item.getItemImageList().get(0).getStoreName(), 0, 4) == 'http'}">
+                                <img class="card-img-top" style="object-fit: cover; height: 100%; width: 100%;" th:src="${item.getItemImageList().get(0).getStoreName()}" alt="..." />
+                            </div>
+                            <div th:if="${#strings.substring(item.getItemImageList().get(0).getStoreName(), 0, 4) != 'http'}">
+                                <img class="card-img-top" style="object-fit: cover; height: 100%; width: 100%;" th:src="|/images/${item.getItemImageList().get(0).getStoreName()}|" alt="..." />
+                            </div>
+                        </div>
+                        <div th:if="${item.getItemImageList() == null or item.getItemImageList().isEmpty()}">
+                            <p>이미지가 없습니다.</p>
+                        </div>
                     </div>
+
                     <!-- Product details-->
                     <div class="card-body p-4">
                         <div class="text-center">

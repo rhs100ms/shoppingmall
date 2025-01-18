@@ -3,8 +3,23 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+            // 화살표 클릭 시 select 박스 클릭 이벤트 처리
+            document.addEventListener('DOMContentLoaded', function() {
+                const genderArrow = document.querySelector('label[for="gender"]');
+                const interestsArrow = document.querySelector('label[for="interests"]');
+                
+                genderArrow.addEventListener('click', function() {
+                    document.getElementById('gender').click();
+                });
+                
+                interestsArrow.addEventListener('click', function() {
+                    document.getElementById('interests').click();
+                });
+            });
+
             var error =[[${errorMessage}]];
             if(error != null){
                 alert(error);
@@ -117,7 +132,43 @@
             <input type="text" id="zipcode" th:field="*{zipcode}" class="formcontrol" style="width: 200px;">
         </div>
         <br>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="gender">&nbsp&nbsp Gender &nbsp&nbsp&nbsp&nbsp</label>
+                <div class="input-group">
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="">Please select your gender</option>
+                        <option value="MALE">MALE</option>
+                        <option value="FEMALE">FEMALE</option>
+                    </select>
+                    <span class="input-group-text">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="interests">&nbsp&nbsp Interests &nbsp&nbsp</label>
+                <div class="input-group">
+                    <select id="interests" name="interests" class="form-control">
+                        <option value="">Please select your interest</option>
+                        <option value="SPORTS">SPORTS</option>
+                        <option value="FASHION">FASHION</option>
+                        <option value="TRAVEL">TRAVEL</option>
+                        <option value="FOOD">FOOD</option>
+                        <option value="TECHNOLOGY">TECHNOLOGY</option>
+                    </select>
+                    <span class="input-group-text">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br>
         &nbsp
+
+
+
+
         <select name="role" id="role" class="formcontrol">
             <option value="">Seller/Buyer Registration</option>
             <option th:each="roleCode : ${roleCodes}"
