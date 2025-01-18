@@ -132,9 +132,13 @@
                 </div>
             </div>
 
-            <div class="col mb-5" th:each="item : ${items}"
-                 th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore}"
-                 th:style="${currentScore >= 12 && currentScore == maxScore ? 'border: 2px solid red;' : ''}">
+            <div class="col mb-5" th:each="item, iterStat : ${items}"
+                 th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore},
+                          rank=${iterStat.index + 1}"
+                 th:style="${currentScore >= 3} ? (
+                            ${rank == 1} ? 'border: 3px solid gold' : (
+                            ${rank == 2} ? 'border: 3px solid silver' : (
+                            ${rank == 3} ? 'border: 3px solid #cd7f32' : ''))) : ''">
                 <div class="card h-100">
 
                     <!-- Product image -->
