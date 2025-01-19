@@ -19,7 +19,7 @@
     />
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
+    <th:block th:replace="~{members/common-styles :: memberStyles}"></th:block>
 </head>
 
 <script th:inline="javascript">
@@ -171,7 +171,7 @@
                             </div>
                             <div th:if="${order.orderStatus.name() == 'ORDER'}">
                                 <button class="btn btn-outline-dark"
-                                        th:onclick="|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
+                                        th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
                                     Cancel Order
                                 </button>
                             </div>

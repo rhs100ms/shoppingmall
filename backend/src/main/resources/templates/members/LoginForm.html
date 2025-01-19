@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
-    <th:block th:replace="members/common-styles :: memberStyles"></th:block>
+    <th:block th:replace="~{members/common-styles :: memberStyles}"></th:block>
     <th:block layout:fragment="script">
         <script th:inline="javascript">
             var error = [[${errorMessage}]];

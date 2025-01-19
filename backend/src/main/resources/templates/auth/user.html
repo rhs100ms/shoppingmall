@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet" />
+    <th:block th:replace="~{members/common-styles :: memberStyles}"></th:block>
     <!-- 스타일 추가 -->
     <style>
         /* home.html의 스타일 복사 */
@@ -206,12 +207,12 @@
             <!-- 상품 카드 -->
             <div class="col-sm-6 col-lg-4 col-xl-3" th:each="item, iterStat : ${items}"
                  th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore},
-                          rank=${iterStat.index + 1}">
-                <div class="card h-100 product-card border-0"
-                     th:classappend="${currentScore >= 3} ? (
-                                    ${rank == 1} ? 'border-warning' : (
-                                    ${rank == 2} ? 'border-secondary' : (
-                                    ${rank == 3} ? 'border-danger' : '')))">
+                          rank=${iterStat.index + 1}"
+                 th:style="${currentScore >= 3} ? (
+                                    ${rank == 1} ? 'border: 3px solid gold' : (
+                                    ${rank == 2} ? 'border: 3px solid silver' : (
+                                    ${rank == 3} ? 'border: 3px solid #cd7f32' : ''))) : ''">
+                <div class="card h-100 product-card border-0">
                     <!-- 상품 이미지 -->
                     <div class="product-image">
                         <img th:if="${item.getItemImageList() != null and !item.getItemImageList().isEmpty()}"
