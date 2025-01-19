@@ -34,6 +34,13 @@ public class GlobalController {
         } else if ("USER".equals(userRole)) {
             return "redirect:/user";
         }
-        return "redirect:/";
+        return "redirect:/guest";
     }
+
+    @GetMapping("/")
+    public String redirect() {
+        return "redirect:/guest";
+    }
+
+
 }

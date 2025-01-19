@@ -17,7 +17,7 @@
                             return;
                         }
                         
-                        fetch('/api/members/check-email?email=' + encodeURIComponent(email))
+                        fetch('/members/api/members/check-email?email=' + encodeURIComponent(email))
                             .then(response => response.json())
                             .then(data => {
                                 const resultDiv = document.querySelector('#emailResult');
@@ -37,7 +37,7 @@
                     return;
                 }
 
-                fetch('/api/members/check-phone?phoneNumber=' + encodeURIComponent(phone))
+                fetch('/members/api/members/check-phone?phoneNumber=' + encodeURIComponent(phone))
                     .then(response => response.json())
                     .then(data => {
                         const resultDiv = document.querySelector('#phoneResult');

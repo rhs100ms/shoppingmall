@@ -123,7 +123,7 @@ public class PageController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("/guest")
     public String homePage(Model model,
                            @RequestParam(value = "query", required = false) String query,
                            @RequestParam(value = "category", required = false) String category) {
