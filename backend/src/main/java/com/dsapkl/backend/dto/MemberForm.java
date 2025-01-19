@@ -10,14 +10,14 @@ import lombok.Setter;
 @Setter
 public class MemberForm {
 
-    @NotEmpty(message = "이름은 필수 입니다.")
+    @NotEmpty(message = "Name is required.")
     private String name;
 
-    @NotEmpty(message = "이메일 필수 입니다.")
+    @NotEmpty(message = "Email is required.")
     @Email
     private String email;
 
-    @NotEmpty(message = "비밀번호 필수 입니다.")
+    @NotEmpty(message = "Password is required.")
     private String password;
 
     private String city;
@@ -26,11 +26,12 @@ public class MemberForm {
 
     private String role;
 
-    @NotEmpty(message = "생년월일은 필수 입니다.")
-    @Pattern(regexp = "\\d{8}", message = "생년월일은 8자리 숫자(YYYYMMDD)로 입력해주세요.")
+    @NotEmpty(message = "Birth date is required.")
+    @Pattern(regexp = "\\d{8}", message = "Please enter the birth date in 8-digit format (YYYYMMDD).")
     private String birthDate;
-    @NotEmpty(message = "휴대폰 번호는 필수 입니다.")
+
+    @NotEmpty(message = "Phone number is required.")
     @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$",
-            message = "올바른 휴대폰 번호 형식이 아닙니다. (예: 010-1234-5678)")
+            message = "Invalid phone number format. (e.g., 010-1234-5678)")
     private String phoneNumber;
 }

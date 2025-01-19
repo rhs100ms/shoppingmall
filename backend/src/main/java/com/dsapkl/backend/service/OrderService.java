@@ -52,6 +52,10 @@ public class OrderService {
                 .findById(memberId).orElseGet(() -> null);
         int orderPrice = findItem.getPrice() * count;
 
+        // sales_count 업데이트
+
+        findItem.increaseSalesCount(count);
+
         OrderItem orderItem = OrderItem.createOrderItem(count, orderPrice, findItem);
         orderItemList.add(orderItem);
 
@@ -69,7 +73,7 @@ public class OrderService {
             // 클러스터 아이템 선호도 업데이트
             updateClusterItemPreference(memberId, findItem);
         } catch (Exception e) {
-            System.err.println("클러스터 처리 중 오류 발생: " + e.getMessage());
+            System.err.println("Error occurred during cluster processing: " + e.getMessage());
         }
 
         return save.getId();
@@ -113,6 +117,9 @@ public class OrderService {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
             int orderPrice = findItem.getPrice() * cartForm.getCount();
 
+            // sales_count 업데이트
+            findItem.increaseSalesCount(cartForm.getCount());
+
             OrderItem orderItem = OrderItem.createOrderItem(cartForm.getCount(), orderPrice, findItem);
             orderItemList.add(orderItem);
 
@@ -137,7 +144,7 @@ public class OrderService {
                 updateClusterItemPreference(memberId, orderItem.getItem());
             }
         } catch (Exception e) {
-            System.err.println("클러스터 처리 중 오류 발생: " + e.getMessage());
+            System.err.println("Error occurred during cluster processing: " + e.getMessage());
         }
 
         return save.getId();
@@ -183,7 +190,7 @@ public class OrderService {
         try {
             // MemberInfo에서 cluster_id 가져오기
             MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
-                    .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("Member information not found."));
 
             Cluster cluster = memberInfo.getCluster_id();
             if (cluster == null) return;  // 클러스터가 없으면 무시
@@ -200,8 +207,8 @@ public class OrderService {
             preference.increasePreferenceScore();
             clusterItemPreferenceRepository.save(preference);
         } catch (Exception e) {
-            // 오류 로깅만 하고 진행
-            System.err.println("클러스터 아이템 선호도 업데이트 중 오류 발생: " + e.getMessage());
+            // Log error and continue
+            System.err.println("Error occurred while updating cluster item preference: " + e.getMessage());
         }
     }
 }

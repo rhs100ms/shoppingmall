@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -41,11 +43,11 @@ public class AdminItemController {
     @GetMapping("/new")
     public String createItemForm(Model model) {
         List<CategoryCode> categoryCode = new ArrayList<>();
-        categoryCode.add(new CategoryCode("APPAREL", "의류"));
-        categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-        categoryCode.add(new CategoryCode("BOOKS", "서적"));
-        categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-        categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+        categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+        categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+        categoryCode.add(new CategoryCode("BOOKS", "Books"));
+        categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+        categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
         model.addAttribute("categoryCode", categoryCode);
         model.addAttribute("itemForm", new ItemForm());
         return "item/itemForm";
@@ -59,18 +61,18 @@ public class AdminItemController {
 
         if (bindingResult.hasErrors()) {
             List<CategoryCode> categoryCode = new ArrayList<>();
-            categoryCode.add(new CategoryCode("APPAREL", "의류"));
-            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-            categoryCode.add(new CategoryCode("BOOKS", "서적"));
-            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
+            categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+            categoryCode.add(new CategoryCode("BOOKS", "Books"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
             model.addAttribute("categoryCode", categoryCode);
             return "item/itemForm";
         }
 
         //상품 이미지를 등록안하면
         if (multipartFiles.get(0).isEmpty()) {
-            model.addAttribute("errorMessage", "상품 사진을 등록해주세요!");
+            model.addAttribute("errorMessage", "Please upload product images!");
             return "item/itemForm";
         }
 
@@ -125,26 +127,8 @@ public class AdminItemController {
     public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
         return "redirect:/"; // 삭제 후 메인 페이지로 이동
-    }
 
-    @GetMapping("/{itemId}/edit")
-    public String itemEditForm(@PathVariable("itemId") Long itemId, Model model) {
-        try {
-            ItemForm itemForm = itemService.getItemDtl(itemId);
-            List<CategoryCode> categoryCode = new ArrayList<>();
-            categoryCode.add(new CategoryCode("APPAREL", "의류"));
-            categoryCode.add(new CategoryCode("ELECTRONICS", "전자제품"));
-            categoryCode.add(new CategoryCode("BOOKS", "서적"));
-            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "가구&가전"));
-            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "건강&미용"));
-            model.addAttribute("itemForm", itemForm);
-            model.addAttribute("categoryCode", categoryCode);
-            model.addAttribute("isEdit", true);  // 수정 모드임을 표시
-            return "item/itemForm";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
-            return "redirect:/items/manage";
-        }
+
     }
 
 
@@ -156,7 +140,8 @@ public class AdminItemController {
                              @RequestParam("description") String description,
                              @RequestParam("category") Category category,
                              @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                             @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages) throws IOException {
+                             @RequestParam(value = "itemImages", required = false) List<MultipartFile> itemImages,
+                             HttpServletRequest request) throws IOException {
         // 상품 수정 로직
         itemService.updateItem(itemId, name, price, stockQuantity, description, category);
 
@@ -172,7 +157,15 @@ public class AdminItemController {
             itemImageService.updateItemImages(itemId, itemImages);
         }
 
-        return "redirect:/items/manage";
+        // Referer 헤더를 통해 이전 페이지 URL 확인
+        String referer = request.getHeader("Referer");
+        // itemForm.html에서 온 요청인지 확인 (상품 관리 페이지에서의 수정)
+        if (referer != null && referer.contains("/items/" + itemId + "/edit")) {
+            return "redirect:/items/manage";
+        } else {
+            // itemView.html에서의 수정
+            return "redirect:/items/" + itemId;
+        }
     }
 
     @GetMapping("/manage")
@@ -234,9 +227,24 @@ public class AdminItemController {
         return "item/itemManage";
     }
 
-
-
-
-
+    @GetMapping("/{itemId}/edit")
+    public String itemEditForm(@PathVariable("itemId") Long itemId, Model model) {
+        try {
+            ItemForm itemForm = itemService.getItemDtl(itemId);
+            List<CategoryCode> categoryCode = new ArrayList<>();
+            categoryCode.add(new CategoryCode("APPAREL", "Apparel"));
+            categoryCode.add(new CategoryCode("ELECTRONICS", "Electronics"));
+            categoryCode.add(new CategoryCode("BOOKS", "Books"));
+            categoryCode.add(new CategoryCode("HOME_AND_KITCHEN", "Home & Kitchen"));
+            categoryCode.add(new CategoryCode("HEALTH_AND_BEAUTY", "Health & Beauty"));
+            model.addAttribute("itemForm", itemForm);
+            model.addAttribute("categoryCode", categoryCode);
+            model.addAttribute("isEdit", true);  // 수정 모드임을 표시
+            return "item/itemForm";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "Product does not exist.");
+            return "redirect:/items/manage";
+        }
+    }
 
 }

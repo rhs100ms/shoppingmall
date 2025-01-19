@@ -47,11 +47,11 @@ public class MemberService {
     private void validateDuplicateMember(Member member) {
         Member findMember = memberRepository.findByEmail(member.getEmail()).orElse(null);
         if (findMember != null) {
-            throw new IllegalStateException("이미 존재하는 회원 입니다.");
+            throw new IllegalStateException("Member already exists.");
         }
 
         if (memberRepository.existsByPhoneNumber(member.getPhoneNumber())) {
-            throw new IllegalStateException("이미 사용중인 전화번호입니다.");
+            throw new IllegalStateException("Phone number is already in use.");
         }
     }
 
@@ -85,13 +85,13 @@ public class MemberService {
     }
 
     public String findEmailByBirthDateAndPhone (String birthDate, String phoneNumber) {
-        Member member = memberRepository.findByBirthDateAndPhoneNumber(birthDate, phoneNumber).orElseThrow(() -> new IllegalArgumentException("일치하는 회원정보가 없습니다."));
+        Member member = memberRepository.findByBirthDateAndPhoneNumber(birthDate, phoneNumber).orElseThrow(() -> new IllegalArgumentException("No matching member information found."));
         return member.getEmail();
     }
 
     @Transactional
     public void sendTemporaryPassword(String email, String phoneNumber) {
-        Member member = memberRepository.findByEmailAndPhoneNumber(email, phoneNumber).orElseThrow(()-> new IllegalStateException("일치하는 회원정보가 없습니다."));
+        Member member = memberRepository.findByEmailAndPhoneNumber(email, phoneNumber).orElseThrow(()-> new IllegalStateException("No matching member information found."));
 
         String temporaryPassword = generateTemporaryPassword();
 

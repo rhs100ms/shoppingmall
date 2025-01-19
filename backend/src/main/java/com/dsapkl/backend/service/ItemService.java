@@ -64,7 +64,7 @@ public class ItemService {
     @Transactional
     public void updateItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
         Item findItem = itemRepository.findById(itemServiceDTO.getItemId())
-                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Product does not exist."));
 
         findItem.updateItem(
                 itemServiceDTO.getName(),
@@ -87,7 +87,7 @@ public class ItemService {
     @Transactional
     public void updateItem(Long itemId, String name, int price, int stockQuantity, String description, Category category) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("The product does not exist."));
 
         item.updateItem(name, price, stockQuantity, description, category);
     }

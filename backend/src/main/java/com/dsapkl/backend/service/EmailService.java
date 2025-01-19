@@ -15,8 +15,8 @@ public class EmailService {
     public void sendTemporaryPassword(String to, String temporaryPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("[PKLshop] 임시 비밀번호 발급");
-        message.setText("임시 비밀번호: " + temporaryPassword + "로그인 후 반드시 비밀번호를 변경해주세요.");
+        message.setSubject("[PKLshop] Temporary Password Issued");
+        message.setText("Temporary Password: " + temporaryPassword + ". Please change your password after logging in.");
         mailSender.send(message);
     }
 }

@@ -24,9 +24,13 @@ public class Item {
     private int price;
     private int stockQuantity;
     private String description;
+    private int sales_count;
 
     @Enumerated(value = EnumType.STRING)
     private Category category;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<ClusterItemPreference> score = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImageList = new ArrayList<>();
@@ -81,7 +85,7 @@ public class Item {
     public void minStock(int quantity) {
         int restQuantity = stockQuantity - quantity;
         if (restQuantity < 0) {
-            throw new NotEnoughStockException("상품 재고가 부족합니다!!");
+            throw new NotEnoughStockException("Not enough stock available!");
         }
         stockQuantity = restQuantity;
     }
@@ -104,5 +108,14 @@ public class Item {
     public int getReviewCount() {
         return reviews.size();
     }
+
+    // sales_count 증가 메서드 추가
+
+    public void increaseSalesCount(int quantity) {
+
+        this.sales_count += quantity;
+
+    }
+
 
 }

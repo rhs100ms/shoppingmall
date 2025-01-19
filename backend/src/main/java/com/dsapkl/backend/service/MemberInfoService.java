@@ -26,7 +26,7 @@ public class MemberInfoService {
     @Transactional
     public void updateMemberLoginInfo(Long memberId) {
         MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Member does not exist."));
         
         memberInfo.updateLoginDays(LocalDate.now());
     }
@@ -34,7 +34,7 @@ public class MemberInfoService {
     @Transactional
     public void updatePurchaseStatistics(Long memberId) {
         MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Member does not exist."));
 
         Integer purchaseFrequency = orderRepository.findPurchaseFrequencyByMemberId(memberId);
         Integer averageOrderValue = orderRepository.findAverageOrderValueByMemberId(memberId);
@@ -46,7 +46,7 @@ public class MemberInfoService {
     @Transactional
     public void updateProductPreference(Long memberId) {
         MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Member does not exist."));
 
         Category preferredCategory = orderItemRepository.findMostFrequentCategoryByMemberId(memberId);
         
@@ -80,7 +80,7 @@ public class MemberInfoService {
 
     public MemberInfo findMemberInfo(Long memberId) {
         return memberInfoRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원정보입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Member information does not exist."));
     }
 
     @Transactional

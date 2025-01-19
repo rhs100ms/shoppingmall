@@ -34,7 +34,7 @@ public class ReviewController {
             Member member = SessionUtil.getMember(request);
             if (member == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("로그인이 필요합니다.");
+                        .body("Login required.");
             }
             Long reviewId = reviewService.createReview(requestDto, member.getId(), images);
             return ResponseEntity.ok(reviewId);
@@ -45,12 +45,21 @@ public class ReviewController {
 
     @PutMapping("/api/reviews/{reviewId}")
     @ResponseBody
-    public ResponseEntity<Void> updateReview(@PathVariable Long reviewId,
-                                           @Valid @RequestBody ReviewRequestDto requestDto,
-                                           HttpServletRequest request) {
-        Member member = SessionUtil.getMember(request);
-        reviewService.updateReview(reviewId, requestDto, member.getId());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> updateReview(@PathVariable Long reviewId,
+                                        @Valid @ModelAttribute ReviewRequestDto requestDto,
+                                        @RequestParam(required = false) List<MultipartFile> images,
+                                        HttpServletRequest request) {
+        try {
+            Member member = SessionUtil.getMember(request);
+            if (member == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Login required.");
+            }
+            reviewService.updateReview(reviewId, requestDto, member.getId(), images);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/api/reviews/{reviewId}")

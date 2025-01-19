@@ -18,26 +18,26 @@
 <section>
 <div layout:fragment="content" class="container">
     <div class="py-5 text-center">
-        <h2 th:text="${itemForm.itemId == null ? '상품 등록' : '상품 수정'}">상품 등록</h2>
+        <h2 th:text="${itemForm.itemId == null ? 'Add Product' : 'Edit Product'}">Add Product</h2>
     </div>
     <!-- th:action 생략 => items/new 현재 URL-->
     <form th:action="${itemForm.itemId != null ? '/admin/items/' + itemForm.itemId + '/edit' : '/admin/items/new'}"
           th:object="${itemForm}" method="post" enctype="multipart/form-data">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-               th:text="${err}">전체 오류 메시지</p>
+               th:text="${err}">Global Error Message</p>
         </div>
         <div>
-            <label for="name">상품명</label>
-            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="상품명을 입력해주세요"
+            <label for="name">Product Name</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Enter product name"
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{name}" />
         </div>
         <br>
         <div>
-            <label for="category">카테고리</label>
-            <select name="category" id="category" class="formcontrol">
-                <option value="">카테고리 선택</option>
+            <label for="category">Category</label>
+            <select name="category" id="category" class="form-control">
+                <option value="">Select Category</option>
                 <option th:each="categoryCode : ${categoryCode}"
                         th:value="${categoryCode.code}"
                         th:text="${categoryCode.displayName}"
@@ -47,20 +47,20 @@
         </div>
         <br>
         <div class="form-group">
-            <label th:for="price">가격</label>
+            <label th:for="price">Price</label>
             <input type="number" th:field="*{price}" class="form-control"
-                  placeholder="가격을 입력하세요" min="0" step="1">
+                  placeholder="Enter price" min="0" step="1">
         </div>
         <br>
         <div class="form-group">
-            <label th:for="stockQuantity">재고수량</label>
+            <label th:for="stockQuantity">Stock Quantity</label>
             <input type="number" th:field="*{stockQuantity}" class="form-control"
-                   placeholder="재고수량을 입력하세요">
+                   placeholder="Enter stock quantity">
             <p th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}">Incorrect date</p>
         </div>
         <br>
         <div>
-            <label for="description">상품 상세 설명</label>
+            <label for="description">Product Description</label>
             <textarea id="description" th:field="*{description}" class="form-control" aria-label="With textarea"></textarea>
         </div>
         <br>
@@ -71,7 +71,7 @@
 <!--        </div>-->
 
         <div th:if="${itemForm.itemId != null}" class="mb-3">
-            <label class="form-label">현재 이미지</label>
+            <label class="form-label">Current Images</label>
             <div class="current-images">
                 <div th:each="image : ${itemForm.itemImageListDto}" class="position-relative d-inline-block">
                     <img th:src="@{${'/images/' + image.storeName}}"
@@ -83,7 +83,7 @@
 
         <div class="mb-3">
             <label for="formFileMultiple" class="form-label"
-                   th:text="${itemForm.itemId == null ? '상품 이미지 업로드' : '추가 이미지 업로드'}">
+                   th:text="${itemForm.itemId == null ? 'Upload Product Images' : 'Upload Additional Images'}">
             </label>
             <input class="form-control" type="file" id="formFileMultiple" name="itemImages" multiple>
         </div>
@@ -94,7 +94,7 @@
                 const previewContainer = document.querySelector(".preview-images");
 
                 // 미리보기 섹션 제목 추가
-                previewContainer.innerHTML = "<h6 class='w-100 mb-3'>새 이미지 미리보기</h6>";
+                previewContainer.innerHTML = "<h6 class='w-100 mb-3'>New Image Preview</h6>";
 
                 Array.from(fileInput.files).forEach(file => {
                     const reader = new FileReader();
@@ -154,7 +154,7 @@
         <br>
         <div style="text-align:center">
         <button class="w-50 btn btn-primary btn-lg" type="submit"
-                th:text="${itemForm.itemId == null ? '상품 등록' : '상품 수정'}">
+                th:text="${itemForm.itemId == null ? 'Add Product' : 'Edit Product'}">
         </button>
         </div>
         <br>
