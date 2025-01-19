@@ -81,7 +81,7 @@ public class Item {
     public void minStock(int quantity) {
         int restQuantity = stockQuantity - quantity;
         if (restQuantity < 0) {
-            throw new NotEnoughStockException("상품 재고가 부족합니다!!");
+            throw new NotEnoughStockException("Not enough stock available!");
         }
         stockQuantity = restQuantity;
     }

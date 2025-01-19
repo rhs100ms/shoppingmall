@@ -3,8 +3,23 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+            // 화살표 클릭 시 select 박스 클릭 이벤트 처리
+            document.addEventListener('DOMContentLoaded', function() {
+                const genderArrow = document.querySelector('label[for="gender"]');
+                const interestsArrow = document.querySelector('label[for="interests"]');
+
+                genderArrow.addEventListener('click', function() {
+                    document.getElementById('gender').click();
+                });
+
+                interestsArrow.addEventListener('click', function() {
+                    document.getElementById('interests').click();
+                });
+            });
+
             var error =[[${errorMessage}]];
             if(error != null){
                 alert(error);
@@ -13,7 +28,7 @@
             function checkEmailDuplicate() {
                         const email = document.querySelector('#email').value;
                         if (!email) {
-                            alert('이메일을 입력해주세요.');
+                            alert('Enter your email');
                             return;
                         }
                         
@@ -23,9 +38,9 @@
                                 const resultDiv = document.querySelector('#emailResult');
                                 //if response true -> email exist so can't use
                                 if (!data.isAvailable) {
-                                    resultDiv.innerHTML = '<span class="text-success">사용 가능한 이메일입니다.</span>';
+                                    resultDiv.innerHTML = '<span class="text-success">Email is available</span>';
                                 } else {
-                                    resultDiv.innerHTML = '<span class="text-danger">이미 사용중인 이메일입니다.</span>';
+                                    resultDiv.innerHTML = '<span class="text-danger">Email is already in use</span>';
                                 }
                             });
                     }
@@ -33,7 +48,7 @@
             function checkPhoneDuplicate() {
                 const phone = document.querySelector('#phoneNumber').value;
                 if (!phone) {
-                    alert('휴대폰 번호를 입력해주세요.');
+                    alert('Enter your phone number');
                     return;
                 }
 
@@ -42,9 +57,9 @@
                     .then(data => {
                         const resultDiv = document.querySelector('#phoneResult');
                         if (!data.isAvailable) {
-                            resultDiv.innerHTML = '<span class="text-success">사용 가능한 번호입니다.</span>';
+                            resultDiv.innerHTML = '<span class="text-success">Phone number is available</span>';
                         } else {
-                            resultDiv.innerHTML = '<span class="text-danger">이미 사용중인 번호입니다.</span>';
+                            resultDiv.innerHTML = '<span class="text-danger">Phone number is already in use</span>';
                         }
                     });
             }
@@ -58,20 +73,20 @@
     <form th:action th:object="${memberForm}" method="post">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-               th:text="${err}">전체 오류 메시지</p>
+               th:text="${err}">Global Error Message</p>
         </div>
         <div>
-            <label for="name">&nbsp&nbsp&nbsp 이름 &nbsp&nbsp&nbsp&nbsp</label>
-            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="이름을 입력해주세요">
+            <label for="name">&nbsp&nbsp&nbsp Name &nbsp&nbsp&nbsp&nbsp</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Enter your name">
             <div class="field-error" th:errors="*{name}" />
         </div>
         <br>
         <div>
-            <label for="email">&nbsp&nbsp 이메일 &nbsp&nbsp</label>
+            <label for="email">&nbsp&nbsp Email &nbsp&nbsp</label>
             <div class="input-group">
-                <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="이메일 형식으로 입력해주세요">
+                <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="Please enter it in e-mail format">
                 <button type="button" class="btn btn-outline-secondary" onclick="checkEmailDuplicate()">
-                    중복확인
+                    Check for duplicates
                 </button>
             </div>
             <div class="field-error" th:errors="*{email}" />
@@ -79,25 +94,25 @@
         </div>
         <br>
         <div>
-            <label for="password">&nbsp 비밀번호 </label>
-            <input type="password" id="password" th:field="*{password}" class="form-control"  placeholder="비밀번호를 입력해주세요">
+            <label for="password">&nbsp Password </label>
+            <input type="password" id="password" th:field="*{password}" class="form-control"  placeholder="Enter your password">
             <div class="field-error" th:errors="*{password}" />
         </div>
         <br>
         <div>
-            <label th:for="birthDate">&nbsp 생년월일</label>
+            <label th:for="birthDate">&nbsp Date of Birth</label>
             <input type="text" th:field="*{birthDate}" class="form-control"
-                   placeholder="YYYYMMDD (예: 19990101)" maxlength="8" id="birthDate">
+                   placeholder="YYYYMMDD (ex: 19990101)" maxlength="8" id="birthDate">
             <div class="field-error" th:errors="*{birthDate}" />
         </div>
         <br>
         <div>
-            <label th:for="phoneNumber">&nbsp 휴대폰 번호</label>
+            <label th:for="phoneNumber">&nbsp Phone Number</label>
             <div class="input-group">
                 <input type="text" th:field="*{phoneNumber}" class="form-control"
-                   placeholder="예) 010-1234-5678" id="phoneNumber">
+                   placeholder="ex) 010-1234-5678" id="phoneNumber">
                 <button type="button" class="btn btn-outline-secondary" onclick="checkPhoneDuplicate()">
-                    중복확인
+                    Check for duplicates
                 </button>
             </div>
             <div class="field-error" th:errors="*{phoneNumber}" />
@@ -105,42 +120,72 @@
         </div>
         <br>
         <div>
-            <label for="city">&nbsp&nbsp  지역명 &nbsp&nbsp</label>
-            <input type="text" id="city" th:field="*{city}"
-                   class="formcontrol">
+            <label for="city">&nbsp;&nbsp;City&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="city" th:field="*{city}" class="formcontrol" style="width: 200px;">
         </div>
         <div>
-            <label for="street">&nbsp&nbsp  도로명 &nbsp&nbsp</label>
-            <input type="text" id="street" th:field="*{street}"
-                   class="formcontrol"
-            >
+            <label for="street">&nbsp;&nbsp;Street&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="street" th:field="*{street}" class="formcontrol" style="width: 200px;">
         </div>
         <div>
-            <label for="zipcode">우편번호 &nbsp&nbsp</label>
-            <input type="text" id="zipcode" th:field="*{zipcode}"
-                   class="formcontrol"
-            >
+            <label for="zipcode">&nbsp;&nbsp;Zip Code&nbsp;&nbsp;</label>
+            <input type="text" id="zipcode" th:field="*{zipcode}" class="formcontrol" style="width: 200px;">
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="gender">&nbsp&nbsp Gender &nbsp&nbsp&nbsp&nbsp</label>
+                <div class="input-group">
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="">Please select your gender</option>
+                        <option value="MALE">MALE</option>
+                        <option value="FEMALE">FEMALE</option>
+                    </select>
+                    <span class="input-group-text">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="interests">&nbsp&nbsp Interests &nbsp&nbsp</label>
+                <div class="input-group">
+                    <select id="interests" name="interests" class="form-control">
+                        <option value="">Please select your interest</option>
+                        <option value="SPORTS">SPORTS</option>
+                        <option value="FASHION">FASHION</option>
+                        <option value="TRAVEL">TRAVEL</option>
+                        <option value="FOOD">FOOD</option>
+                        <option value="TECHNOLOGY">TECHNOLOGY</option>
+                    </select>
+                    <span class="input-group-text">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </div>
+            </div>
         </div>
         <br>
         &nbsp
+
+
+
+
         <select name="role" id="role" class="formcontrol">
-            <option value="">회원 등록</option>
+            <option value="">Seller/Buyer Registration</option>
             <option th:each="roleCode : ${roleCodes}"
                     th:value="${roleCode.code}"
                     th:text="${roleCode.displayName}" />
         </select>
-<!--        <input type="hidden" id="role" class="formcontrol" th:value="${roleCodes.code}">-->
         <hr class="my-4">
         <div class="row">
             <div class="col" style="text-align: center">
                 <button class="w-100 btn btn-primary btn-lg" type="submit">
-                    회원가입</button>
+                    Sign Up</button>
             </div>
             <div class="col" style="text-align: center">
                 <button class="w-100 btn btn-secondary btn-lg"
                         onclick="location.href='home.html'"
                         th:onclick="|location.href='@{/members}'|"
-                        type="button">취소</button>
+                        type="button">Cancel</button>
             </div>
         </div>
     </form>

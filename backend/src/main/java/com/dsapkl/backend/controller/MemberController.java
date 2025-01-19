@@ -1,12 +1,11 @@
 package com.dsapkl.backend.controller;
 
-import com.dsapkl.backend.dto.FindEmailRequestDto;
-import com.dsapkl.backend.dto.FindPasswordRequestDto;
-import com.dsapkl.backend.dto.LoginForm;
-import com.dsapkl.backend.dto.MemberForm;
+import com.dsapkl.backend.dto.*;
 import com.dsapkl.backend.entity.Address;
+import com.dsapkl.backend.entity.Interest;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.service.CartService;
+import com.dsapkl.backend.service.MemberInfoService;
 import com.dsapkl.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +30,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberInfoService memberInfoService;
+
     private final CartService cartService;
 
     /*
@@ -55,7 +57,9 @@ public class MemberController {
     @PostMapping("/members/new")
     public String createMember(@Valid @ModelAttribute MemberForm memberForm,
                                BindingResult bindingResult, Model model,
-                               @RequestParam("role") String role) {
+                               @RequestParam("role") String role,
+                               @RequestParam("gender") String gender,
+                               @RequestParam("interests") String interests) {
 
         //memberForm 객체에 binding 했을 때 에러
         if(bindingResult.hasErrors()) {
@@ -82,6 +86,23 @@ public class MemberController {
 
             member.changeRole(role);
             memberService.join(member);
+
+            Long savedMember = member.getId();
+            
+            // 생년월일로 나이 계산
+            String birthDateStr = memberForm.getBirthDate();
+            int birthYear = Integer.parseInt(birthDateStr.substring(0, 4));
+            int currentYear = LocalDate.now().getYear();
+            int age = currentYear - birthYear;
+            
+            // MemberInfo 생성 및 저장
+            MemberInfoCreateDto memberInfoDto = new MemberInfoCreateDto();
+            memberInfoDto.setAge(age);
+            memberInfoDto.setGender(gender);
+            memberInfoDto.setInterests(Interest.valueOf(interests));
+            
+            memberInfoService.updateMemberInfo(savedMember, memberInfoDto);
+            
         } catch (IllegalStateException e){
             model.addAttribute("errorMessage", e.getMessage());
             return "members/createMemberForm";
@@ -113,7 +134,7 @@ public class MemberController {
         log.info("login? {}", loginMember);
 
         if (loginMember == null) {
-            bindingResult.reject("loginfail", "이메일 또는 비밀번호가 맞지 않습니다.");
+            bindingResult.reject("loginfail", "Invalid email or password.");
             return "members/loginForm";
         }
     /*
@@ -174,7 +195,7 @@ public class MemberController {
             model.addAttribute("foundEmail", email);
             return "members/findEmailResult";
         } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", "일치하는 회원정보가 없습니다.");
+            model.addAttribute("errorMessage", "No matching member information found.");
             return "members/findEmail";
         }
     }
@@ -188,7 +209,7 @@ public class MemberController {
             memberService.sendTemporaryPassword(requestDto.getEmail(),requestDto.getPhoneNumber());
             return "members/findPasswordResult";
         } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage","일치하는 회원정보가 없습니다.");
+            model.addAttribute("errorMessage", "No matching member information found.");
             return "members/findPassword";
         }
     }

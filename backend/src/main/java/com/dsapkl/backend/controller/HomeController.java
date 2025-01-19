@@ -54,7 +54,7 @@ public class HomeController {
         try {
             // 회원의 클러스터 정보 조회
             MemberInfo memberInfo = memberInfoRepository.findById(member.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("Member information not found."));
 
             Cluster cluster = memberInfo.getCluster_id();
             if (cluster != null) {
@@ -70,7 +70,7 @@ public class HomeController {
             }
         } catch (Exception e) {
             // 오류 발생 시 기본 검색 결과 유지
-            System.err.println("선호도 정렬 중 오류 발생: " + e.getMessage());
+            System.err.println("Error occurred while sorting preferences: " + e.getMessage());
         }
 
         model.addAttribute("items", items);

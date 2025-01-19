@@ -8,12 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FindEmailRequestDto {
-    @NotEmpty(message = "생년월일은 필수입니다")
-    @Pattern(regexp = "\\d{8}", message = "생년월일은 8자리 숫자(YYYYMMDD)로 입력해주세요")
+    @NotEmpty(message = "Birth date is required.")
+    @Pattern(regexp = "\\d{8}", message = "Please enter the birth date in 8-digit format (YYYYMMDD).")
     private String birthDate;
 
-    @NotEmpty(message = "휴대폰 번호는 필수입니다")
+    @NotEmpty(message = "Phone number is required.")
     @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$",
-            message = "올바른 휴대폰 번호 형식이 아닙니다")
+            message = "Invalid phone number format.")
     private String phoneNumber;
 }

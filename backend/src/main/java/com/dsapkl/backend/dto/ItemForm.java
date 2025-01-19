@@ -22,16 +22,16 @@ public class ItemForm {
 
     private Long itemId;
 
-    @NotEmpty(message = "상품 이름은 필수입니다.")
+    @NotEmpty(message = "Product name is required.")
     private String name;
 
-    @NotNull(message = "카테고리 정보 입력 필수")
+    @NotNull(message = "Category information is required.")
     private Category category;
 
-    @NotNull(message = "상품 가격은 필수입니다.")
+    @NotNull(message = "Product price is required.")
     private int price;
 
-    @NotNull(message = "상품 재고 수량은 필수입니다.")
+    @NotNull(message = "Product stock quantity is required.")
     private int stockQuantity;
 
     private String description;

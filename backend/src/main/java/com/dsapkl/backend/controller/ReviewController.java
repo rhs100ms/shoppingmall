@@ -34,7 +34,7 @@ public class ReviewController {
             Member member = getMember(request);
             if (member == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("로그인이 필요합니다.");
+                        .body("Login required.");
             }
             Long reviewId = reviewService.createReview(requestDto, member.getId(), images);
             return ResponseEntity.ok(reviewId);

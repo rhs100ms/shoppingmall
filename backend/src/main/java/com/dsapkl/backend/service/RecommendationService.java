@@ -29,7 +29,7 @@ public class RecommendationService {
     public Integer getClusterPrediction(Long memberId) {
         // MemberInfo 조회
         MemberInfo memberInfo = memberInfoRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Member does not exist."));
 
         // 회원 데이터 가공
         Map<String, Object> memberData = prepareMemberData(memberInfo);
@@ -93,7 +93,7 @@ public class RecommendationService {
             Integer prediction = predictionNode.get(0).asInt();
             return prediction;
         } catch (Exception e) {
-            throw new RuntimeException("Flask 서버 응답 처리 중 오류 발생", e);
+            throw new RuntimeException("Error occurred while processing Flask server response", e);
         }
     }
 } 

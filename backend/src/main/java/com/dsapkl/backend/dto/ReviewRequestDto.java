@@ -12,11 +12,12 @@ import lombok.Setter;
 @Setter
 public class ReviewRequestDto {
     private Long itemId;
-    @NotBlank(message = "리뷰 내용을 입력해주세요.")
-    @Size(min = 1, max = 1000, message = "리뷰는 1000자 이하로 작성해주세요.")
+
+    @NotBlank(message = "Please enter the review content.")
+    @Size(min = 1, max = 1000, message = "Review must be 1000 characters or less.")
     private String content;
-    
-    @Min(value = 1, message = "평점은 1점 이상이어야 합니다")
-    @Max(value = 5, message = "평점은 5점 이하여야 합니다")
+
+    @Min(value = 1, message = "Rating must be at least 1.")
+    @Max(value = 5, message = "Rating must be 5 or less.")
     private int rating;
 } 
