@@ -24,11 +24,12 @@ public class WebSecurityConfig {
     //로그인 없이 접근 가능 경로
     private static final String[] PUBLIC_URLS = {
             "/"                     //root
-            , "/guest/**"
             , "/images/**"          //이미지 경로
             , "/css/**"             //CSS파일들
             , "/js/**"              //JavaSCript 파일들
             , "/members/**"        //회원가입
+            , "/guest/**"
+            , "/redirectByRole"
     };
 
     @Bean
