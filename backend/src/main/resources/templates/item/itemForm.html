@@ -34,7 +34,7 @@
                             <h2 class="fw-bold" th:text="${itemForm.itemId == null ? 'Add Product' : 'Edit Product'}">Add Product</h2>
                         </div>
 
-                        <form th:action="${itemForm.itemId != null ? '/admin/items/' + itemForm.itemId + '/edit' : '/items/new'}"
+                        <form th:action="${itemForm.itemId != null ? '/admin/items/' + itemForm.itemId + '/edit' : '/admin/items/new'}"
                               th:object="${itemForm}" method="post" enctype="multipart/form-data">
 
                             <!-- Error Messages -->
