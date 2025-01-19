@@ -92,7 +92,7 @@
         }
 
         $.ajax({
-            url: "/api/reviews",
+            url: "/review/api/reviews",
             method: "POST",
             data: formData,
             processData: false,
@@ -115,7 +115,7 @@
     function loadReviews() {
         console.log("Loading reviews for item:", itemId);
         $.ajax({
-            url: `/api/items/${itemId}/reviews`,
+            url: `/review/api/items/${itemId}/reviews`,
             method: "GET",
             success: function(reviews) {
                 console.log("Received reviews:", reviews);
@@ -261,7 +261,7 @@
         }
 
         $.ajax({
-            url: `/api/reviews/${reviewId}`,
+            url: `/review/api/reviews/${reviewId}`,
             method: "PUT",
             processData: false,
             contentType: false,
@@ -277,37 +277,6 @@
         });
     }
 
-    function deleteReview(reviewId) {
-        if (!confirm("리뷰를 삭제하시겠습니까?")) return;
-
-        $.ajax({
-            url: `/api/reviews/${reviewId}`,
-            method: "DELETE",
-            success: function() {
-                alert("리뷰가 삭제되었습니다.");
-                loadReviews();
-                updateItemRating();
-                $("#reviewContent").val("");
-                $("input[name='rating']").prop("checked", false);
-            },
-            error: function(xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    }
-
-    function updateItemRating() {
-        $.ajax({
-            url: `/api/items/${itemId}/rating`,
-            method: "GET",
-            success: function(response) {
-                updateAverageRating(response.averageRating, response.reviewCount);
-            },
-            error: function(xhr) {
-                console.error("Failed to update rating:", xhr);
-            }
-        });
-    }
     /*]]>*/
 </script>
 
@@ -812,7 +781,7 @@
         if (!confirm("리뷰를 삭제하시겠습니까?")) return;
 
         $.ajax({
-            url: `/api/reviews/${reviewId}`,
+            url: `/review/api/reviews/${reviewId}`,
             method: "DELETE",
             success: function() {
                 alert("리뷰가 삭제되었습니다.");
@@ -829,7 +798,7 @@
 
     function updateItemRating() {
         $.ajax({
-            url: `/api/items/${itemId}/rating`,
+            url: `/user/api/items/${itemId}/rating`,
             method: "GET",
             success: function(response) {
                 updateAverageRating(response.averageRating, response.reviewCount);

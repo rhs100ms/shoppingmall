@@ -47,7 +47,7 @@ public class MemberInfoController {
             }
 
             memberInfoService.updateMemberInfo(memberId, memberInfoCreateDto);
-            return "redirect:/";
+            return "redirect:/user";
         } catch (Exception e) {
             MemberInfo memberInfo = memberInfoService.findMemberInfo(memberId);
             model.addAttribute("memberInfo", MemberInfoResponseDto.of(memberInfo));

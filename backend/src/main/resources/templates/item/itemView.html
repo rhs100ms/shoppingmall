@@ -92,7 +92,7 @@
         }
 
         $.ajax({
-            url: "/api/reviews",
+            url: "/review/api/reviews",
             method: "POST",
             data: formData,
             processData: false,
@@ -115,7 +115,7 @@
     function loadReviews() {
         console.log("Loading reviews for item:", itemId);
         $.ajax({
-            url: `/api/items/${itemId}/reviews`,
+            url: `/review/api/items/${itemId}/reviews`,
             method: "GET",
             success: function(reviews) {
                 console.log("Received reviews:", reviews);
@@ -260,7 +260,7 @@
         }
 
         $.ajax({
-            url: `/api/reviews/${reviewId}`,
+            url: `/review/api/reviews/${reviewId}`,
             method: "PUT",
             data: formData,
             processData: false,
@@ -272,38 +272,6 @@
             },
             error: function(xhr) {
                 alert(xhr.responseText);
-            }
-        });
-    }
-
-    function deleteReview(reviewId) {
-        if (!confirm("Are you sure you want to delete this review?")) return;
-
-        $.ajax({
-            url: `/api/reviews/${reviewId}`,
-            method: "DELETE",
-            success: function() {
-                alert("Review has been deleted.");
-                loadReviews();
-                updateItemRating();
-                $("#reviewContent").val("");
-                $("input[name='rating']").prop("checked", false);
-            },
-            error: function(xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    }
-
-    function updateItemRating() {
-        $.ajax({
-            url: `/api/items/${itemId}/rating`,
-            method: "GET",
-            success: function(response) {
-                updateAverageRating(response.averageRating, response.reviewCount);
-            },
-            error: function(xhr) {
-                console.error("Failed to update rating:", xhr);
             }
         });
     }
@@ -347,7 +315,7 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #e3f2fd;">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/user}">Home</a>
+        <a class="navbar-brand" th:href="@{/admin}">Home</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
                 class="navbar-toggler-icon"></span></button>
@@ -355,14 +323,14 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
 
             </ul>
-            <form class="d-flex" method="get" th:action="@{/cart}">
-                <button class="btn btn-light btn-outline-secondary" type="submit">
+<!--            <form class="d-flex" method="get" th:action="@{/cart}">-->
+<!--                <button class="btn btn-light btn-outline-secondary" type="submit">-->
 
-                    <i class="bi-cart-fill me-1"></i>
-                    Cart
-                    <span class="badge bg-dark text-white ms-1 rounded-pill" th:text="${cartItemCount}">0</span>
-                </button>
-            </form>
+<!--                    <i class="bi-cart-fill me-1"></i>-->
+<!--                    Cart-->
+<!--                    <span class="badge bg-dark text-white ms-1 rounded-pill" th:text="${cartItemCount}">0</span>-->
+<!--                </button>-->
+<!--            </form>-->
         </div>
     </div>
 </nav>
@@ -459,7 +427,7 @@
                     </div>
                 </div>
 
-                <form th:action="@{/items/{itemId}/edit(itemId=${item.itemId})}"
+                <form th:action="@{/admin/items/{itemId}/edit(itemId=${item.itemId})}"
                       method="post" enctype="multipart/form-data"
                       class="edit-mode" style="display: none;">
                     <input type="hidden" name="redirectUrl" value="view">
@@ -504,16 +472,16 @@
                 </form>
 
                 <div class="d-flex mt-4">
-                    <button class="btn btn-outline-dark view-mode"
-                            type="button" th:onclick="initiateCheckout()">
-                        Buy Now
-                    </button>
+<!--                    <button class="btn btn-outline-dark view-mode"-->
+<!--                            type="button" th:onclick="initiateCheckout()">-->
+<!--                        Buy Now-->
+<!--                    </button>-->
 
                     &nbsp;
-                    <button class="btn btn-outline-dark flex-shrink-0 view-mode" type="button" th:onclick="addCart()">
-                        <i class="bi-cart-fill me-1"></i>
-                        Add to Cart
-                    </button>
+<!--                    <button class="btn btn-outline-dark flex-shrink-0 view-mode" type="button" th:onclick="addCart()">-->
+<!--                        <i class="bi-cart-fill me-1"></i>-->
+<!--                        Add to Cart-->
+<!--                    </button>-->
 
                     &nbsp;
                     <button class="btn btn-primary flex-shrink-0 view-mode"
@@ -521,7 +489,7 @@
                         Edit
                     </button>
                     &nbsp;
-                    <form th:action="@{/items/{itemId}/delete(itemId=${item.itemId})}" method="post" class="view-mode">
+                    <form th:action="@{/admin/items/{itemId}/delete(itemId=${item.itemId})}" method="post" class="view-mode">
                         <button class="btn btn-danger flex-shrink-0" type="submit">
                             Delete
                         </button>
@@ -863,7 +831,7 @@
         if (!confirm("Are you sure you want to delete this review?")) return;
 
         $.ajax({
-            url: `/api/reviews/${reviewId}`,
+            url: `/review/api/reviews/${reviewId}`,
             method: "DELETE",
             success: function() {
                 alert("Review has been deleted.");
@@ -880,7 +848,7 @@
 
     function updateItemRating() {
         $.ajax({
-            url: `/api/items/${itemId}/rating`,
+            url: `/admin/api/items/${itemId}/rating`,
             method: "GET",
             success: function(response) {
                 updateAverageRating(response.averageRating, response.reviewCount);

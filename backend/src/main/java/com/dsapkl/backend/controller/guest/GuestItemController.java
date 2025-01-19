@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/guest")
 @RequiredArgsConstructor
 public class GuestItemController {
 
@@ -62,7 +63,7 @@ public class GuestItemController {
 
         model.addAttribute("currentMemberId", member != null ? member.getId() : null);
 
-        return "item/itemView";
+        return "item/itemViewUser";
     }
 
 }

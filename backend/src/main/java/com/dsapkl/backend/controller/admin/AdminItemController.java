@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.admin;
 
+import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CategoryCode;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
@@ -18,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -87,10 +89,10 @@ public class AdminItemController {
      * 상품 상세 조회
      */
     @GetMapping("/{itemId}")
-    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
+    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
         Item item = itemService.findItem(itemId);
         if (item == null) {
-            return "redirect:/";
+            return "redirect:/admin";
         }
 
         List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
@@ -105,15 +107,14 @@ public class AdminItemController {
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 
-        Member member = SessionUtil.getMember(request);
-        if (member != null) {
-            List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+        if (user != null) {
+            List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
             int cartItemCount = cartItemListForm.size();
             model.addAttribute("cartItemListForm", cartItemListForm);
             model.addAttribute("cartItemCount", cartItemCount);
         }
 
-        model.addAttribute("currentMemberId", member != null ? member.getId() : null);
+        model.addAttribute("currentMemberId", user != null ? user.getId() : null);
 
         return "item/itemView";
     }
@@ -126,9 +127,7 @@ public class AdminItemController {
     @PostMapping("/{itemId}/delete")
     public String deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
-        return "redirect:/"; // 삭제 후 메인 페이지로 이동
-
-
+        return "redirect:/admin"; // 삭제 후 메인 페이지로 이동
     }
 
 
@@ -160,11 +159,11 @@ public class AdminItemController {
         // Referer 헤더를 통해 이전 페이지 URL 확인
         String referer = request.getHeader("Referer");
         // itemForm.html에서 온 요청인지 확인 (상품 관리 페이지에서의 수정)
-        if (referer != null && referer.contains("/items/" + itemId + "/edit")) {
-            return "redirect:/items/manage";
+        if (referer != null && referer.contains("/admin/items/" + itemId + "/edit")) {
+            return "redirect:/admin/items/manage";
         } else {
             // itemView.html에서의 수정
-            return "redirect:/items/" + itemId;
+            return "redirect:/admin/items/" + itemId;
         }
     }
 
@@ -243,7 +242,7 @@ public class AdminItemController {
             return "item/itemForm";
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "Product does not exist.");
-            return "redirect:/items/manage";
+            return "redirect:/admin/items/manage";
         }
     }
 

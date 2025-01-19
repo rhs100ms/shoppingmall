@@ -30,6 +30,7 @@ public class WebSecurityConfig {
             , "/members/**"        //회원가입
             , "/guest/**"
             , "/redirectByRole"
+            , "/review/**"
     };
 
     @Bean

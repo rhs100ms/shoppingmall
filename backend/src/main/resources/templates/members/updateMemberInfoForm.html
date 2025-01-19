@@ -17,7 +17,7 @@
     <div class="container">
         <h2 class="text-center mb-4">Manage Member Information</h2>
 
-        <form th:action="@{/api/member-info/update/{memberId}(memberId=${memberInfo.memberId})}"
+        <form th:action="@{/user/api/member-info/update/{memberId}(memberId=${memberInfo.memberId})}"
               th:object="${memberInfoCreateDto}"
               method="post">
 
@@ -131,7 +131,7 @@
                 <div class="col text-end">
                     <button type="submit" class="btn btn-dark">Save</button>
                     <button type="button" class="btn btn-secondary"
-                            th:onclick="|location.href='@{/}'|">Cancel</button>
+                            th:onclick="|location.href='@{/user}'|">Cancel</button>
                 </div>
             </div>
         </form>

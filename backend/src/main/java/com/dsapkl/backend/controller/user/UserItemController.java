@@ -1,5 +1,6 @@
 package com.dsapkl.backend.controller.user;
 
+import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
 import com.dsapkl.backend.entity.Item;
@@ -12,6 +13,7 @@ import com.dsapkl.backend.service.ItemService;
 import com.dsapkl.backend.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +36,12 @@ public class UserItemController {
      * 상품 상세 조회
      */
     @GetMapping("items/{itemId}")
-    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
+    public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+
         Item item = itemService.findItem(itemId);
+
         if (item == null) {
-            return "redirect:/";
+            return "redirect:/user";
         }
 
         List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
@@ -52,15 +56,14 @@ public class UserItemController {
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 
-        Member member = SessionUtil.getMember(request);
-        if (member != null) {
-            List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
+        if (user != null) {
+            List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
             int cartItemCount = cartItemListForm.size();
             model.addAttribute("cartItemListForm", cartItemListForm);
             model.addAttribute("cartItemCount", cartItemCount);
         }
 
-        model.addAttribute("currentMemberId", member != null ? member.getId() : null);
+        model.addAttribute("currentMemberId", user != null ? user.getId() : null);
 
         return "item/itemViewUser";
     }
