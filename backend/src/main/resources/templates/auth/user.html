@@ -122,7 +122,7 @@
             <!-- 사용자 환영 메시지 추가 -->
 
             <div class="d-flex align-items-center gap-3">
-                <span class="text-dark">Welcome <span class="fw-bold" th:text="${session.loginMember.name}">User</span>!</span>
+                <span class="text-dark">Welcome <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!</span>
 
                 <form th:action="@{/user/cart}" method="get">
                     <button class="btn btn-outline-dark rounded-pill nav-btn">
