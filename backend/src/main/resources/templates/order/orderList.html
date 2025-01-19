@@ -30,7 +30,7 @@
             return;
         }
         
-        var url = "/order/" + orderId + "/cancel"
+        var url = "/user/order/" + orderId + "/cancel"
         $.ajax({
             url : url,
             type: 'POST',
@@ -52,13 +52,13 @@
         }
 
         //1. 먼저 Stripe 환불 처리
-        fetch(`/api/refund?paymentIntentId=${paymentIntentId}`, {
+        fetch(`/user/api/refund?paymentIntentId=${paymentIntentId}`, {
             method: 'POST'
         })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    fetch(`/order/${orderId}/cancel`, {
+                    fetch(`/user/order/${orderId}/cancel`, {
                         method: 'POST'
                     })
                         .then(response => {

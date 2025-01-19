@@ -31,8 +31,11 @@ public class CheckoutController {
     private String secretKey;
 
     @PostMapping("/checkout/create-checkout-session-multi")
-    public Map<String, String> createCheckoutSession(@RequestBody DataDto request) throws StripeException, JsonProcessingException {
-
+    public Map<String, String> createCheckoutSession(@RequestBody DataDto request,
+                                                     @AuthenticationPrincipal AuthenticatedUser user) throws StripeException, JsonProcessingException {
+        if (user == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
         List<CartQueryDto> cartOrderList = request.getCartQueryDto();
 
         long totalAmount = cartOrderList.stream()
@@ -70,7 +73,7 @@ public class CheckoutController {
                         .addAllLineItem(lineItems)
                         .setMode(SessionCreateParams.Mode.PAYMENT) // 결제 모드
                         .putMetadata("orderInfo", new ObjectMapper().writeValueAsString(cartOrderList))
-                        .setSuccessUrl("http://localhost:8888/cart/success?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
+                        .setSuccessUrl("http://localhost:8888/user/cart/success?sessionId={CHECKOUT_SESSION_ID}") // 성공 시 리다이렉트 URL
                         .setCancelUrl("http://localhost:8888/members") // 취소 시 리다이렉트 URL
                         .build();
 
@@ -148,6 +151,7 @@ public class CheckoutController {
         }
         return response;
     }
+
 
 
 }
