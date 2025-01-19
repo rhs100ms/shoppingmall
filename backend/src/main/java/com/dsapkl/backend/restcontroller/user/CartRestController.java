@@ -2,6 +2,7 @@ package com.dsapkl.backend.restcontroller.user;
 
 import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CartForm;
+import com.dsapkl.backend.dto.CartItemDto;
 import com.dsapkl.backend.dto.CartItemForm;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.service.CartService;
@@ -24,15 +25,15 @@ public class CartRestController {
      *  장바구니 담기
      */
     @PostMapping("/cart")
-    public ResponseEntity<String> addCart(@ModelAttribute CartForm cartForm, @AuthenticationPrincipal AuthenticatedUser member) {
+    public ResponseEntity<String> addCart(@ModelAttribute CartItemDto cartItemDto, @AuthenticationPrincipal AuthenticatedUser user) {
 
 //        Member member = SessionUtil.getMember(request);
         //비로그인 회원은 장바구니를 가질 수 없다.
-        if (member == null) {
-            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        if (user == null) {
+            return new ResponseEntity<String>("Login is required.", HttpStatus.BAD_REQUEST);
         }
 
-        cartService.addCart(member.getId(), cartForm.getItemId(), cartForm.getCount());
+        cartService.addCart(cartItemDto, user.getEmail());
         return ResponseEntity.ok("success");
     }
 
