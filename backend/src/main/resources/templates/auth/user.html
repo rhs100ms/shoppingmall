@@ -140,7 +140,7 @@
                     </button>
                 </form>
 
-                <form th:action="@{/api/member-info/update/{memberId}(memberId=${#authentication.principal.id})}" method="get">
+                <form th:action="@{/user/api/member-info/update/{memberId}(memberId=${#authentication.principal.id})}" method="get">
                     <button class="btn btn-outline-dark rounded-pill nav-btn">
                         <i class="bi-person-fill me-1"></i>My Account
                     </button>
