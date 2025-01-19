@@ -85,6 +85,15 @@
         .nav-btn:hover {
             transform: translateY(-2px);
         }
+
+        /* 검색 버튼 호버 효과 추가 */
+        .search-btn {
+            transition: all 0.3s ease;
+        }
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -156,24 +165,25 @@
 </header>
 
 <!-- 검색 -->
-<div class="container px-4 px-lg-5 mt-3">
+<div class="container px-4 px-lg-5 mt-4">
     <div class="d-flex justify-content-end">
-        <form th:action="@{/}" method="get" class="d-flex" style="width: 600px;">
-            <select class="form-select me-2" name="category" style="width: 200px;">
-                <option value="">Select Category</option>
+        <form th:action="@{/}" method="get" class="d-flex gap-2" style="width: 600px;">
+            <select class="form-select rounded-pill" name="category" style="width: 200px;">
+                <option value="">All Categories</option>
                 <option value="APPAREL">Apparel</option>
                 <option value="ELECTRONICS">Electronics</option>
                 <option value="BOOKS">Books</option>
                 <option value="HOME_AND_KITCHEN">Home & Kitchen</option>
                 <option value="HEALTH_AND_BEAUTY">Health & Beauty</option>
             </select>
-            <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search products"
-                aria-label="Search"
+            <input 
+                class="form-control rounded-pill" 
+                type="search" 
+                placeholder="Search products" 
                 name="query" />
-            <button class="btn btn-outline-dark" style="width: 100px;" type="submit">Search</button>
+            <button class="btn btn-dark rounded-pill px-4 search-btn" type="submit">
+                Search
+            </button>
         </form>
     </div>
 </div>
@@ -181,25 +191,20 @@
 
 <!-- Section-->
 <section class="py-5">
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-
-            <!-- 아무 상품도 등록하지 않았을 경우 -->
-            <div th:if="${#lists.isEmpty(items)}">
-                <div class="card h-100">
-                    <!-- Product image-->
-                    <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                    <!-- Product details-->
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <!-- Product name-->
-                            <h5 class="fw-bolder">No products available</h5>
-                        </div>
+    <div class="container px-4 px-lg-5 mt-4">
+        <div class="row g-4 justify-content-center">
+            <!-- 빈 상품 리스트 -->
+            <div th:if="${#lists.isEmpty(items)}" class="col-12 text-center">
+                <div class="card border-0 shadow-sm h-100 p-4">
+                    <div class="card-body">
+                        <i class="bi bi-bag-x display-1 text-muted mb-3"></i>
+                        <h5 class="fw-bold text-muted">No Products Available</h5>
                     </div>
                 </div>
             </div>
 
-            <div class="col mb-5" th:each="item, iterStat : ${items}"
+            <!-- 상품 카드 -->
+            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="item, iterStat : ${items}"
                  th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore},
                           rank=${iterStat.index + 1}">
                 <div class="card h-100 product-card border-0"
@@ -238,7 +243,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
