@@ -2,31 +2,35 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
+<head>
+    <th:block th:replace="members/common-styles :: memberStyles"></th:block>
+</head>
 
-<div layout:fragment="content">
-  <div class="py-5 text-center">
-    <h2>Email Search Result</h2>
-  </div>
-  <div class="col-md-4 container">
-    <div class="alert alert-success" role="alert">
-      <h4 class="alert-heading">Email Found!</h4>
-      <p>Your email address is <strong th:text="${foundEmail}"></strong>.</p>
+<div layout:fragment="content" class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <h2 class="mb-4">Email Search Result</h2>
+                    <div class="alert alert-success mb-4" role="alert">
+                        <h4 class="alert-heading mb-3">Email Found!</h4>
+                        <p class="mb-0">Your email address is <strong th:text="${foundEmail}"></strong></p>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col">
+                            <button class="btn btn-dark w-100 nav-btn"
+                                    th:onclick="|location.href='@{/members}'|"
+                                    type="button">Login</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-dark w-100 nav-btn"
+                                    th:onclick="|location.href='@{/}'|"
+                                    type="button">Main Page</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <button class="w-100 btn btn-primary btn-lg"
-                onclick="location.href='members/loginForm'"
-                th:onclick="|location.href='@{/members}'|"
-                type="button">Login</button>
-      </div>
-      <div class="col">
-        <button class="w-100 btn btn-secondary btn-lg"
-                onclick="location.href='/'"
-                th:onclick="|location.href='@{/}'|"
-                type="button">Main Page</button>
-      </div>
-    </div>
-  </div>
 </div>
-
 </html>
