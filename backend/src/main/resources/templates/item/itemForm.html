@@ -21,7 +21,7 @@
         <h2 th:text="${itemForm.itemId == null ? 'Add Product' : 'Edit Product'}">Add Product</h2>
     </div>
     <!-- th:action 생략 => items/new 현재 URL-->
-    <form th:action="${itemForm.itemId != null ? '/items/' + itemForm.itemId + '/edit' : '/items/new'}"
+    <form th:action="${itemForm.itemId != null ? '/admin/items/' + itemForm.itemId + '/edit' : '/admin/items/new'}"
           th:object="${itemForm}" method="post" enctype="multipart/form-data">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"

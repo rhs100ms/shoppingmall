@@ -52,6 +52,10 @@ public class OrderService {
                 .findById(memberId).orElseGet(() -> null);
         int orderPrice = findItem.getPrice() * count;
 
+        // sales_count 업데이트
+
+        findItem.increaseSalesCount(count);
+
         OrderItem orderItem = OrderItem.createOrderItem(count, orderPrice, findItem);
         orderItemList.add(orderItem);
 
@@ -112,6 +116,9 @@ public class OrderService {
         for (CartForm cartForm : cartOrderDtoList) {
             Item findItem = itemRepository.findById(cartForm.getItemId()).orElse(null);
             int orderPrice = findItem.getPrice() * cartForm.getCount();
+
+            // sales_count 업데이트
+            findItem.increaseSalesCount(cartForm.getCount());
 
             OrderItem orderItem = OrderItem.createOrderItem(cartForm.getCount(), orderPrice, findItem);
             orderItemList.add(orderItem);
@@ -182,7 +189,7 @@ public class OrderService {
     private void updateClusterItemPreference(Long memberId, Item item) {
         try {
             // MemberInfo에서 cluster_id 가져오기
-            MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+            MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
                     .orElseThrow(() -> new IllegalArgumentException("Member information not found."));
 
             Cluster cluster = memberInfo.getCluster_id();

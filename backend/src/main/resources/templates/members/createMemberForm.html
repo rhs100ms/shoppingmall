@@ -32,7 +32,7 @@
                             return;
                         }
                         
-                        fetch('/api/members/check-email?email=' + encodeURIComponent(email))
+                        fetch('/members/api/members/check-email?email=' + encodeURIComponent(email))
                             .then(response => response.json())
                             .then(data => {
                                 const resultDiv = document.querySelector('#emailResult');
@@ -52,7 +52,7 @@
                     return;
                 }
 
-                fetch('/api/members/check-phone?phoneNumber=' + encodeURIComponent(phone))
+                fetch('/members/api/members/check-phone?phoneNumber=' + encodeURIComponent(phone))
                     .then(response => response.json())
                     .then(data => {
                         const resultDiv = document.querySelector('#phoneResult');
@@ -170,7 +170,7 @@
 
 
         <select name="role" id="role" class="formcontrol">
-            <option value="">Seller/Buyer Registration</option>
+            <option value="">Buyer Registration</option>
             <option th:each="roleCode : ${roleCodes}"
                     th:value="${roleCode.code}"
                     th:text="${roleCode.displayName}" />

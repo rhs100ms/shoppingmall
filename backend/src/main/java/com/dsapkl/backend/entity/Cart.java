@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,11 +21,18 @@ public class Cart {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartItem> cartItems = new ArrayList<>();
+
     private Cart(Member member) {
         this.member = member;
     }
 
     public static Cart createCart(Member member) {
         return new Cart(member);
+    }
+
+    public List<CartItem> getCartItems() {
+        return cartItems;
     }
 }

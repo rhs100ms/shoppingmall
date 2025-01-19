@@ -90,7 +90,7 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #e3f2fd;">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/}">Home</a>
+        <a class="navbar-brand" th:href="@{/user}">Home</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
@@ -104,6 +104,21 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
             </div>
 
+            <!-- Empty order list message -->
+            <div th:if="${#lists.isEmpty(orderDetails)}" class="container py-5 h-100">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-lg-10 col-xl-8">
+                        <div class="card text-center p-5" style="border-radius: 10px;">
+                            <i class="bi bi-cart-x" style="font-size: 4rem; color: #36808f;"></i>
+                            <h3 class="mt-4" style="color: #36808f;">No Orders Found</h3>
+                            <p class="text-muted mb-4">You haven't made any purchases yet.</p>
+                            <a th:href="@{/}" class="btn btn-outline-dark" style="width: 200px; margin: 0 auto;">
+                                Start Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div th:each="order : ${orderDetails}"   class="container py-5 h-100">
                 <div class="row d-flex justify-content-center align-items-center h-100">

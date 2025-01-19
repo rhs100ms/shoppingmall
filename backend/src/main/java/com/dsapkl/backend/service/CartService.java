@@ -10,6 +10,7 @@ import com.dsapkl.backend.repository.ItemRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.repository.query.CartQueryRepository;
+import com.dsapkl.backend.dto.CartItemDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,28 +54,25 @@ public class CartService {
     /**
      * 장바구니 담기(추가)
      */
-    public Long addCart(Long memberId, Long itemId, int count) {
+    public Long addCart(CartItemDto cartItemDto, String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        Cart cart = cartRepository.findByMemberId(member.getId())
+            .orElseGet(() -> Cart.createCart(member));
+        
+        Item item = itemRepository.findById(cartItemDto.getItemId())
+            .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
-        //엔티티 조회
-        Member member = memberRepository.findById(memberId).get();
-        Cart cart = cartRepository.findByMemberId(memberId).orElseGet(() -> null);
-        Item item = itemRepository.findById(itemId).get();
+        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId())
+            .orElse(null);
 
-        //장바구니안에 장바구니 상품 조회
-        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), item.getId()).orElse(null);
-
-        //장바구니 상품이 없으면 생성
         if (cartItem == null) {
-            cartItem = CartItem.createCartItem(count, cart, item);
-            CartItem savedCartItem = cartItemRepository.save(cartItem);
-//            log.info("cartItemId={}", cartItem.getId());
-            return savedCartItem.getId();
+            cartItem = CartItem.createCartItem(cartItemDto.getCount(), cart, item);
+            return cartItemRepository.save(cartItem).getId();
         }
 
-        //장바구니 상품이 존재하면 수량 변경 (Dirty checking)
-        cartItem.changeCount(count);
+        cartItem.changeCount(cartItemDto.getCount());
         return cartItem.getId();
-
     }
 
     /**
@@ -83,6 +81,14 @@ public class CartService {
     public void deleteCartItem(Long itemId) {
         CartItem findCartItem = cartItemRepository.findById(itemId).orElse(null);
         cartItemRepository.delete(findCartItem);
+    }
+
+    public int getCartItemCount(String email) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        return cartRepository.findByMemberId(member.getId())
+            .orElse(Cart.createCart(member))
+            .getCartItems().size();
     }
 
 }

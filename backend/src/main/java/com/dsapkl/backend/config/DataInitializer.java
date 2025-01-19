@@ -7,6 +7,7 @@ import com.dsapkl.backend.entity.Role;
 import com.dsapkl.backend.repository.CartRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,11 +15,12 @@ public class DataInitializer implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public DataInitializer(MemberRepository memberRepository, CartRepository cartRepository) {
+    public DataInitializer(MemberRepository memberRepository, CartRepository cartRepository, BCryptPasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.cartRepository = cartRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
             Member admin = new Member();
             admin.setName("Admin");
             admin.setEmail("admin@example.com");
-            admin.setPassword("1231234");
+            admin.setPassword(passwordEncoder.encode("1231234"));
             admin.setAddress(address);
             admin.setRole(Role.ADMIN);
             admin.setBirthDate("19800101");

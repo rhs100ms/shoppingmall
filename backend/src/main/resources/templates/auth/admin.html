@@ -18,18 +18,18 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/}">PKLshop</a>
+        <a class="navbar-brand" th:href="@{/admin}">PKLshop</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <!--                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>-->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Product Menu</a>
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">상품 메뉴</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" th:href="@{/items/new}">Add Product</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/items/new}">상품 등록</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" th:href="@{/items/manage}">Manage Products</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/items/manage}">상품 관리</a></li>
                     </ul>
                 </li>
             </ul>
@@ -38,34 +38,33 @@
             <form th:action="@{/logout}" class="d-flex" method="post">
                 <button class="btn btn-outline-dark"
                         type="submit">
-                    Logout
+                    로그아웃
                 </button>
             </form>
             &nbsp;
-            <form th:action="@{/cart}" class="d-flex" method="get">
-                <button class="btn btn-outline-dark" type="submit">
-                    <i class="bi-cart-fill me-1"></i>
-                    Cart
-                    <span th:text="${{cartItemCount != null ? cartItemCount : 0}}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                </button>
-            </form>
+<!--            <form th:action="@{/templates/cart}" class="d-flex" method="get">-->
+<!--                <button class="btn btn-outline-dark" type="submit">-->
+<!--                    <i class="bi-cart-fill me-1"></i>-->
+<!--                    Cart-->
+<!--                    <span th:text="${{cartItemCount != null ? cartItemCount : 0}}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
+<!--                </button>-->
+<!--            </form>-->
 
-            <form th:action="@{/orders/success}" class="d-flex" method="get">
-                <button class="btn btn-outline-dark" type="submit">
-                    <i class="bi-cart-fill me-1"></i>
-                    Order History
-                    <span th:text="${orderCount}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                </button>
-            </form>
+<!--            <form th:action="@{/orders/success}" class="d-flex" method="get">-->
+<!--                <button class="btn btn-outline-dark" type="submit">-->
+<!--                    <i class="bi-cart-fill me-1"></i>-->
+<!--                    구매 내역-->
+<!--                    <span th:text="${orderCount}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
+<!--                </button>-->
+<!--            </form>-->
 
-            <!-- 회원 정보 수정 버튼 추가 -->
-            <form th:action="@{/api/member-info/update/{memberId}(memberId=${session.loginMember.id})}" 
-                  class="d-flex" method="get">
-                <button class="btn btn-outline-dark" type="submit">
-                    <i class="bi-person-fill me-1"></i>
-                    My Account
-                </button>
-            </form>
+<!--            <form th:action="@{/api/member-info/update/{memberId}(memberId=${#authentication.principal.email})}"-->
+<!--                  class="d-flex" method="get">-->
+<!--                <button class="btn btn-outline-dark" type="submit">-->
+<!--                    <i class="bi-person-fill me-1"></i>-->
+<!--                    회원 정보-->
+<!--                </button>-->
+<!--            </form>-->
 
         </div>
     </div>
@@ -75,7 +74,7 @@
     <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
             <h1 class="display-4 fw-bolder">PKLshop</h1>
-            <p class="lead fw-normal text-white-50 mb-0">Welcome to PKLshop</p>
+            <p class="lead fw-normal text-white-50 mb-0">쇼핑몰에 오신것을 환영합니다.</p>
         </div>
     </div>
 </header>
@@ -83,22 +82,22 @@
 <!-- 검색 -->
 <div class="container px-4 px-lg-5 mt-3">
     <div class="d-flex justify-content-end">
-        <form th:action="@{/}" method="get" class="d-flex" style="width: 600px;">
-            <select class="form-select me-2" name="category" style="width: 200px;">
-                <option value="">Select Category</option>
-                <option value="APPAREL">Apparel</option>
-                <option value="ELECTRONICS">Electronics</option>
-                <option value="BOOKS">Books</option>
-                <option value="HOME_AND_KITCHEN">Home & Kitchen</option>
-                <option value="HEALTH_AND_BEAUTY">Health & Beauty</option>
+        <form th:action="@{/admin}" method="get" class="d-flex" style="width: 600px;">
+            <select class="form-select me-2" name="category" style="width: 150px;">
+                <option value="">카테고리 선택</option>
+                <option value="APPAREL">의류</option>
+                <option value="ELECTRONICS">전자제품</option>
+                <option value="BOOKS">서적</option>
+                <option value="HOME_AND_KITCHEN">가구&가전</option>
+                <option value="HEALTH_AND_BEAUTY">건강&미용</option>
             </select>
             <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search products"
-                aria-label="Search"
-                name="query" />
-            <button class="btn btn-outline-dark" style="width: 100px;" type="submit">Search</button>
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="검색어 입력"
+                    aria-label="Search"
+                    name="query" />
+            <button class="btn btn-outline-dark" style="width: 100px;" type="submit">검색</button>
         </form>
     </div>
 </div>
@@ -118,7 +117,7 @@
                     <div class="card-body p-4">
                         <div class="text-center">
                             <!-- Product name-->
-                            <h5 class="fw-bolder">No products available</h5>
+                            <h5 class="fw-bolder">상품 등록 대기중</h5>
                         </div>
                     </div>
                 </div>
@@ -130,15 +129,16 @@
                     <!-- Product image -->
                     <div style="height: 300px; overflow: hidden;">
                         <div th:if="${item.getItemImageList() != null and item.getItemImageList().size() > 0}">
-                            <div th:if="${#strings.substring(item.getItemImageList().get(0).getStoreName(), 0, 4) == 'http'}">
-                                <img class="card-img-top" style="object-fit: cover; height: 100%; width: 100%;" th:src="${item.getItemImageList().get(0).getStoreName()}" alt="..." />
-                            </div>
-                            <div th:if="${#strings.substring(item.getItemImageList().get(0).getStoreName(), 0, 4) != 'http'}">
-                                <img class="card-img-top" style="object-fit: cover; height: 100%; width: 100%;" th:src="|/images/${item.getItemImageList().get(0).getStoreName()}|" alt="..." />
-                            </div>
+                            <img class="card-img-top product-image"
+                                 th:src="|/images/${item.getItemImageList().get(0).getStoreName()}|"
+                                 alt="..."
+                                 style="width: 100%; height: 300px; object-fit: contain; background-color: #f8f9fa;" />
                         </div>
                         <div th:if="${item.getItemImageList() == null or item.getItemImageList().isEmpty()}">
-                            <p>이미지가 없습니다.</p>
+                            <img class="card-img-top product-image"
+                                 src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
+                                 alt="..."
+                                 style="width: 100%; height: 300px; object-fit: contain; background-color: #f8f9fa;" />
                         </div>
                     </div>
 
@@ -148,7 +148,7 @@
                             <!-- Product name -->
                             <h5 class="fw-bolder" th:text="${item.getName()}">Fancy Product</h5>
                             <!-- Product price -->
-                            <span th:text="${#numbers.formatInteger(item.getPrice(), 0, 'COMMA')}">$40.00 - $80.00</span>KRW
+                            <span th:text="${#numbers.formatInteger(item.getPrice(), 0, 'COMMA')}">$40.00 - $80.00</span>원
                         </div>
                     </div>
 
