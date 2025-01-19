@@ -3,45 +3,48 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
-  <th:block layout:fragment="script">
-    <script th:inline="javascript">
-      var error = [[${errorMessage}]];
-      if(error != null){
-        alert(error);
-      }
-    </script>
-  </th:block>
+    <th:block th:replace="members/common-styles :: memberStyles"></th:block>
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            var error = [[${errorMessage}]];
+            if(error != null){
+                alert(error);
+            }
+        </script>
+    </th:block>
 </head>
-<div layout:fragment="content">
-  <div class="container">
+<div layout:fragment="content" class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-md-6">
-        <ul class="nav nav-tabs mb-4">
-          <li class="nav-item">
-            <a class="nav-link active" href="#" th:href="@{/members/find-email}">Find Email</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" th:href="@{/members/find-password}">Find Password</a>
-          </li>
-        </ul>
-        <form th:action="@{/members/find-email}" method="post">
-          <div class="mb-3">
-            <label for="birthDate" class="form-label">Date of Birth (YYYYMMDD)</label>
-            <input type="text" class="form-control" id="birthDate" name="birthDate"
-                   pattern="\d{8}" maxlength="8" placeholder="e.g., 19990101" required>
-          </div>
-          <div class="mb-3">
-            <label for="phoneNumber" class="form-label">Verified Phone Number</label>
-            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
-                   placeholder="e.g., 010-1234-5678" required>
-          </div>
-          <div class="d-grid gap-2">
-            <button class="btn btn-primary btn-lg" type="submit">Confirm</button>
-            <a class="btn btn-secondary btn-lg" th:href="@{/members/login}">Login</a>
-          </div>
-        </form>
-      </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/members/find-email}">Find Email</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/members/find-password}">Find Password</a>
+                        </li>
+                    </ul>
+                    <form th:action="@{/members/find-email}" method="post">
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label">Date of Birth (YYYYMMDD)</label>
+                            <input type="text" class="form-control" id="birthDate" name="birthDate"
+                                   pattern="\d{8}" maxlength="8" placeholder="e.g., 19990101" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Verified Phone Number</label>
+                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
+                                   placeholder="e.g., 010-1234-5678" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-dark nav-btn" type="submit">Confirm</button>
+                            <a class="btn btn-outline-dark nav-btn" th:href="@{/members/login}">Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 </html>

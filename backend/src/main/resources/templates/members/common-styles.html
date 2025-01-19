@@ -1,0 +1,160 @@
+<style th:fragment="memberStyles">
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .nav-btn {
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .nav-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        height: auto;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.05);
+        border-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .card {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    
+    .btn {
+        border-radius: 50rem;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-dark {
+        background-color: #212529;
+        border-color: #212529;
+    }
+    .btn-dark:hover {
+        background-color: #1a1e21;
+        border-color: #1a1e21;
+    }
+    
+    .btn-outline-dark {
+        color: #212529;
+        border-color: #212529;
+    }
+    .btn-outline-dark:hover {
+        background-color: #212529;
+        color: white;
+    }
+    
+    .letter-spacing {
+        letter-spacing: 0.1em;
+    }
+    
+    .field-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        padding: 1rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .nav-tabs .nav-link.active {
+        color: #212529;
+        border-bottom: 2px solid #212529;
+        font-weight: 600;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #212529;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #212529;
+    }
+    
+    .input-group .btn {
+        padding: 0.75rem 1.5rem;
+        border-top-right-radius: 50rem;
+        border-bottom-right-radius: 50rem;
+        font-weight: 500;
+    }
+    
+    .input-group .form-control {
+        border-top-left-radius: 50rem;
+        border-bottom-left-radius: 50rem;
+    }
+    
+    .check-btn {
+        color: #212529;
+        background-color: #fff;
+        border-color: #dee2e6;
+        min-width: 140px;
+    }
+    .check-btn:hover {
+        background-color: #212529;
+        color: #fff;
+        border-color: #212529;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Select box 스타일 */
+    .input-group-text {
+        border-top-right-radius: 50rem;
+        border-bottom-right-radius: 50rem;
+        border-left: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group-text:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .input-group-text .bi {
+        color: #6c757d;
+    }
+    
+    select.form-control {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 2rem;
+    }
+    
+    .input-group:hover .input-group-text .bi {
+        color: #212529;
+    }
+    
+    .input-group select.form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style> 

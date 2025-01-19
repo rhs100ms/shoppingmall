@@ -2,9 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<!--      th:replace="~{layout/base :: layout(~{::section})}"-->
-
 <head>
+    <th:block th:replace="members/common-styles :: memberStyles"></th:block>
     <th:block layout:fragment="script">
         <script th:inline="javascript">
             var error = [[${errorMessage}]];
@@ -13,55 +12,51 @@
             }
         </script>
     </th:block>
-
 </head>
 
-<!--<body>-->
-<!--<section>-->
-<div layout:fragment="content">
-<!--    <div class="py-5 text-center">-->
-<!--    </div>-->
-    <form th:action th:object="${loginForm}" method="post">
-        <div th:if="${#fields.hasGlobalErrors()}">
-            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-               th:text="${err}">Global Error Message</p>
-        </div>
-        <div>
-            <label for="email">&nbsp Email</label>
-            <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="Please enter it in e-mail format"
-                   th:errorclass="field-error">
-            <div class="field-error" th:errors="*{email}" />
-        </div>
-        <br>
-        <div>
-            <label for="password">&nbsp Password &nbsp&nbsp</label>
-            <input type="password" id="password" th:field="*{password}" placeholder="Enter password"
-                   class="form-control"
-                   th:errorclass="field-error">
-            <div class="field-error" th:errors="*{password}" />
-        </div>
+<div layout:fragment="content" class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Login</h2>
+                    <form th:action th:object="${loginForm}" method="post">
+                        <div th:if="${#fields.hasGlobalErrors()}">
+                            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
+                               th:text="${err}">Global Error Message</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" id="email" th:field="*{email}" 
+                                   class="form-control" 
+                                   placeholder="Please enter it in e-mail format"
+                                   th:errorclass="field-error">
+                            <div class="field-error" th:errors="*{email}" />
+                        </div>
 
-        <div class="text-end mt-2">
-            <a th:href="@{/members/find-email}" class="text-decoration-none me-2">Find Email</a> |
-            <a th:href="@{/members/find-password}" class="text-decoration-none ms-2">Find Password</a>
-        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" th:field="*{password}" 
+                                   class="form-control"
+                                   placeholder="Enter password"
+                                   th:errorclass="field-error">
+                            <div class="field-error" th:errors="*{password}" />
+                        </div>
 
-        <hr class="my-4">
-        <div class="row">
-            <div class="col" style="text-align: center">
-                <button class="w-100 btn btn-primary btn-lg" type="submit">
-                    Login</button>
-            </div>
-            <div class="col" style="text-align: center">
-                <button class="w-100 btn btn-secondary btn-lg"
-                        onclick="location.href='home.html'"
-                        th:onclick="|location.href='@{/members/new}'|"
-                        type="button">Sign Up</button>
+                        <div class="text-end mb-3">
+                            <a th:href="@{/members/find-email}" class="text-decoration-none me-2">Find Email</a> |
+                            <a th:href="@{/members/find-password}" class="text-decoration-none ms-2">Find Password</a>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark nav-btn">Login</button>
+                            <button type="button" class="btn btn-outline-dark nav-btn"
+                                    th:onclick="|location.href='@{/members/new}'|">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </form>
-    <br><br><br>
-</div> <!-- /container -->
-<!--</section>-->
-<!--</body>-->
+    </div>
+</div>
 </html>
