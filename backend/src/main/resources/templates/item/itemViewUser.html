@@ -286,7 +286,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #e3f2fd;">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand" th:href="@{/user}">PKLshop</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler btn btn-light btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
                 class="navbar-toggler-icon"></span></button>
 
@@ -294,22 +294,25 @@
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4"></ul>
 
-            <form th:action="@{/user/cart}" method="get">
-                <button class="btn btn-light btn-outline-secondary rounded-pill nav-btn">
-                    <i class="bi-cart-fill me-1"></i>Cart
-                    <span class="badge bg-dark text-white ms-1 rounded-pill"
-                          th:text="${{cartItemCount != null ? cartItemCount : 0}}">0</span>
-                </button>
-            </form>
+            <div class="d-flex flex-row justify-content-end w-100">
 
-            <form th:action="@{/user/orders/success}" method="get" class="ms-3">
-                <button class="btn btn-light btn-outline-secondary rounded-pill nav-btn">
-                    <i class="bi-clock-history me-1"></i>Orders
-                    <span class="badge bg-dark text-white ms-1 rounded-pill"
-                          th:text="${orderCount != null ? orderCount : 0}">0</span>
-                </button>
-            </form>
+                <form th:action="@{/user/cart}" method="get">
+                    <button class="btn btn-light btn-outline-secondary rounded-pill nav-btn">
+                        <i class="bi-cart-fill me-1"></i>Cart
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"
+                              th:text="${{cartItemCount != null ? cartItemCount : 0}}">0</span>
+                    </button>
+                </form>
 
+                <form th:action="@{/user/orders/success}" method="get" class="ms-3">
+                    <button class="btn btn-light btn-outline-secondary rounded-pill nav-btn">
+                        <i class="bi-clock-history me-1"></i>Orders
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"
+                              th:text="${orderCount != null ? orderCount : 0}">0</span>
+                    </button>
+                </form>
+
+            </div>
         </div>
 
     </div>
@@ -549,9 +552,33 @@
 <!--<script src="js/scripts.js"></script>-->
 
 <style>
-    .navbar-dark, .bg-dark {
-        /*background-color: #e3f2fd !important;*/
+    /* navbar-toggler 커스텀 스타일 */
+    .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background-color: #f8f9fa !important;
+        padding: 0.25rem 0.75rem !important;
+        border-radius: 0.25rem !important;
     }
+
+    .navbar-toggler:hover {
+        background-color: #6c757d !important; /* hover 시 더 어두운 배경색으로 변경 */
+        border-color: #6c757d !important;
+        transform: none; !important;
+    }
+
+    .navbar-toggler .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    }
+
+    /* hover 시 3선 아이콘 색상을 흰색으로 변경 */
+    .navbar-toggler:hover .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none !important;
+    }
+
     .preview-images {
         display: flex;
         flex-wrap: wrap;
