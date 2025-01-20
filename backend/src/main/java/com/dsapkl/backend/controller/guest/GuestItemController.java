@@ -38,7 +38,7 @@ public class GuestItemController {
     public String itemView(@PathVariable(name = "itemId") Long itemId, Model model, HttpServletRequest request) {
         Item item = itemService.findItem(itemId);
         if (item == null) {
-            return "redirect:/";
+            return "redirect:/guest";
         }
 
         List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
@@ -63,7 +63,7 @@ public class GuestItemController {
 
         model.addAttribute("currentMemberId", member != null ? member.getId() : null);
 
-        return "item/itemViewUser";
+        return "item/itemViewGuest";
     }
 
 }
