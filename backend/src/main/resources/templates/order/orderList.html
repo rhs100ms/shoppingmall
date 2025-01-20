@@ -123,82 +123,91 @@
 
 <section class="py-5 bg-light">
     <div class="container">
-        <!-- Empty order list message -->
-        <div th:if="${#lists.isEmpty(orderDetails)}" class="text-center py-5">
-            <div class="card shadow-sm border-0 p-5">
-                <div class="card-body">
-                    <i class="bi bi-cart-x display-1 text-muted mb-4"></i>
-                    <h3 class="fw-bold mb-3">No Orders Found</h3>
-                    <p class="text-muted mb-4">You haven't made any purchases yet.</p>
-                    <a th:href="@{/user}" class="btn btn-outline-dark px-4">
-                        Start Shopping
-                    </a>
-                </div>
-            </div>
-        </div>
 
-        <!-- Order List -->
-        <div th:each="order : ${orderDetails}" class="mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0" th:text="${order.orderDate} + ' Order'"></h5>
-                        <span class="badge bg-primary"
-                              th:text="${order.orderStatus.name() == 'ORDER' ? 'Processing' : 'Cancelled'}">
-                        </span>
+
+            <!-- Empty order list message -->
+            <div th:if="${#lists.isEmpty(orderDetails)}" class="text-center py-5">
+                <div class="card shadow-sm border-0 p-5">
+                    <div class="card-body">
+                        <i class="bi bi-cart-x display-1 text-muted mb-4"></i>
+                        <h3 class="fw-bold mb-3">No Orders Found</h3>
+                        <p class="text-muted mb-4">You haven't made any purchases yet.</p>
+                        <a th:href="@{/user}" class="btn btn-outline-dark px-4">
+                            Start Shopping
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <div class="card-body">
-                    <!-- Order Items -->
-                    <div th:each="orderItem : ${order.getOrderItemDtoList()}" class="mb-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-2">
-                                <img th:src="|/images/${orderItem.getImgUrl()}|"
-                                     class="img-fluid rounded" alt="Product Image"
-                                     style="width: 100px; height: 100px; object-fit: contain;">
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="mb-1" th:text="${orderItem.itemName}"></h6>
-                                <p class="text-muted small mb-0" th:text="'Quantity: ' + ${orderItem.count}"></p>
-                            </div>
-                            <div class="col-md-3">
-                                <p class="mb-0 fw-bold"
-                                   th:text="${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')} + ' KRW'">
-                                </p>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="progress" style="height: 5px;">
-                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 25%"></div>
-                                </div>
-                                <div class="d-flex justify-content-between mt-1">
-                                    <small class="text-muted">Ordered</small>
-                                    <small class="text-muted">Shipped</small>
-                                    <small class="text-muted">Delivered</small>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Order List -->
+            <div th:each="order : ${orderDetails}" class="mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
 
-                    <!-- Order Summary -->
-                    <div class="border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">Total Amount</h6>
-                                <h5 class="mb-0"
-                                    th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + ' KRW'">
-                                </h5>
-                            </div>
-                            <div th:if="${order.orderStatus.name() == 'ORDER'}">
-                                <button class="btn btn-outline-dark"
-                                        th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
-                                    Cancel Order
-                                </button>
+                            <h5 class="mb-0" th:text="${order.orderDate} + ' Order'"></h5>
+                            <span class="badge bg-primary"
+                                  th:text="${order.orderStatus.name() == 'ORDER' ? 'Processing' : 'Cancelled'}">
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- Order Items -->
+                        <div th:each="orderItem : ${order.getOrderItemDtoList()}" class="mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img th:src="|/images/${orderItem.getImgUrl()}|"
+                                         class="img-fluid rounded" alt="Product Image"
+                                         style="width: 100px; height: 100px; object-fit: contain;">
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1" th:text="${orderItem.itemName}"></h6>
+                                    <p class="text-muted small mb-0" th:text="'Quantity: ' + ${orderItem.count}"></p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0 fw-bold"
+                                       th:text="${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')} + ' KRW'">
+                                    </p>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 25%"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <small class="text-muted">Ordered</small>
+                                        <small class="text-muted">Shipped</small>
+                                        <small class="text-muted">Delivered</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <!--Order Summary-->
+                        <div class="border-top pt-3 mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Total Amount</h6>
+                                    <h5 class="mb-0"
+                                        th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + ' KRW'">
+                                    </h5>
+                                </div>
+                                <div th:if="${order.orderStatus.name() == 'ORDER'}">
+                                    <button class="btn btn-outline-dark"
+                                            th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
+                                        Cancel Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-        </div>
+
+
     </div>
 </section>
 

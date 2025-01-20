@@ -91,6 +91,13 @@ public class CartService {
             .getCartItems().size();
     }
 
+    public List<CartItem> getCartItems(Long memberId) {
 
+        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+        List<CartItem> cartItems = cart.getCartItems();
+
+        return cartItems;
+    }
 
 }

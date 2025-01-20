@@ -3,9 +3,12 @@ package com.dsapkl.backend.controller.user;
 import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CartForm;
 import com.dsapkl.backend.dto.CheckoutRequest;
+import com.dsapkl.backend.entity.CartItem;
 import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.OrderStatus;
+import com.dsapkl.backend.repository.query.CartQueryDto;
+import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.CheckoutService;
 import com.dsapkl.backend.service.OrderService;
 import com.dsapkl.backend.util.SessionUtil;
@@ -39,9 +42,15 @@ public class OrderController {
 
     private final CheckoutService checkoutService;
     private final OrderService orderService;
+    private final CartService cartService;
 
     @GetMapping("/orders")
     public String findOrder(OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+
+        List<CartItem> cartItems = cartService.getCartItems(user.getId());
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("cartItemCount", cartItems.size());
 
         List<OrderDto> findOrders = checkoutService.getOrderDetails(null, status, model, user);
         model.addAttribute("orderDetails", findOrders);
@@ -50,6 +59,7 @@ public class OrderController {
         long orderCount = orderDetail.stream()
                 .filter(order -> order.getOrderStatus() == OrderStatus.ORDER)
                 .count();
+
         model.addAttribute("orderCount", orderCount);
 
         return "order/orderList";

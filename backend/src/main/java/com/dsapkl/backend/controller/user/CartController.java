@@ -42,8 +42,12 @@ public class CartController {
 
     private final CheckoutService checkoutService;
     private final CartService cartService;
+    private final OrderService orderService;
+
     @GetMapping("/cart")
     public String cartView(Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
+
+
         List<CartQueryDto> cartViews = checkoutService.cartViewDetails(null, model, user);
         model.addAttribute("cartItemListForm", cartViews);
 
