@@ -38,11 +38,20 @@ import java.util.Map;
 public class OrderController {
 
     private final CheckoutService checkoutService;
+    private final OrderService orderService;
 
     @GetMapping("/orders")
     public String findOrder(OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+
         List<OrderDto> findOrders = checkoutService.getOrderDetails(null, status, model, user);
         model.addAttribute("orderDetails", findOrders);
+
+        List<OrderDto> orderDetail = orderService.findOrdersDetail(user.getId(), status);
+        long orderCount = orderDetail.stream()
+                .filter(order -> order.getOrderStatus() == OrderStatus.ORDER)
+                .count();
+        model.addAttribute("orderCount", orderCount);
+
         return "order/orderList";
     }
 

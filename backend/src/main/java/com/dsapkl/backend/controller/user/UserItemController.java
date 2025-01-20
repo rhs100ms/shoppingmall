@@ -56,14 +56,15 @@ public class UserItemController {
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 
-        if (user != null) {
-            List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
-            int cartItemCount = cartItemListForm.size();
-            model.addAttribute("cartItemListForm", cartItemListForm);
-            model.addAttribute("cartItemCount", cartItemCount);
-        }
 
-        model.addAttribute("currentMemberId", user != null ? user.getId() : null);
+            List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
+            model.addAttribute("cartItemListForm", cartItemListForm);
+            model.addAttribute("cartItemCount", cartItemListForm.size());
+
+
+        model.addAttribute("currentMemberId", user.getId());
+
+
 
         return "item/itemViewUser";
     }

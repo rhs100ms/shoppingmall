@@ -41,11 +41,16 @@ import java.util.stream.Collectors;
 public class CartController {
 
     private final CheckoutService checkoutService;
-
+    private final CartService cartService;
     @GetMapping("/cart")
     public String cartView(Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
         List<CartQueryDto> cartViews = checkoutService.cartViewDetails(null, model, user);
         model.addAttribute("cartItemListForm", cartViews);
+
+        List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
+        model.addAttribute("cartItemListForm", cartItemListForm);
+        model.addAttribute("cartItemCount", cartItemListForm.size());
+
         return "cart/cartView";
     }
 

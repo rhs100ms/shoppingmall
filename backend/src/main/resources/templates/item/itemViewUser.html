@@ -163,8 +163,8 @@
             type: 'POST',
             dataType: 'json',
             success: function (response) {
-                alert("상품을 담았습니다.");
-                $(".badge.bg-dark.text-white.ms-1.rounded-pill").text(response.count);
+                alert(response.message);
+                window.location.href = response.redirectUrl ;
             },
             error: function (jqXHR) {
                 if (jqXHR.status === 401) {

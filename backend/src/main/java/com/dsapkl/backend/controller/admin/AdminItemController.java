@@ -116,7 +116,7 @@ public class AdminItemController {
 
         model.addAttribute("currentMemberId", user != null ? user.getId() : null);
 
-        return "item/itemView";
+        return "item/itemViewAdmin";
     }
 
 
