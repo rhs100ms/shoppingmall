@@ -96,7 +96,27 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4"></ul>
+
+            <div class="d-flex flex-row justify-content-end w-100">
+                <form th:action="@{/user/cart}" method="get" class="ms-3">
+                    <button class="btn btn-outline-dark rounded-pill nav-btn">
+                        <i class="bi-cart-fill me-1"></i>Cart
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"
+                              th:text="${{cartItemCount != null ? cartItemCount : 0}}">0</span>
+                    </button>
+                </form>
+
+                <form th:action="@{/user/orders/success}" method="get" class="ms-3">
+                    <button class="btn btn-outline-dark rounded-pill nav-btn">
+                        <i class="bi-clock-history me-1"></i>Orders
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"
+                              th:text="${orderCount != null ? orderCount : 0}">0</span>
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </nav>

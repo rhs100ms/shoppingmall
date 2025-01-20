@@ -14,7 +14,6 @@ import java.util.Map;
 public class MemberRestController {
 
     private final MemberService memberService;
-    private final CartService cartService;
 
     @GetMapping("/members/check-email")
     public Map<String, Boolean> checkEmailDuplicate(@RequestParam("email") String email) {

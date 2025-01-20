@@ -110,58 +110,39 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand fw-bold" th:href="@{/admin}">PKLshop</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <!--                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>-->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Product Menu</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" th:href="@{/admin/items/new}">Add Product</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" th:href="@{/admin/items/manage}">Manage Products</a></li>
+            <div class="d-flex justify-content-between align-items-center w-100">
+
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Product Menu
+
+                            </a>
+
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/admin/items/new}">Add Product</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" th:href="@{/admin/items/manage}">Manage Products</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                </li>
-            </ul>
 
 
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-dark">Welcome <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!</span>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-dark">Welcome <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!</span>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-dark rounded-pill nav-btn"
+                                type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </div>
 
-
-            <form th:action="@{/logout}" method="post">
-                <button class="btn btn-dark rounded-pill nav-btn"
-                        type="submit">
-                    Logout
-                </button>
-            </form>
-            &nbsp;
-<!--            <form th:action="@{/templates/cart}" class="d-flex" method="get">-->
-<!--                <button class="btn btn-outline-dark" type="submit">-->
-<!--                    <i class="bi-cart-fill me-1"></i>-->
-<!--                    Cart-->
-<!--                    <span th:text="${{cartItemCount != null ? cartItemCount : 0}}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
-<!--                </button>-->
-<!--            </form>-->
-
-<!--            <form th:action="@{/orders/success}" class="d-flex" method="get">-->
-<!--                <button class="btn btn-outline-dark" type="submit">-->
-<!--                    <i class="bi-cart-fill me-1"></i>-->
-<!--                    구매 내역-->
-<!--                    <span th:text="${orderCount}" class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
-<!--                </button>-->
-<!--            </form>-->
-
-<!--            <form th:action="@{/api/member-info/update/{memberId}(memberId=${#authentication.principal.email})}"-->
-<!--                  class="d-flex" method="get">-->
-<!--                <button class="btn btn-outline-dark" type="submit">-->
-<!--                    <i class="bi-person-fill me-1"></i>-->
-<!--                    회원 정보-->
-<!--                </button>-->
-<!--            </form>-->
             </div>
+
         </div>
     </div>
 </nav>

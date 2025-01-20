@@ -82,6 +82,12 @@
         .nav-btn {
             padding: 0.5rem 1rem;
             transition: all 0.3s ease;
+
+            height: auto;  /* 모든 버튼의 높이를 통일 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;  /* 최소 버튼 너비 설정 */
         }
         .nav-btn:hover {
             transform: translateY(-2px);
@@ -103,28 +109,20 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand fw-bold" th:href="@{/user}">PKLshop</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-<!--            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">-->
-<!--                &lt;!&ndash;                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>&ndash;&gt;-->
-<!--                <li class="nav-item dropdown">-->
-<!--                    <a class="nav-link dropdown-toggle fw-semibold" id="navbarDropdown" href="#" role="button" -->
-<!--                       data-bs-toggle="dropdown" aria-expanded="false">Product Menu</a>-->
-<!--                    <ul class="dropdown-menu border-0 shadow-sm">-->
-<!--                        <li><a class="dropdown-item" th:href="@{/items/new}">Add Product</a></li>-->
-<!--                        <li><hr class="dropdown-divider" /></li>-->
-<!--                        <li><a class="dropdown-item" th:href="@{/items/manage}">Manage Products</a></li>-->
-<!--                    </ul>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--            &nbsp-->
-
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4"></ul>
             <!-- 사용자 환영 메시지 추가 -->
 
             <div class="d-flex align-items-center gap-3 ms-auto">
-                <span class="text-dark">Welcome <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!</span>
+
+                <div>
+                    <span class="text-dark">Welcome
+                        <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!
+                    </span>
+                </div>
 
                 <form th:action="@{/user/cart}" method="get">
                     <button class="btn btn-outline-dark rounded-pill nav-btn">
@@ -151,6 +149,7 @@
                 <form th:action="@{/logout}" method="post">
                     <button class="btn btn-dark rounded-pill nav-btn">Logout</button>
                 </form>
+
             </div>
 
         </div>
