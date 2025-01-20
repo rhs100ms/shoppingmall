@@ -45,23 +45,23 @@ public class PageController {
 
         List<Item> items = itemService.searchItems(query, category);
 
-//        try {
-//            MemberInfo memberInfo = memberInfoRepository.findByMemberId(member.getId())
-//                    .orElseThrow(()-> new IllegalArgumentException("memberInfo 정보를 찾을 수 없습니다."));
-//
-//            Cluster cluster = memberInfo.getCluster_id();
-//            if (cluster != null) {
-//                List<Item> sortedItems = items.stream()
-//                        .sorted((item1, item2) -> {
-//                            Integer score1 = getPreferenceScore(cluster, item1);
-//                            Integer score2 = getPreferenceScore(cluster, item2);
-//                            return score2.compareTo(score1);
-//                        }).toList();
-//                items = sortedItems;
-//            }
-//        } catch (Exception e) {
-//            log.error("선호도 정렬 중 오류 발생: ", e);
-//        }
+        try {
+            MemberInfo memberInfo = memberInfoRepository.findByMemberId(member.getId())
+                    .orElseThrow(()-> new IllegalArgumentException("memberInfo 정보를 찾을 수 없습니다."));
+
+            Cluster cluster = memberInfo.getCluster_id();
+            if (cluster != null) {
+                List<Item> sortedItems = items.stream()
+                        .sorted((item1, item2) -> {
+                            Integer score1 = getPreferenceScore(cluster, item1);
+                            Integer score2 = getPreferenceScore(cluster, item2);
+                            return score2.compareTo(score1);
+                        }).toList();
+                items = sortedItems;
+            }
+        } catch (Exception e) {
+            log.error("선호도 정렬 중 오류 발생: ", e);
+        }
 
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
         model.addAttribute("cartItemListForm", cartItemListForm);

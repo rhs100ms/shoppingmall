@@ -110,13 +110,14 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand fw-bold" th:href="@{/guest}">PKLshop</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-            </ul>
+<!--            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">-->
+<!--            </ul>-->
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 ms-auto">
                 <form th:action="@{/members}">
                     <button class="btn btn-outline-dark px-4 rounded-pill nav-btn" type="submit" th:method="get">
                         Login
@@ -141,6 +142,32 @@
         </div>
     </div>
 </header>
+
+<!-- 검색 -->
+<div class="container px-4 px-lg-5 mt-4">
+    <div class="d-flex justify-content-end">
+        <form th:action="@{/guest}" method="get" class="d-flex gap-2" style="width: 600px;">
+            <select class="form-select rounded-pill" name="category" style="width: 200px;">
+                <option value="">All Categories</option>
+                <option value="APPAREL">Apparel</option>
+                <option value="ELECTRONICS">Electronics</option>
+                <option value="BOOKS">Books</option>
+                <option value="HOME_AND_KITCHEN">Home & Kitchen</option>
+                <option value="HEALTH_AND_BEAUTY">Health & Beauty</option>
+            </select>
+            <input
+                    class="form-control rounded-pill"
+                    type="search"
+                    placeholder="Search products"
+                    name="query" />
+            <button class="btn btn-dark rounded-pill px-4 search-btn" type="submit">
+                Search
+            </button>
+        </form>
+    </div>
+</div>
+&nbsp
+
 <!-- Section-->
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-4">
@@ -156,7 +183,13 @@
             </div>
 
             <!-- 상품 카드 -->
-            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="item : ${items}">
+            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="item, iterStat : ${items}"
+                 th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore},
+                          rank=${iterStat.index + 1}"
+                 th:style="${currentScore >= 3} ? (
+                                    ${rank == 1} ? 'border: 3px solid gold' : (
+                                    ${rank == 2} ? 'border: 3px solid silver' : (
+                                    ${rank == 3} ? 'border: 3px solid #cd7f32' : ''))) : ''">
                 <div class="card h-100 product-card border-0">
                     <!-- 상품 이미지 -->
                     <div class="product-image">
@@ -175,7 +208,7 @@
                     <div class="card-body p-4 text-center">
                         <h5 class="product-title mb-3" th:text="${item.getName()}">Product</h5>
                         <p class="product-price mb-0">
-                            <span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}">price</span>
+                            <span th:text="${#numbers.formatInteger(item.getPrice(), 0, 'COMMA')}">price</span>
                             <span class="text-muted fs-6">KRW</span>
                         </p>
                     </div>
@@ -189,6 +222,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
