@@ -183,440 +183,240 @@
     </div>
 </nav>
 
-
-
+<!-- Container-->
 <div class="container mt-5">
 
     <h2 class="mb-4">Product Management</h2>
 
-
-
     <!-- 통계 카드 -->
-
     <div class="row mb-4">
-
         <div class="col-md-3">
-
             <div class="card bg-white">
-
                 <div class="card-body">
-
                     <div class="d-flex align-items-center">
-
                         <i class="bi bi-box-seam fs-3 me-2"></i>
-
                         <div>
-
                             <h6 class="card-subtitle mb-1 text-muted">Total Products</h6>
-
                             <h3 class="card-title mb-0" th:text="${totalItems}">0</h3>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-3">
-
             <div class="card bg-white">
-
                 <div class="card-body">
-
                     <div class="d-flex align-items-center">
-
                         <i class="bi bi-exclamation-triangle fs-3 me-2 text-warning"></i>
-
                         <div>
-
                             <h6 class="card-subtitle mb-1 text-muted">Low Stock</h6>
-
                             <h3 class="card-title mb-0" th:text="${lowStockItems}">0</h3>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-3">
-
             <div class="card bg-white">
-
                 <div class="card-body">
-
                     <div class="d-flex align-items-center">
-
                         <i class="bi bi-check-circle fs-3 me-2 text-success"></i>
-
                         <div>
-
                             <h6 class="card-subtitle mb-1 text-muted">On Sale</h6>
-
                             <h3 class="card-title mb-0" th:text="${sellingItems}">0</h3>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-3">
-
             <div class="card bg-white">
-
                 <div class="card-body">
-
                     <div class="d-flex align-items-center">
-
                         <i class="bi bi-x-circle fs-3 me-2 text-danger"></i>
-
                         <div>
-
                             <h6 class="card-subtitle mb-1 text-muted">Discontinued</h6>
-
                             <h3 class="card-title mb-0" th:text="${soldOutItems}">0</h3>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-
     <!-- 검색 및 필터 -->
-
     <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
 
         <form th:action="@{/admin/items/manage}" method="get" class="row g-3 flex-grow-1">
-
             <div class="col-md-4">
-
                 <div class="input-group">
-
                     <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-
-                    <input type="text" class="form-control" name="query" 
-
+                    <input type="text" class="form-control" name="query"
                            placeholder="Search by product name or code" th:value="${param.query}">
-
                 </div>
-
             </div>
-
             <div class="col-md-2">
-
                 <select class="form-select" name="category">
-
                     <option value="">All Categories</option>
-
                     <option th:each="category : ${T(com.dsapkl.backend.entity.Category).values()}"
-
                             th:value="${category}"
-
                             th:text="${category.name()}"
-
                             th:selected="${param.category == category.name()}">
-
                     </option>
-
                 </select>
-
             </div>
 
             <div class="col-md-2">
-
                 <select class="form-select" name="status">
-
                     <option value="">All Status</option>
-
                     <option value="SELLING" th:selected="${param.status == 'SELLING'}">On Sale</option>
-
                     <option value="SOLDOUT" th:selected="${param.status == 'SOLDOUT'}">Sold Out</option>
-
                     <option value="LOW_STOCK" th:selected="${param.status == 'LOW_STOCK'}">Low Stock</option>
-
                 </select>
-
             </div>
 
             <div class="col-md-2">
-
                 <button type="submit" class="btn btn-dark w-100">
-
                     <i class="bi bi-search"></i> Search
-
                 </button>
-
             </div>
 
             <!-- 현재 페이지 크기와 정렬 상태 유지를 위한 hidden 필드들 -->
-
             <input type="hidden" name="page" value="0">
-
             <input type="hidden" name="size" th:value="${param.size}">
-
         </form>
 
         <div class="ms-3">
-
             <a th:href="@{~/admin/items/new}" class="btn btn-primary">
-
                 <i class="bi bi-plus-lg"></i> Add New Product
-
             </a>
-
         </div>
 
     </div>
 
-
-
     <!-- 제품 목록 -->
-
     <div class="card mb-4">
-
         <div class="card-body p-0">
-
             <div class="table-responsive">
 
                 <table class="table table-hover mb-0">
-
                     <thead class="bg-light">
-
                     <tr>
-
                         <th class="border-0">Product Info</th>
-
                         <th class="border-0">Product Code</th>
-
                         <th class="border-0">Category</th>
-
                         <th class="border-0">Price</th>
-
                         <th class="border-0">Stock</th>
-
                         <th class="border-0">Status</th>
-
                         <th class="border-0">Last Modified</th>
-
                         <th class="border-0">Actions</th>
-
                     </tr>
-
                     </thead>
-
                     <tbody>
-
                     <tr th:each="item : ${items}">
-
                         <td>
-
                             <div class="d-flex align-items-center">
-
                                 <img th:if="${!item.getItemImageListDto().isEmpty()}"
-
                                      th:src="|/images/${item.getItemImageListDto().get(0).getStoreName()}|"
-
                                      class="rounded"
-
                                      alt="Product Image">
-
                                 <img th:unless="${!item.getItemImageListDto().isEmpty()}"
-
                                      src="https://dummyimage.com/40x40/dee2e6/6c757d.jpg"
-
                                      class="rounded"
-
                                      alt="Default Image">
-
                                 <div class="ms-3">
-
                                     <a th:href="@{~/admin/items/{id}(id=${item.itemId})}"
                                        class="product-link">
                                         <p class="fw-bold mb-0" th:text="${item.name}">Product Name</p>
-
                                     </a>
-
                                 </div>
-
                             </div>
-
                         </td>
 
                         <td th:text="${item.category.name() + '-' + item.itemId}">SNK-2024-001</td>
-
                         <td th:text="${item.category.name()}">Shoes</td>
-
                         <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + ' KRW'}">89,000 KRW</td>
-
                         <td th:text="${item.stockQuantity}">245</td>
-
                         <td>
-
                             <span th:if="${item.stockQuantity > 10}" class="badge bg-success">On Sale</span>
-
                             <span th:if="${item.stockQuantity <= 10 && item.stockQuantity > 0}" class="badge bg-warning">Low Stock</span>
-
                             <span th:if="${item.stockQuantity == 0}" class="badge bg-danger">Sold Out</span>
-
                         </td>
 
                         <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
-
                         <td>
-
                             <div class="btn-group">
-
                                 <a th:href="@{~/admin/items/{itemId}/edit(itemId=${item.itemId}, redirectUrl='manage')}"
-
                                    class="btn btn-outline-dark btn-sm">
-
                                     <i class="bi bi-pencil"></i>
-
                                 </a>
-
                                 <button type="button" class="btn btn-outline-dark btn-sm"
-
                                         th:onclick="'deleteItem(' + ${item.itemId} + ')'">
-
                                     <i class="bi bi-trash"></i>
-
                                 </button>
-
                             </div>
-
                         </td>
-
                     </tr>
-
                     </tbody>
-
                 </table>
 
             </div>
-
         </div>
-
     </div>
 
-
-
     <!-- 페이지네이션 -->
-
     <div class="d-flex justify-content-between align-items-center my-4">
 
         <div>
-
-            <select class="form-select form-select-sm" style="width: 130px;" 
-
+            <select class="form-select form-select-sm" style="width: 130px;"
                     onchange="changePageSize(this.value)">
-
                 <option value="10" th:selected="${param.size == null || param.size == 10}">10 per page</option>
-
                 <option value="20" th:selected="${param.size == 20}">20 per page</option>
-
                 <option value="50" th:selected="${param.size == 50}">50 per page</option>
-
             </select>
-
         </div>
 
         <nav th:if="${totalPages > 0}">
-
             <ul class="pagination mb-0">
-
                 <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-
                     <a class="page-link" th:href="@{~/admin/items/manage(
-
                         page=${currentPage - 1},
-
                         size=${param.size},
-
                         query=${param.query},
-
                         category=${param.category},
-
                         status=${param.status}
-
                     )}">
-
                         <i class="bi bi-chevron-left"></i>
-
                     </a>
-
                 </li>
-
-                <li class="page-item" 
-
+                <li class="page-item"
                     th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-
                     th:classappend="${pageNum == currentPage ? 'active' : ''}">
-
-                    <a class="page-link" 
-
+                    <a class="page-link"
                        th:href="@{~/admin/items/manage(
-
                            page=${pageNum},
-
                            size=${param.size},
-
                            query=${param.query},
-
                            category=${param.category},
-
                            status=${param.status}
-
                        )}"
-
                        th:text="${pageNum + 1}">1</a>
-
                 </li>
-
                 <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-
                     <a class="page-link" th:href="@{~/admin/items/manage(
-
                         page=${currentPage + 1},
-
                         size=${param.size},
-
                         query=${param.query},
-
                         category=${param.category},
-
                         status=${param.status}
-
                     )}">
-
                         <i class="bi bi-chevron-right"></i>
-
                     </a>
-
                 </li>
-
             </ul>
-
         </nav>
 
     </div>
@@ -624,15 +424,10 @@
 </div>
 
 <div class="pb-5"></div>
-
 <footer class="py-5 bg-dark">
-
     <div class="container">
-
         <p class="m-0 text-center text-white">Copyright &copy; PKLshop</p>
-
     </div>
-
 </footer>
 
 

@@ -3,6 +3,7 @@ package com.dsapkl.backend.service;
 import com.dsapkl.backend.entity.Cart;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.MemberInfo;
+import com.dsapkl.backend.entity.Role;
 import com.dsapkl.backend.repository.CartRepository;
 import com.dsapkl.backend.repository.MemberInfoRepository;
 import com.dsapkl.backend.repository.MemberRepository;
@@ -10,6 +11,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,4 +107,8 @@ public class MemberService {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
+
+    public Page<Member> findOnlyUsers(Pageable pageable) {
+       return memberRepository.findByRole(Role.USER, pageable);
+    }
 }

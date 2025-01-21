@@ -15,4 +15,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
            "ORDER BY COUNT(oi) DESC " +
            "LIMIT 1")
     Category findMostFrequentCategoryByMemberId(@Param("memberId") Long memberId);
+
+
 }

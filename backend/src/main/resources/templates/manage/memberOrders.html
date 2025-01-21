@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <title>Member Orders - PKLshop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="/css/styles.css" rel="stylesheet"/>
+</head>
+<body class="bg-light">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <!-- ... 네비게이션 바 내용 ... -->
+</nav>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Order History - <span th:text="${member.name}"></span></h2>
+    <a th:href="@{/admin/manage/info}" class="btn btn-outline-dark">
+      <i class="bi bi-arrow-left"></i> Back to Members
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+
+      <!-- Empty order list message -->
+      <div th:if="${#lists.isEmpty(orderDetails)}" class="text-center py-5">
+        <div class="card shadow-sm border-0 p-5">
+          <div class="card-body">
+            <i class="bi bi-cart-x display-1 text-muted mb-4"></i>
+            <h3 class="fw-bold mb-3">No Orders Found</h3>
+            <p class="text-muted mb-4">Customer haven't made any purchases yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order List -->
+      <div th:each="order : ${orderDetails}" class="mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0" th:text="${order.orderDate} + ' Order'"></h5>
+              <span class="badge bg-primary"
+                    th:text="${order.orderStatus.name() == 'ORDER' ? 'Processing' : 'Cancelled'}">
+                            </span>
+            </div>
+
+          </div>
+
+          <div class="card-body">
+
+            <!-- Order Items -->
+            <div th:each="orderItem : ${order.getOrderItemDtoList()}" class="mb-3">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <img th:src="|/images/${orderItem.getImgUrl()}|"
+                       class="img-fluid rounded" alt="Product Image"
+                       style="width: 100px; height: 100px; object-fit: contain;">
+                </div>
+                <div class="col-md-4">
+                  <h6 class="mb-1" th:text="${orderItem.itemName}"></h6>
+                  <p class="text-muted small mb-0" th:text="'Quantity: ' + ${orderItem.count}"></p>
+                </div>
+                <div class="col-md-3">
+                  <p class="mb-0 fw-bold"
+                     th:text="${#numbers.formatInteger(orderItem.orderPrice, 0, 'COMMA')} + ' KRW'">
+                  </p>
+                </div>
+                <div class="col-md-3">
+                  <div class="progress" style="height: 5px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 25%"></div>
+                  </div>
+                  <div class="d-flex justify-content-between mt-1">
+                    <small class="text-muted">Ordered</small>
+                    <small class="text-muted">Shipped</small>
+                    <small class="text-muted">Delivered</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--Order Summary-->
+            <div class="border-top pt-3 mt-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">Total Amount</h6>
+                  <h5 class="mb-0"
+                      th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + ' KRW'">
+                  </h5>
+                </div>
+                <div th:if="${order.orderStatus.name() == 'ORDER'}">
+                  <button class="btn btn-outline-dark"
+                          th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
+                    Cancel Order
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function viewOrderDetails(orderId) {
+    window.location.href = '/admin/orders/' + orderId;
+  }
+</script>
+
+</body>
+</html>
