@@ -17,4 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.member.id = :memberId")
     Integer findTotalSpendingByMemberId(@Param("memberId") Long memberId);
+
+    List<Order> findByMemberId(Long memberId);
+
 }

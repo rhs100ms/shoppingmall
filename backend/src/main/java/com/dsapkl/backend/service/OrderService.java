@@ -9,6 +9,7 @@ import com.stripe.model.LineItem;
 import com.stripe.model.StripeCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionListLineItemsParams;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,11 +90,22 @@ public class OrderService {
     /**
      * 주문 목록 조회
      */
+
+    @Transactional(readOnly = true)
+    public List<Order> findOrders(Long memberId) {
+
+        return orderRepository.findByMemberId(memberId);
+    }
+
+
+
     @Transactional(readOnly = true)
     public List<OrderDto> findOrdersDetail(Long memberId, OrderStatus orderStatus) {
         List<OrderDto> orders = orderRepository.findOrderDetail(memberId, orderStatus);
         return orders;
     }
+
+//    public
 
     /**
      * 장바구니 상품들 주문

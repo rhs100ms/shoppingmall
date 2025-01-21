@@ -5,6 +5,9 @@ import com.dsapkl.backend.dto.CartForm;
 import com.dsapkl.backend.dto.CartItemForm;
 import com.dsapkl.backend.dto.CartOrderDto;
 import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.Order;
+import com.dsapkl.backend.entity.OrderStatus;
+import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.CheckoutService;
@@ -47,6 +50,9 @@ public class CartController {
     @GetMapping("/cart")
     public String cartView(Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
 
+        List<Order> order = orderService.findOrders(user.getId());
+        long orderCount = order.stream().filter(o -> o.getStatus() == OrderStatus.ORDER).count();
+        model.addAttribute("orderCount", orderCount);
 
         List<CartQueryDto> cartViews = checkoutService.cartViewDetails(null, model, user);
         model.addAttribute("cartItemListForm", cartViews);
