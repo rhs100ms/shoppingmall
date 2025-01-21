@@ -118,7 +118,7 @@
         };
 
         $.ajax({
-            url: "/cart",
+            url: "/user/cart",
             type: 'DELETE',
             data: JSON.stringify(cartItemForm),
             contentType: 'application/json',
@@ -126,12 +126,12 @@
             <!-- 성공시 -->
             success: function (result) {
                 alert("Selected items have been deleted.");
-                location.href="/cart"
+                location.href="/user/cart"
             },
             <!-- 실패시 -->
             error: function (jqXHR) {
                 alert(jqXHR.responseText);
-                location.href = "/cart";
+                location.href = "/user/cart";
             }
         })
     }
@@ -193,6 +193,11 @@
             body: JSON.stringify(dataDto)
         })
             .then(function (response) {
+                if (!response.ok) {
+                    return response.json().then((data) => {
+                        alert(data.message);
+                    });
+                }
                 return response.json();
             })
             .then(function (session) {

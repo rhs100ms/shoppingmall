@@ -3,6 +3,7 @@ package com.dsapkl.backend.restcontroller.user;
 import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.DataDto;
 import com.dsapkl.backend.dto.CheckoutRequest;
+import com.dsapkl.backend.exception.CustomClientAlertException;
 import com.dsapkl.backend.exception.UnauthorizedException;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,6 +48,9 @@ public class CheckoutController {
 
 
         List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();
+
+
+
         for(CartQueryDto item : cartOrderList) {
             SessionCreateParams.LineItem lineItem =
                     SessionCreateParams.LineItem.builder()
@@ -65,6 +69,10 @@ public class CheckoutController {
                             .build();
 
             lineItems.add(lineItem);
+        }
+
+        if (lineItems == null || lineItems.isEmpty()) {
+            throw new CustomClientAlertException("Please select the product you want to order.");
         }
 
         // Checkout 세션 생성
