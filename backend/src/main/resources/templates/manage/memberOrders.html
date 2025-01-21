@@ -38,7 +38,12 @@
       </div>
 
       <!-- Order List -->
-      <div th:each="order : ${orderDetails}" class="mb-4">
+      <div th:each="order, iterStat : ${orderDetails}" class="mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <span class="badge bg-secondary rounded-pill me-2"
+                th:text="'Order #' + ${orderDetails.size() - iterStat.index}">
+          </span>
+        </div>
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white py-3">
 
