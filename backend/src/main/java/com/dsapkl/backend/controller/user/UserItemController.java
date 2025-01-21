@@ -3,13 +3,13 @@ package com.dsapkl.backend.controller.user;
 import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
-import com.dsapkl.backend.entity.Item;
-import com.dsapkl.backend.entity.ItemImage;
-import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.entity.*;
+import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
+import com.dsapkl.backend.service.OrderService;
 import com.dsapkl.backend.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,8 @@ public class UserItemController {
     private final ItemService itemService;
     private final ItemImageService itemImageService;
     private final CartService cartService;
+    private final OrderService orderService;
+
 
     /**
      * 상품 상세 조회
@@ -53,18 +55,14 @@ public class UserItemController {
         itemForm.setItemImageListDto(itemImageDtoList);
         model.addAttribute("item", itemForm);
 
-        // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
-
-
-
-            List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
-            model.addAttribute("cartItemListForm", cartItemListForm);
-            model.addAttribute("cartItemCount", cartItemListForm.size());
-
-
+        List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
+        model.addAttribute("cartItemListForm", cartItemListForm);
+        model.addAttribute("cartItemCount", cartItemListForm.size());
         model.addAttribute("currentMemberId", user.getId());
 
-
+        List<Order> order = orderService.findOrders(user.getId());
+        long orderCount = order.stream().filter(o -> o.getStatus() == OrderStatus.ORDER).count();
+        model.addAttribute("orderCount", orderCount);
 
         return "item/itemViewUser";
     }
