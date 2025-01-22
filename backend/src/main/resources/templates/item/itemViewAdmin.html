@@ -413,6 +413,7 @@
         </div>
     </div>
 </nav>
+
 <!-- Product section-->
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5" th:object="${item}">
@@ -467,6 +468,7 @@
 
             <!-- 상품 정보 -->
             <div class="col-md-6">
+
                 <div class="view-mode">
                     <h1 class="h3 fw-bold" th:text="${item.getName()}">Shop item template</h1>
                     <div class="mb-3">
@@ -496,7 +498,12 @@
                         </div>
                     </div>
 
+                    <div class="container bg-light">
+                        <h6>총 상품 금액</h6>
+                        <h4 name="totalPrice" id="totalPrice" class="font-weight-bold"></h4>
+                    </div>
 
+                </div>
 
                 <form th:action="@{/admin/items/{itemId}/edit(itemId=${item.itemId})}"
                       method="post" enctype="multipart/form-data"
@@ -542,7 +549,7 @@
                     <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Cancel</button>
                 </form>
 
-<!--                    <div class="d-flex gap-2">-->
+                <div class="d-flex gap-2">
 <!--                        <button class="btn btn-outline-dark" type="button" th:onclick="initiateCheckout()">-->
 <!--                            Buy Now-->
 <!--                        </button>-->
@@ -550,16 +557,17 @@
 <!--                            <i class="bi-cart-fill me-1"></i>-->
 <!--                            Add to Cart-->
 <!--                        </button>-->
-                        <button class="btn btn-primary" onclick="toggleEditMode()">
-                            Edit
+                    <button class="btn btn-primary" onclick="toggleEditMode()">
+                        Edit
+                    </button>
+                    <form th:action="@{/admin/items/{itemId}/delete(itemId=${item.itemId})}" method="post">
+                        <button class="btn btn-danger" type="submit">
+                            Delete
                         </button>
-                        <form th:action="@{/items/{itemId}/delete(itemId=${item.itemId})}" method="post">
-                            <button class="btn btn-danger" type="submit">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
+                    </form>
                 </div>
+
+
 
                 <!-- 수정 모드 부분 -->
                 <div class="edit-mode" style="display: none;">
@@ -574,6 +582,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
