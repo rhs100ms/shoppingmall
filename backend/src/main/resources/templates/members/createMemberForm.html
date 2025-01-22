@@ -178,12 +178,7 @@
 
 
 
-                        <select name="role" id="role" class="formcontrol">
-                            <option value="">Registration</option>
-                            <option th:each="roleCode : ${roleCodes}"
-                                    th:value="${roleCode.code}"
-                                    th:text="${roleCode.displayName}" />
-                        </select>
+                        <input type="hidden" name="role" th:value="${roleCodes[0].code}">
                         <hr class="my-4">
                         <div class="row mt-4">
                             <div class="col">
@@ -194,6 +189,7 @@
                                         th:onclick="|location.href='@{/members}'|">Cancel</button>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
