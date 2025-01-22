@@ -143,7 +143,9 @@
             <div th:each="order, iterStat : ${orderDetails}" class="mb-4">
                     <div class="d-flex align-items-center mb-2">
                         <span class="badge bg-secondary rounded-pill me-2"
-                              th:text="'Order #' + ${orderDetails.size() - iterStat.index}">
+                              th:text="${order.orderStatus.name() == 'ORDER' ?
+                    'Order #' + (orderDetails.size() - iterStat.index) :
+                    'Cancel #' + (orderDetails.size() - iterStat.index)}">
                         </span>
                     </div>
                     <div class="card shadow-sm border-0">
@@ -194,7 +196,7 @@
 
                             <!--Order Summary-->
                             <div class="border-top pt-3 mt-3">
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-end align-items-center">
                                     <div>
                                         <h6 class="mb-0">Total Amount</h6>
                                         <h5 class="mb-0"
@@ -202,10 +204,10 @@
                                         </h5>
                                     </div>
                                     <div th:if="${order.orderStatus.name() == 'ORDER'}">
-                                        <button class="btn btn-outline-dark"
-                                                th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">
-                                            Cancel Order
-                                        </button>
+<!--                                        <button class="btn btn-outline-dark"-->
+<!--                                                th:attr="onclick=|cancelOrder(${order.orderId}, '${order.paymentIntentId}')|">-->
+<!--                                            Cancel Order-->
+<!--                                        </button>-->
                                     </div>
                                 </div>
                             </div>

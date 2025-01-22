@@ -41,7 +41,9 @@
       <div th:each="order, iterStat : ${orderDetails}" class="mb-4">
         <div class="d-flex align-items-center mb-2">
           <span class="badge bg-secondary rounded-pill me-2"
-                th:text="'Order #' + ${orderDetails.size() - iterStat.index}">
+                th:text="${order.orderStatus.name() == 'ORDER' ?
+                    'Order #' + (orderDetails.size() - iterStat.index) :
+                    'Cancel #' + (orderDetails.size() - iterStat.index)}">
           </span>
         </div>
         <div class="card shadow-sm border-0">
@@ -118,9 +120,48 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
   function viewOrderDetails(orderId) {
     window.location.href = '/admin/orders/' + orderId;
   }
+
+  function cancelOrder(orderId, paymentIntentId) {
+    if (!confirm('Are you sure you want to cancel this order?')) {
+      return;
+    }
+
+    //1. 먼저 Stripe 환불 처리
+    fetch(`/admin/api/refund?paymentIntentId=${paymentIntentId}`, {
+      method: 'POST'
+    })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                fetch(`/admin/order/${orderId}/cancel`, {
+                  method: 'POST'
+                })
+                        .then(response => {
+                          if (response.ok) {
+                            alert('The order has been canceled.');
+                            window.location.reload();
+                          } else {
+                            alert('Failed to cancel the order.');
+                          }
+                        })
+                        .catch(error => {
+                          console.error('Error', error);
+                          alert('An error occurred while canceling the order.');
+                        });
+              } else {
+                alert('Failed to process the refund: ' + data.error);
+              }
+            })
+            .catch(error => {
+              console.error('Error: ', error);
+              alert('An error occurred while processing the refund.');
+            });
+  }
+
 </script>
 
 </body>

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class OrderRestController {
 

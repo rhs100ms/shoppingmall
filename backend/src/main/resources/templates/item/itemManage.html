@@ -169,6 +169,9 @@
 
                 <div class="d-flex align-items-center gap-3">
                     <span class="text-dark">Welcome <span class="fw-bold" th:text="${#authentication.principal.name}">User</span>!</span>
+                    <a th:href="@{/admin/manage/info}" class="btn btn-dark" style="padding: 0.5rem 1rem;">
+                        <i class="bi bi-people"></i> Member Info
+                    </a>
                     <form th:action="@{/logout}" method="post">
                         <button class="btn btn-dark rounded-pill nav-btn"
                                 type="submit">
