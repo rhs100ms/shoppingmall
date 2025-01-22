@@ -418,11 +418,11 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5" th:object="${item}">
         <div class="row gx-4 gx-lg-5 align-items-start">
-            <!-- 메인 이미지 -->
+            <!-- 왼쪽 이미지 영역 - 메인 뷰와 수정 모드에서 공유 -->
             <div class="col-md-6">
                 <div class="image-container">
                     <!-- 메인 이미지 슬라이더 -->
-                    <div id="productImageSlider" class="carousel slide mb-3 view-mode">
+                    <div id="productImageSlider" class="carousel slide mb-3">
                         <div class="carousel-inner">
                             <!-- 이미지가 없을 경우 기본 이미지 표시 -->
                             <div th:if="${item.getItemImageListDto().isEmpty()}" class="carousel-item active">
@@ -432,7 +432,8 @@
                             <!-- 이미지 리스트 순회 -->
                             <div th:each="image, iterStat : ${item.getItemImageListDto()}"
                                  th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
-                                <img th:src="|/images/${image.getStoreName()}|" class="d-block w-100"
+                                <img th:src="|/images/${image.getStoreName()}|"
+                                     class="d-block w-100"
                                      style="width: 100%; height: 400px; object-fit: contain; background-color: #f8f9fa;"
                                      th:alt="${item.getName()}">
                             </div>
@@ -450,7 +451,7 @@
                         </th:block>
                     </div>
 
-                    <!-- 썸네일 미리보기를 슬라이더 아래로 이동 -->
+                    <!-- 썸네일 미리보기 -->
                     <div class="thumbnail-preview" th:if="${!item.getItemImageListDto().isEmpty()}">
                         <div class="d-flex flex-wrap gap-2 justify-content-center">
                             <div th:each="image, iterStat : ${item.getItemImageListDto()}"
@@ -503,6 +504,17 @@
                         <h4 name="totalPrice" id="totalPrice" class="font-weight-bold"></h4>
                     </div>
 
+                    <div class="d-flex gap-2 view-mode">
+                        <button class="btn btn-primary" onclick="toggleEditMode()">
+                            Edit
+                        </button>
+                        <form th:action="@{/admin/items/{itemId}/delete(itemId=${item.itemId})}" method="post">
+                            <button class="btn btn-danger" type="submit">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
                 <form th:action="@{/admin/items/{itemId}/edit(itemId=${item.itemId})}"
@@ -548,40 +560,6 @@
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Cancel</button>
                 </form>
-
-                <div class="d-flex gap-2">
-<!--                        <button class="btn btn-outline-dark" type="button" th:onclick="initiateCheckout()">-->
-<!--                            Buy Now-->
-<!--                        </button>-->
-<!--                        <button class="btn btn-outline-dark" type="button" th:onclick="addCart()">-->
-<!--                            <i class="bi-cart-fill me-1"></i>-->
-<!--                            Add to Cart-->
-<!--                        </button>-->
-                    <button class="btn btn-primary" onclick="toggleEditMode()">
-                        Edit
-                    </button>
-                    <form th:action="@{/admin/items/{itemId}/delete(itemId=${item.itemId})}" method="post">
-                        <button class="btn btn-danger" type="submit">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-
-
-
-                <!-- 수정 모드 부분 -->
-                <div class="edit-mode" style="display: none;">
-                    <div class="current-images mb-3">
-                        <label class="form-label">Current Image</label>
-                        <div class="d-flex flex-wrap gap-3">
-                            <div th:each="image : ${item.itemImageListDto}" class="position-relative">
-                                <img th:src="|/images/${image.storeName}|"
-                                     style="width: 200px; height: 200px; object-fit: contain; background-color: #f8f9fa;"
-                                     class="img-thumbnail">
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </div>
