@@ -2,12 +2,14 @@ package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.dto.MemberInfoCreateDto;
 import com.dsapkl.backend.entity.Category;
+import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.MemberInfo;
 import com.dsapkl.backend.repository.MemberInfoRepository;
 import com.dsapkl.backend.repository.MemberRepository;
 import com.dsapkl.backend.repository.OrderItemRepository;
 import com.dsapkl.backend.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class MemberInfoService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public void updateMemberLoginInfo(Long memberId) {
@@ -108,4 +111,19 @@ public class MemberInfoService {
         
         memberInfoRepository.save(memberInfo);
     }
+
+    @Transactional
+    public void updatePassword(Long memberId, String currentPassword, String newPassword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        if (!passwordEncoder.matches(currentPassword,member.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        member.updatePassword(encodedNewPassword);
+        memberRepository.save(member);
+    }
+
 } 

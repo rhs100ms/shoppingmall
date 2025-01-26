@@ -19,86 +19,7 @@
         }
     </style>
 
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-            var error = [[${errorMessage}]];
-            if(error != null){
-                alert(error);
-            }
 
-            function validatePassword() {
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const passwordMatch = document.getElementById('passwordMatch');
-
-                if (newPassword !== confirmPassword) {
-                    passwordMatch.innerHTML = '<span class="text-danger">Passwords do not match!</span>';
-                    return false;
-                } else if (newPassword.length > 0) {
-                    passwordMatch.innerHTML = '<span class="text-success">Passwords match!</span>';
-                    return true;
-                } else {
-                    passwordMatch.innerHTML = '';
-                    return false;
-                }
-            }
-
-            function updatePassword() {
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
-
-                if (!currentPassword) {
-                    alert('Please enter your current password');
-                    return;
-                }
-
-                if (!newPassword) {
-                    alert('Please enter a new password');
-                    return;
-                }
-
-                if (!validatePassword()) {
-                    alert('New passwords do not match');
-                    return;
-                }
-
-                const memberId = [[${member.memberId}]];
-
-                fetch(`/user/api/member-info/update-password/${memberId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        currentPassword: currentPassword,
-                        newPassword: newPassword
-                    })
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => { throw new Error(text) });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert('Password has been updated successfully');
-                        // 입력 필드 초기화
-                        document.getElementById('currentPassword').value = '';
-                        document.getElementById('newPassword').value = '';
-                        document.getElementById('confirmPassword').value = '';
-                        document.getElementById('passwordMatch').innerHTML = '';
-                    })
-                    .catch(error => {
-                        alert(error.message || 'Failed to update password');
-                    });
-            }
-
-            // 비밀번호 일치 여부 실시간 확인
-            document.getElementById('newPassword').addEventListener('input', validatePassword);
-            document.getElementById('confirmPassword').addEventListener('input', validatePassword);
-
-        </script>
-    </th:block>
 </head>
 
 <div layout:fragment="content" class="container py-5">
@@ -251,4 +172,92 @@
         </div>
     </div>
 </div>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        var error = [[${errorMessage}]];
+        if(error != null){
+            alert(error);
+        }
+
+        function validatePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordMatch = document.getElementById('passwordMatch');
+
+            if (newPassword !== confirmPassword) {
+                passwordMatch.innerHTML = '<span class="text-danger">Passwords do not match!</span>';
+                return false;
+            } else if (newPassword.length > 0) {
+                passwordMatch.innerHTML = '<span class="text-success">Passwords match!</span>';
+                return true;
+            } else {
+                passwordMatch.innerHTML = '';
+                return false;
+            }
+        }
+
+        function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (!currentPassword) {
+                alert('Please enter your current password');
+                return;
+            }
+
+            if (!newPassword) {
+                alert('Please enter a new password');
+                return;
+            }
+
+            if (!validatePassword()) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            const memberId = [[${member.id}]];
+
+            fetch(`/user/api/member-info/update-password/${memberId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Password has been updated successfully');
+                    // 입력 필드 초기화
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    document.getElementById('passwordMatch').innerHTML = '';
+
+                    // POST 방식으로 로그아웃 요청
+                    fetch('/logout', {
+                        method: 'POST'
+                    }).then(() => {
+                        window.location.href = '/';  // 홈으로 리다이렉트
+                    });
+
+                })
+                .catch(error => {
+                    alert(error.message || 'Failed to update password');
+                });
+        }
+
+        // 비밀번호 일치 여부 실시간 확인
+        document.getElementById('newPassword').addEventListener('input', validatePassword);
+        document.getElementById('confirmPassword').addEventListener('input', validatePassword);
+
+    </script>
+</th:block>
 </html> 

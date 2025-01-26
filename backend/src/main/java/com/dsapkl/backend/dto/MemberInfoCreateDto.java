@@ -12,4 +12,7 @@ public class MemberInfoCreateDto {
     private Integer age;
     private String gender;
     private Interest interests;
+
+
+
 } 
