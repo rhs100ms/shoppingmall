@@ -59,6 +59,32 @@
         var carousel = new bootstrap.Carousel(document.getElementById('productImageSlider'), {
             interval: false
         });
+
+        // 리뷰 이미지 미리보기
+        $("#reviewImages").on('change', function(e) {
+            const preview = $("#imagePreview");
+            preview.empty();
+
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = $('<img>')
+                        .attr('src', e.target.result)
+                        .css({
+                            'width': '200px',
+                            'height': '200px',
+                            'object-fit': 'contain',
+                            'margin': '10px',
+                            'border': '1px solid #dee2e6',
+                            'border-radius': '4px',
+                            'background-color': '#f8f9fa'
+                        });
+                    preview.append(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
     });
 
     function submitReview() {
@@ -849,22 +875,34 @@
         });
     }
 
-    // 이미지 미리보기
-    document.getElementById('reviewImages').addEventListener('change', function(e) {
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = '';
+    // 수정 모드의 이미지 미리보기
+    $(document).on('change', '.edit-images', function(e) {
+        const previewContainer = $(this).siblings('.edit-image-preview');
+        const currentImages = $(this).siblings('.current-images');
+        previewContainer.empty();
+
+        // 새 이미지가 선택되면 기존 이미지 숨기기
+        if (e.target.files.length > 0) {
+            currentImages.hide();
+        } else {
+            currentImages.show();
+        }
 
         Array.from(e.target.files).forEach(file => {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.width = '200px';
-                img.style.height = '200px';
-                img.style.objectFit = 'contain';
-                img.style.border = '1px solid #dee2e6';
-                img.style.borderRadius = '0.25rem';
-                preview.appendChild(img);
+                const img = $('<img>')
+                    .attr('src', e.target.result)
+                    .css({
+                        'width': '200px',
+                        'height': '200px',
+                        'object-fit': 'contain',
+                        'margin': '10px',
+                        'border': '1px solid #dee2e6',
+                        'border-radius': '4px',
+                        'background-color': '#f8f9fa'
+                    });
+                previewContainer.append(img);
             }
             reader.readAsDataURL(file);
         });

@@ -85,38 +85,7 @@
             });
         });
 
-        // 수정 모드의 이미지 미리보기
-        $(document).on('change', '.edit-images', function(e) {
-            const previewContainer = $(this).siblings('.edit-image-preview');
-            const currentImages = $(this).siblings('.current-images');
-            previewContainer.empty();
 
-            // 새 이미지가 선택되면 기존 이미지 숨기기
-            if (e.target.files.length > 0) {
-                currentImages.hide();
-            } else {
-                currentImages.show();
-            }
-
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = $('<img>')
-                        .attr('src', e.target.result)
-                        .css({
-                            'width': '200px',
-                            'height': '200px',
-                            'object-fit': 'contain',
-                            'margin': '10px',
-                            'border': '1px solid #dee2e6',
-                            'border-radius': '4px',
-                            'background-color': '#f8f9fa'
-                        });
-                    previewContainer.append(img);
-                }
-                reader.readAsDataURL(file);
-            });
-        });
     });
 
     function submitReview() {
@@ -335,38 +304,7 @@
         });
     }
 
-    // 이미지 미리보기 기능 추가
-    $(document).on('change', '.edit-images', function(e) {
-        const previewContainer = $(this).siblings('.edit-image-preview');
-        const currentImages = $(this).siblings('.current-images');
-        previewContainer.empty();
-        
-        // 새 이미지가 선택되면 기존 이미지 숨기기
-        if (e.target.files.length > 0) {
-            currentImages.hide();
-        } else {
-            currentImages.show();
-        }
 
-        Array.from(e.target.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = $('<img>')
-                    .attr('src', e.target.result)
-                    .css({
-                        'width': '200px',
-                        'height': '200px',
-                        'object-fit': 'contain',
-                        'margin': '10px',
-                        'border': '1px solid #dee2e6',
-                        'border-radius': '4px',
-                        'background-color': '#f8f9fa'
-                    });
-                previewContainer.append(img);
-            }
-            reader.readAsDataURL(file);
-        });
-    });
     /*]]>*/
 </script>
 
@@ -1109,6 +1047,39 @@
             }
         });
     }
+
+    // 수정 모드의 이미지 미리보기
+    $(document).on('change', '.edit-images', function(e) {
+        const previewContainer = $(this).siblings('.edit-image-preview');
+        const currentImages = $(this).siblings('.current-images');
+        previewContainer.empty();
+
+        // 새 이미지가 선택되면 기존 이미지 숨기기
+        if (e.target.files.length > 0) {
+            currentImages.hide();
+        } else {
+            currentImages.show();
+        }
+
+        Array.from(e.target.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = $('<img>')
+                    .attr('src', e.target.result)
+                    .css({
+                        'width': '200px',
+                        'height': '200px',
+                        'object-fit': 'contain',
+                        'margin': '10px',
+                        'border': '1px solid #dee2e6',
+                        'border-radius': '4px',
+                        'background-color': '#f8f9fa'
+                    });
+                previewContainer.append(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
 </script>
 </body>
 </html>
