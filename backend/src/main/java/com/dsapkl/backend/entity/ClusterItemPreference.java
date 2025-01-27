@@ -35,8 +35,8 @@ public class ClusterItemPreference {
     }
 
     // 선호도 점수 증가 메서드
-    public void increasePreferenceScore() {
-        this.preferenceScore += 1;
+    public void increasePreferenceScore(int count) {
+        this.preferenceScore += count;
     }
 
     // 선호도 점수 설정 메서드

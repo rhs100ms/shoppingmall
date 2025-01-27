@@ -16,4 +16,5 @@ public class DataController {
     public Integer sendMemberDataToFlask(@PathVariable Long memberId) {
         return recommendationService.getClusterPrediction(memberId);
     }
+
 }

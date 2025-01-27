@@ -72,7 +72,7 @@ public class OrderService {
         try {
             recommendationService.getClusterPrediction(memberId);
             // 클러스터 아이템 선호도 업데이트
-            updateClusterItemPreference(memberId, findItem);
+            updateClusterItemPreference(memberId, findItem, count);
         } catch (Exception e) {
             System.err.println("Error occurred during cluster processing: " + e.getMessage());
         }
@@ -105,7 +105,6 @@ public class OrderService {
         return orders;
     }
 
-//    public
 
     /**
      * 장바구니 상품들 주문
@@ -153,7 +152,7 @@ public class OrderService {
             recommendationService.getClusterPrediction(memberId);
             // 장바구니의 모든 아이템에 대해 선호도 업데이트
             for (OrderItem orderItem : orderItemList) {
-                updateClusterItemPreference(memberId, orderItem.getItem());
+                updateClusterItemPreference(memberId, orderItem.getItem(), orderItem.getCount());
             }
         } catch (Exception e) {
             System.err.println("Error occurred during cluster processing: " + e.getMessage());
@@ -198,7 +197,7 @@ public class OrderService {
                 .orElseGet(Collections::emptyList);
     }
 
-    private void updateClusterItemPreference(Long memberId, Item item) {
+    private void updateClusterItemPreference(Long memberId, Item item, int count) {
         try {
             // MemberInfo에서 cluster_id 가져오기
             MemberInfo memberInfo = memberInfoRepository.findByMemberId(memberId)
@@ -216,7 +215,7 @@ public class OrderService {
                     });
 
             // 선호도 점수 증가
-            preference.increasePreferenceScore();
+            preference.increasePreferenceScore(count);
             clusterItemPreferenceRepository.save(preference);
         } catch (Exception e) {
             // Log error and continue
