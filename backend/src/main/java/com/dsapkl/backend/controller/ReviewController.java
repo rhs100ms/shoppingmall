@@ -6,8 +6,6 @@ import com.dsapkl.backend.dto.ReviewResponseDto;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.Review;
 import com.dsapkl.backend.service.ReviewService;
-import com.dsapkl.backend.util.SessionUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -27,7 +27,8 @@
         <div class="col-md-8">
             <h2 class="text-center mb-4">Manage Member Information</h2>
 
-            <form th:action="@{/user/api/member-info/update/{memberId}(memberId=${memberInfo.memberId})}"
+            <form id="memberInfoForm"
+                  th:action="@{/user/api/member-info/update/{memberId}(memberId=${memberInfo.memberId})}"
                   th:object="${memberInfoCreateDto}"
                   method="post">
 
@@ -63,12 +64,12 @@
                                 <div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="gender" id="male"
-                                               value="MALE" th:field="*{gender}">
+                                               value="MALE" th:field="*{gender}" disabled>
                                         <label class="form-check-label" for="male">Male</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="gender" id="female"
-                                               value="FEMALE" th:field="*{gender}">
+                                               value="FEMALE" th:field="*{gender}" disabled>
                                         <label class="form-check-label" for="female">Female</label>
                                     </div>
                                 </div>
@@ -86,15 +87,15 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" th:value="${member.address?.city}" readonly>
+                                <input type="text" class="form-control" id="city" th:field="*{city}" >
                             </div>
                             <div class="col-md-4">
                                 <label for="street" class="form-label">Street</label>
-                                <input type="text" class="form-control" id="street" th:value="${member.address?.street}" readonly>
+                                <input type="text" class="form-control" id="street" th:field="*{street}" >
                             </div>
                             <div class="col-md-4">
                                 <label for="zipcode" class="form-label">Zip Code</label>
-                                <input type="text" class="form-control" id="zipcode" th:value="${member.address?.zipcode}" readonly>
+                                <input type="text" class="form-control" id="zipcode" th:field="*{zipcode}" >
                             </div>
                         </div>
                     </div>
@@ -136,38 +137,40 @@
                     </div>
                 </div>
 
+
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h4 class="mb-0">Password Reset</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword"
+                                   placeholder="Enter current password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword"
+                                   placeholder="Enter new password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                   placeholder="Confirm new password">
+                            <div id="passwordMatch" class="form-text"></div>
+                        </div>
+                        <button type="button" class="btn btn-dark rounded-pill px-4 hover-shadow" onclick="updatePassword()">Update Password</button>
+                    </div>
+                </div>
+
                 <!-- 버튼 -->
-                <div class="d-flex justify-content-end gap-2">
+                <div class="text-center">
                     <button type="submit" class="btn btn-dark nav-btn">Save</button>
                     <button type="button" class="btn btn-outline-dark nav-btn"
                             th:onclick="|location.href='@{/user}'|">Cancel</button>
                 </div>
             </form>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white py-3">
-                    <h4 class="mb-0">Password Reset</h4>
-                </div>
-                <div class="card-body p-4">
-                    <div class="mb-3">
-                        <label for="currentPassword" class="form-label">Current Password</label>
-                        <input type="password" class="form-control" id="currentPassword" name="currentPassword"
-                               placeholder="Enter current password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newPassword" class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="newPassword" name="newPassword"
-                               placeholder="Enter new password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                               placeholder="Confirm new password">
-                        <div id="passwordMatch" class="form-text"></div>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="updatePassword()">Update Password</button>
-                </div>
-            </div>
 
         </div>
     </div>
@@ -178,6 +181,16 @@
         if(error != null){
             alert(error);
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('#memberInfoForm').addEventListener('submit', function(event) {
+                event.preventDefault();  // 먼저 기본 제출을 막고
+
+                if (confirm('변경 사항을 저장하시겠습니까?')) {
+                    this.submit();  // 확인 누르면 폼 제출
+                }
+            });
+        });
 
         function validatePassword() {
             const newPassword = document.getElementById('newPassword').value;

@@ -1,6 +1,7 @@
 package com.dsapkl.backend.service;
 
 import com.dsapkl.backend.dto.MemberInfoCreateDto;
+import com.dsapkl.backend.entity.Address;
 import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.Member;
 import com.dsapkl.backend.entity.MemberInfo;
@@ -25,6 +26,7 @@ public class MemberInfoService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MemberService memberService;
 
     @Transactional
     public void updateMemberLoginInfo(Long memberId) {
@@ -88,8 +90,10 @@ public class MemberInfoService {
 
     @Transactional
     public void updateMemberInfo(Long memberId, MemberInfoCreateDto dto) {
+
         MemberInfo memberInfo = findMemberInfo(memberId);
-        
+        Member member = memberService.findMember(memberId);
+
         // 기본 정보 업데이트
         if (dto.getAge() != null) {
             memberInfo.updateAge(dto.getAge());
@@ -101,6 +105,20 @@ public class MemberInfoService {
             memberInfo.updateInterests(dto.getInterests());
         }
 
+        Address address = member.getAddress();
+
+        if (dto.getCity() != null) {
+            address.setCity(dto.getCity());
+        }
+
+        if (dto.getStreet() != null) {
+            address.setStreet(dto.getStreet());
+        }
+
+        if (dto.getZipcode() != null) {
+            address.setZipcode(dto.getZipcode());
+        }
+
         // 통계 정보가 없는 경우 초기화
         if (memberInfo.getIncome() == null || memberInfo.getLocation() == null) {
             memberInfo.initializeStatistics();
@@ -110,6 +128,7 @@ public class MemberInfoService {
         updateAllStatistics(memberId);
         
         memberInfoRepository.save(memberInfo);
+        memberRepository.save(member);
     }
 
     @Transactional
@@ -124,6 +143,7 @@ public class MemberInfoService {
         String encodedNewPassword = passwordEncoder.encode(newPassword);
         member.updatePassword(encodedNewPassword);
         memberRepository.save(member);
+
     }
 
 } 

@@ -1,4 +1,4 @@
-package com.dsapkl.backend.controller;
+package com.dsapkl.backend.controller.user;
 
 import com.dsapkl.backend.dto.MemberInfoCreateDto;
 import com.dsapkl.backend.dto.MemberInfoResponseDto;
@@ -27,7 +27,10 @@ public class MemberInfoController {
         MemberInfoCreateDto memberInfoCreateDto = new MemberInfoCreateDto();
         memberInfoCreateDto.setGender(memberInfo.getGender());
         memberInfoCreateDto.setInterests(memberInfo.getInterests());
-        
+        memberInfoCreateDto.setCity(member.getAddress().getCity());
+        memberInfoCreateDto.setStreet(member.getAddress().getStreet());
+        memberInfoCreateDto.setZipcode(member.getAddress().getZipcode());
+
         model.addAttribute("memberInfo", MemberInfoResponseDto.of(memberInfo));
         model.addAttribute("member", member);
         model.addAttribute("memberInfoCreateDto", memberInfoCreateDto);
@@ -35,10 +38,10 @@ public class MemberInfoController {
     }
 
     @PostMapping("/update/{memberId}")
-    public String updateMemberInfo(@PathVariable Long memberId, 
-                                 @Valid @ModelAttribute MemberInfoCreateDto memberInfoCreateDto,
-                                 BindingResult result,
-                                 Model model) {
+    public String updateMemberInfo(@PathVariable Long memberId,
+                                   @Valid @ModelAttribute MemberInfoCreateDto memberInfoCreateDto,
+                                   BindingResult result,
+                                   Model model) {
         try {
             if (result.hasErrors()) {
                 MemberInfo memberInfo = memberInfoService.findMemberInfo(memberId);
@@ -55,4 +58,5 @@ public class MemberInfoController {
             return "members/updateMemberInfoForm";
         }
     }
-} 
+
+}
