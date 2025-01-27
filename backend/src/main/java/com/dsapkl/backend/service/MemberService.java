@@ -111,4 +111,28 @@ public class MemberService {
     public Page<Member> findOnlyUsers(Pageable pageable) {
        return memberRepository.findByRole(Role.USER, pageable);
     }
+
+    public List<Member> findOnlyUser() {
+        return memberRepository.findByRole(Role.USER);
+    }
+
+    public List<Member> searchMembers(String searchKeyword) {
+        return memberRepository.findByNameContainingOrEmailContainingOrPhoneNumberContaining(searchKeyword,searchKeyword,searchKeyword);
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
+
+    public List<Member> findByNameContaining(String searchKeyword) {
+        return memberRepository.findByNameContaining(searchKeyword);
+    }
+
+    public List<Member> findByEmailContaing(String searchKeyword) {
+        return memberRepository.findByEmailContaining(searchKeyword);
+    }
+
+    public List<Member> findByPhoneNumberContaining(String searchKeyword) {
+        return memberRepository.findByPhoneNumberContaining(searchKeyword);
+    }
 }

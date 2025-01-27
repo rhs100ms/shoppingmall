@@ -21,4 +21,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByRole(Role role);
 
     Page<Member> findByRole(Role role, Pageable pageable);
+
+
+    List<Member> findByNameContainingOrEmailContainingOrPhoneNumberContaining(String name, String email, String phoneNumber);
+
+    List<Member> findByNameContaining(String searchKeyword);
+
+    List<Member> findByEmailContaining(String searchKeyword);
+
+    List<Member> findByPhoneNumberContaining(String searchKeyword);
 }

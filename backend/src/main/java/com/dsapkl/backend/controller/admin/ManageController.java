@@ -31,14 +31,37 @@ public class ManageController {
 
     @GetMapping("/info")
     public String manageMembers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(required = false) String searchKeyword,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "all") String searchType,
+            @RequestParam(required = false) String searchKeyword,
             Model model) {
+        List<Member> members;
+
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+
+            switch (searchType) {
+                case "name":
+                    members = memberService.findByNameContaining(searchKeyword);
+                    break;
+                case "email":
+                    members = memberService.findByEmailContaing(searchKeyword);
+                    break;
+                case "phoneNumber":
+                    members = memberService.findByPhoneNumberContaining(searchKeyword);
+                    break;
+                default:
+                    members = memberService.searchMembers(searchKeyword);
+            }
+        } else {
+            members = memberService.findOnlyUser();
+        }
+
+        model.addAttribute("members", members);
 
 //         페이지네이션을 위한 PageRequest 객체 생성
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Member> userPage = memberService.findOnlyUsers(pageRequest);
+//        PageRequest pageRequest = PageRequest.of(page, size);
+//        Page<Member> userPage = memberService.findOnlyUsers(pageRequest);
 
         // 회원 목록 조회 (검색어가 있는 경우 필터링)
 //        Page<Member> memberPage = memberService.getMembers(searchKeyword, pageRequest);
@@ -48,7 +71,7 @@ public class ManageController {
 //        long newMembers = memberService.getNewMembersToday();
 
         // 모델에 데이터 추가
-        model.addAttribute("members", userPage.getContent());
+//        model.addAttribute("membersOnlyUser", userPage.getContent());
 //        model.addAttribute("totalPages", memberPage.getTotalPages());
 //        model.addAttribute("currentPage", page);
         model.addAttribute("totalMembers", totalMembers);
