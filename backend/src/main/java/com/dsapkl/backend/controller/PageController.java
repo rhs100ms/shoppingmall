@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -45,6 +47,17 @@ public class PageController {
 
         List<Item> items = itemService.searchItems(query, category);
 
+        // 카테고리 선택 상태 유지
+        if (category != null && !category.trim().isEmpty()) {
+            try {
+                Category selectedCategory = Category.valueOf(category.toUpperCase());
+                model.addAttribute("selectedCategory", selectedCategory);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 카테고리 값은 무시
+            }
+        }
+
+
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
         model.addAttribute("cartItemListForm", cartItemListForm);
         model.addAttribute("cartItemCount", cartItemListForm.size());
@@ -57,6 +70,9 @@ public class PageController {
         model.addAttribute("items", items);
         model.addAttribute("orderCount", orderCount);
 
+        List<Item> recommendedItems = itemService.findLatestItems(4);
+        model.addAttribute("recommendedItems", recommendedItems);
+
         return "auth/admin";
     }
 
@@ -68,30 +84,54 @@ public class PageController {
                            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
 
         Member member = memberRepository.findByEmail(authenticatedUser.getEmail()).orElseThrow(()-> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. (SECURITY)"));
+        MemberInfo memberInfo = memberInfoRepository.findByMemberId(member.getId()).get();
 
         List<Item> items = itemService.searchItems(query, category);
 
-
-
-        try {
-            MemberInfo memberInfo = memberInfoRepository.findByMemberId(member.getId())
-                    .orElseThrow(()-> new IllegalArgumentException("memberInfo 정보를 찾을 수 없습니다."));
-
-            Cluster cluster = memberInfo.getCluster_id();
-            if (cluster != null) {
-                List<Item> sortedItems = items.stream()
-                        .sorted((item1, item2) -> {
-                            Integer score1 = getPreferenceScore(cluster, item1);
-                            Integer score2 = getPreferenceScore(cluster, item2);
-                            return score2.compareTo(score1);
-                        }).toList();
-                items = sortedItems;
-            }
-        } catch (Exception e) {
-            log.error("선호도 정렬 중 오류 발생: ", e);
+        if (category == null || category.isEmpty()) {
+            items = itemService.findLatestItems(4);
+        } else {
+            Category selectedCategory = Category.valueOf(category.toUpperCase());
+            model.addAttribute("selectedCategory", selectedCategory);
+            items = itemService.searchItems(query, category);
         }
 
 
+
+        // 카테고리 선택 상태 유지
+        if (category != null && !category.trim().isEmpty()) {
+            try {
+                Category selectedCategory = Category.valueOf(category.toUpperCase());
+                model.addAttribute("selectedCategory", selectedCategory);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 카테고리 값은 무시
+            }
+        }
+
+        // 선호도 기반 추천 상품 가져오기
+        List<Item> recommendedItems;
+
+        if (memberInfo != null && memberInfo.getCluster_id() != null) {
+            // 클러스터의 선호도 높은 상품 4개 조회
+            List<ClusterItemPreference> preferences = clusterItemPreferenceRepository
+                    .findByClusterIdOrderByPreferenceScoreDesc(memberInfo.getCluster_id().getId());
+
+            if (!preferences.isEmpty()) {
+                recommendedItems = preferences.stream()
+                        .map(ClusterItemPreference::getItem)
+                        .limit(4)
+                        .collect(Collectors.toList());
+                model.addAttribute("isRecommended", true);
+            } else {
+                recommendedItems = itemService.findLatestItems(4);
+                model.addAttribute("isRecommended", false);
+            }
+        } else {
+            recommendedItems = itemService.findLatestItems(4);
+            model.addAttribute("isRecommended", false);
+        }
+
+        model.addAttribute("recommendedItems", recommendedItems);
 
 
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
@@ -115,7 +155,23 @@ public class PageController {
                            @RequestParam(value = "query", required = false) String query,
                            @RequestParam(value = "category", required = false) String category) {
         List<Item> items = itemService.searchItems(query, category);
+
+        // 카테고리 선택 상태 유지
+        if (category != null && !category.trim().isEmpty()) {
+            try {
+                Category selectedCategory = Category.valueOf(category.toUpperCase());
+                model.addAttribute("selectedCategory", selectedCategory);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 카테고리 값은 무시
+            }
+        }
+
+        List<Item> recommendedItems = itemService.findLatestItems(4);
+        model.addAttribute("recommendedItems", recommendedItems);
+
         model.addAttribute("items", items);
+
+
         return "home";
     }
 
