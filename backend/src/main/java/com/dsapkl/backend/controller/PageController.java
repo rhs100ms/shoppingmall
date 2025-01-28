@@ -88,16 +88,6 @@ public class PageController {
 
         List<Item> items = itemService.searchItems(query, category);
 
-        if (category == null || category.isEmpty()) {
-            items = itemService.findLatestItems(4);
-        } else {
-            Category selectedCategory = Category.valueOf(category.toUpperCase());
-            model.addAttribute("selectedCategory", selectedCategory);
-            items = itemService.searchItems(query, category);
-        }
-
-
-
         // 카테고리 선택 상태 유지
         if (category != null && !category.trim().isEmpty()) {
             try {
@@ -154,6 +144,7 @@ public class PageController {
     public String homePage(Model model,
                            @RequestParam(value = "query", required = false) String query,
                            @RequestParam(value = "category", required = false) String category) {
+
         List<Item> items = itemService.searchItems(query, category);
 
         // 카테고리 선택 상태 유지

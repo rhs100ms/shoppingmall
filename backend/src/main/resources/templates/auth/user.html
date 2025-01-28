@@ -312,7 +312,7 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-4">
         <!-- 검색 시 추천/최신 상품 섹션 숨기기 -->
-        <div th:if="${recommendedItems != null and !recommendedItems.isEmpty() and param.query == null and param.category == null}"
+        <div th:if="${recommendedItems != null and !recommendedItems.isEmpty() and (param.query == null or #strings.isEmpty(param.query[0])) and (param.category == null or #strings.isEmpty(param.category[0]))}"
              class="mb-5">
             <h3 class="section-title">
                 <span th:if="${isRecommended}">
