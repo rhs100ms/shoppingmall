@@ -86,7 +86,6 @@ public class PageController {
                 .count();
 
         model.addAttribute("items", items);
-//        System.out.println(items);
         model.addAttribute("orderCount", orderCount);
 
         List<Item> recommendedItems = itemService.findLatestItems(4);
@@ -106,6 +105,20 @@ public class PageController {
         MemberInfo memberInfo = memberInfoRepository.findByMemberId(member.getId()).get();
 
         List<Item> items = itemService.searchItems(query, category);
+
+
+        //ItemForm 으로 변환
+        List<ItemForm> itemForms = items.stream().map(item -> {
+                    List<ItemImage> itemImageList = itemImageService.findItemImageDetail(item.getId(), "N");
+                    List<ItemImageDto> itemImageDtoList = itemImageList.stream().map(ItemImageDto::new).collect(Collectors.toList());
+
+                    ItemForm itemForm = ItemForm.from(item);
+                    itemForm.setItemImageListDto(itemImageDtoList);
+                    return itemForm;
+                })
+                .collect(Collectors.toList());
+        model.addAttribute("itemForms", itemForms);
+
 
         // 카테고리 선택 상태 유지
         if (category != null && !category.trim().isEmpty()) {
@@ -165,6 +178,20 @@ public class PageController {
                            @RequestParam(value = "category", required = false) String category) {
 
         List<Item> items = itemService.searchItems(query, category);
+
+
+        //ItemForm 으로 변환
+        List<ItemForm> itemForms = items.stream().map(item -> {
+                    List<ItemImage> itemImageList = itemImageService.findItemImageDetail(item.getId(), "N");
+                    List<ItemImageDto> itemImageDtoList = itemImageList.stream().map(ItemImageDto::new).collect(Collectors.toList());
+
+                    ItemForm itemForm = ItemForm.from(item);
+                    itemForm.setItemImageListDto(itemImageDtoList);
+                    return itemForm;
+                })
+                .collect(Collectors.toList());
+        model.addAttribute("itemForms", itemForms);
+
 
         // 카테고리 선택 상태 유지
         if (category != null && !category.trim().isEmpty()) {

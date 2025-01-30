@@ -403,60 +403,12 @@
             </div>
         </div>
 
-<!--            &lt;!&ndash; 상품 카드 &ndash;&gt;-->
-<!--            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="item, iterStat : ${items}"-->
-<!--                 th:with="currentScore=${item.score.isEmpty() ? 0 : item.score.get(0).preferenceScore},-->
-<!--                          rank=${iterStat.index + 1}">-->
-<!--                <div class="card h-100 product-card border-0"-->
-<!--                     th:classappend="${currentScore >= 3} ? (-->
-<!--                                    ${rank == 1} ? 'border-warning' : (-->
-<!--                                    ${rank == 2} ? 'border-secondary' : (-->
-<!--                                    ${rank == 3} ? 'border-danger' : '')))">-->
-<!--                    &lt;!&ndash; 상품 이미지 &ndash;&gt;-->
-<!--                    <div class="product-image">-->
-<!--                        <img th:if="${item.getItemImageList() != null and !item.getItemImageList().isEmpty()}"-->
-<!--                             th:src="${#strings.startsWith(item.getItemImageList().get(0).getStoreName(), 'http')} ?-->
-<!--                                     ${item.getItemImageList().get(0).getStoreName()} :-->
-<!--                                     |/images/${item.getItemImageList().get(0).getStoreName()}|"-->
-<!--                             alt="Product Image"/>-->
-<!--                        <div th:if="${item.getItemImageList() == null or item.getItemImageList().isEmpty()}"-->
-<!--                             class="d-flex align-items-center justify-content-center">-->
-<!--                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 상품 정보 &ndash;&gt;-->
-<!--                    <div class="card-body p-4 text-center">-->
-<!--                        <h5 class="product-title mb-3" th:text="${item.getName()}">Product</h5>-->
-<!--                        <p class="product-price mb-0">-->
-<!--                            <span th:text="${#numbers.formatInteger(item.getPrice(), 0, 'COMMA')}">price</span>-->
-<!--                            <span class="text-muted fs-6">KRW</span>-->
-<!--                        </p>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 버튼 &ndash;&gt;-->
-<!--                    <div class="card-footer bg-transparent border-0 p-4 text-center">-->
-<!--                        <a class="btn btn-outline-dark w-100 rounded-pill hover-shadow"-->
-<!--                           th:href="@{/admin/items/{id}(id=${item.id})}">-->
-<!--                            View Details-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-
-
-
-
-
-
     </div>
 </section>
 <script th:inline="javascript">
     const itemsPerPage = 8;
     let currentPage = 0;
     const allItems = /*[[${itemForms}]]*/ [];
-    console.log(allItems);
     // 초기 로드
     document.addEventListener('DOMContentLoaded', function(){
        displayItems(0, itemsPerPage);

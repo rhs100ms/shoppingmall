@@ -34,7 +34,6 @@ public class Item {
     private List<ClusterItemPreference> score = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
-    @JsonIgnore
     private List<ItemImage> itemImageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
