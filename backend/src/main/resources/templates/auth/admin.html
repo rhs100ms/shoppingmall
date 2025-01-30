@@ -455,8 +455,8 @@
 <script th:inline="javascript">
     const itemsPerPage = 8;
     let currentPage = 0;
-    const allItems = /*[[${items}]]*/ [];
-
+    const allItems = /*[[${itemForms}]]*/ [];
+    console.log(allItems);
     // 초기 로드
     document.addEventListener('DOMContentLoaded', function(){
        displayItems(0, itemsPerPage);
@@ -507,11 +507,7 @@
             <div class="col-sm-6 col-lg-4 col-xl-3">
                 <div class="card h-100 product-card border-0">
                     <div class="product-image">
-                        <img src="${item.itemImageList && item.itemImageList.length > 0
-            ? (item.itemImageList[0].storeName.startsWith('http')
-                ? item.itemImageList[0].storeName
-                : '/images/' + item.itemImageList[0].storeName)
-            : ''}"
+                        <img src="/images/${item.itemImageListDto[0].storeName}"
                             alt="Product Image"/>
                     </div>
                     <div class="card-body p-4 text-center">
@@ -523,7 +519,7 @@
                     </div>
                     <div class="card-footer bg-transparent border-0 p-4 text-center">
                         <a class="btn btn-outline-dark w-100 rounded-pill hover-shadow"
-                           href="/admin/items/${item.id}">
+                           href="/admin/items/${item.itemId}">
                             View Details
                         </a>
                     </div>

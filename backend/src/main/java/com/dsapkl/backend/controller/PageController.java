@@ -1,6 +1,8 @@
 package com.dsapkl.backend.controller;
 
 import com.dsapkl.backend.config.AuthenticatedUser;
+import com.dsapkl.backend.dto.ItemForm;
+import com.dsapkl.backend.dto.ItemImageDto;
 import com.dsapkl.backend.entity.*;
 import com.dsapkl.backend.repository.ClusterItemPreferenceRepository;
 import com.dsapkl.backend.repository.MemberInfoRepository;
@@ -8,6 +10,7 @@ import com.dsapkl.backend.repository.MemberRepository;
 import com.dsapkl.backend.repository.OrderDto;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
+import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
 import com.dsapkl.backend.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class PageController {
     private final MemberInfoRepository memberInfoRepository;
     private final ClusterItemPreferenceRepository clusterItemPreferenceRepository;
     private final MemberRepository memberRepository;
+    private final ItemImageService itemImageService;
 
     @GetMapping("/admin")
     public String adminPage(Model model,
@@ -46,6 +50,20 @@ public class PageController {
         Member member = memberRepository.findByEmail(authenticatedUser.getEmail()).orElseThrow(()-> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. (SECURITY)"));
 
         List<Item> items = itemService.searchItems(query, category);
+
+        //ItemForm 으로 변환
+        List<ItemForm> itemForms = items.stream().map(item -> {
+            List<ItemImage> itemImageList = itemImageService.findItemImageDetail(item.getId(), "N");
+            List<ItemImageDto> itemImageDtoList = itemImageList.stream().map(ItemImageDto::new).collect(Collectors.toList());
+
+            ItemForm itemForm = ItemForm.from(item);
+            itemForm.setItemImageListDto(itemImageDtoList);
+            return itemForm;
+        })
+                .collect(Collectors.toList());
+        model.addAttribute("itemForms", itemForms);
+
+
 
         // 카테고리 선택 상태 유지
         if (category != null && !category.trim().isEmpty()) {
@@ -68,6 +86,7 @@ public class PageController {
                 .count();
 
         model.addAttribute("items", items);
+//        System.out.println(items);
         model.addAttribute("orderCount", orderCount);
 
         List<Item> recommendedItems = itemService.findLatestItems(4);
