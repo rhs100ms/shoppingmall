@@ -19,7 +19,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <th:block th:replace="~{members/common-styles :: memberStyles}"></th:block>
-    <style>
+        <style>
         :root {
             --primary-color: #212529;
             --secondary-color: #495057;
@@ -93,6 +93,10 @@
             vertical-align: middle;
         }
 
+        .input-group .form-control {
+            border-radius: 0.5rem !important;
+        }
+
         .form-select, .form-control {
             padding: 0.5rem 1rem;
         }
@@ -107,34 +111,151 @@
         }
 
         /* 페이지네이션 스타일 수정 */
+        .pagination {
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .page-item {
+            margin: 2px;
+        }
+
         .page-link {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.5rem;
             color: var(--primary-color);
             border-color: var(--border-color);
         }
 
-        .page-link:hover {
-            color: var(--white);
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        /* 페이지네이션 컨테이너 수정 */
+        .pagination-container {
+            overflow-x: auto;
+            padding: 1rem 0;
         }
 
-        .page-item.active .page-link {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
+        /* 많은 페이지 번호를 처리하기 위한 스타일 */
+        @media (max-width: 768px) {
+            .pagination .page-item:not(.active):not(:first-child):not(:last-child) {
+                display: none;
+            }
 
-        .page-item.disabled .page-link {
-            color: var(--secondary-color);
+            .pagination .page-item.active {
+                display: block;
+            }
         }
 
         /* 상품명 링크 스타일 수정 */
         .product-link {
             color: var(--primary-color);
             text-decoration: none;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            margin-left: 0.5rem;
         }
 
         .product-link:hover {
             color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .rounded {
+            border-radius: 0.5rem !important;
+        }
+
+        /* 이미지 컨테이너 호버 효과 */
+        .image-container {
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+
+        /* 상품 이미지 관련 스타일 */
+        .product-image-container {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            min-height: 80px;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #dee2e6;
+            margin-right: 0.5rem;
+        }
+
+        .image-wrapper, .no-image-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .no-image-wrapper i {
+            font-size: 1.5rem;
+            color: #adb5bd;
+        }
+
+        /* 호버 효과 */
+        .product-image-container:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn {
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 권한없음 배지 스타일 */
+        .permission-badge {
+            display: inline-block;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .permission-badge i {
+            margin-right: 0.25rem;
+            font-size: 0.8rem;
         }
     </style>
 
@@ -200,7 +321,7 @@
                         <i class="bi bi-box-seam fs-3 me-2"></i>
                         <div>
                             <h6 class="card-subtitle mb-1 text-muted">Total Products</h6>
-                            <h3 class="card-title mb-0" th:text="${totalItems}">0</h3>
+                            <h3 class="card-title mb-0" th:text="${itemStats.getTotalCount()}">0</h3>
                         </div>
                     </div>
                 </div>
@@ -214,7 +335,7 @@
                         <i class="bi bi-exclamation-triangle fs-3 me-2 text-warning"></i>
                         <div>
                             <h6 class="card-subtitle mb-1 text-muted">Low Stock</h6>
-                            <h3 class="card-title mb-0" th:text="${lowStockItems}">0</h3>
+                            <h3 class="card-title mb-0" th:text="${itemStats.getLowStockCount()}">0</h3>
                         </div>
                     </div>
                 </div>
@@ -228,7 +349,7 @@
                         <i class="bi bi-check-circle fs-3 me-2 text-success"></i>
                         <div>
                             <h6 class="card-subtitle mb-1 text-muted">On Sale</h6>
-                            <h3 class="card-title mb-0" th:text="${sellingItems}">0</h3>
+                            <h3 class="card-title mb-0" th:text="${itemStats.getOnSaleCount()}">0</h3>
                         </div>
                     </div>
                 </div>
@@ -241,8 +362,8 @@
                     <div class="d-flex align-items-center">
                         <i class="bi bi-x-circle fs-3 me-2 text-danger"></i>
                         <div>
-                            <h6 class="card-subtitle mb-1 text-muted">Discontinued</h6>
-                            <h3 class="card-title mb-0" th:text="${soldOutItems}">0</h3>
+                            <h6 class="card-subtitle mb-1 text-muted">Sold Out</h6>
+                            <h3 class="card-title mb-0" th:text="${itemStats.getSoldOutCount()}">0</h3>
                         </div>
                     </div>
                 </div>
@@ -256,18 +377,18 @@
         <form th:action="@{/admin/items/manage}" method="get" class="row g-3 flex-grow-1">
             <div class="col-md-4">
                 <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control" name="query"
-                           placeholder="Search by product name or code" th:value="${param.query}">
+                           placeholder="Search by product name" th:value="${param.query}">
                 </div>
             </div>
+
             <div class="col-md-2">
                 <select class="form-select" name="category">
                     <option value="">All Categories</option>
-                    <option th:each="category : ${T(com.dsapkl.backend.entity.Category).values()}"
-                            th:value="${category}"
-                            th:text="${category.name()}"
-                            th:selected="${param.category == category.name()}">
+                    <option th:each="cat : ${T(com.dsapkl.backend.entity.Category).values()}"
+                            th:value="${cat}"
+                            th:text="${cat.name()}"
+                            th:selected="${cat == selectedCategory}">
                     </option>
                 </select>
             </div>
@@ -275,9 +396,11 @@
             <div class="col-md-2">
                 <select class="form-select" name="status">
                     <option value="">All Status</option>
-                    <option value="SELLING" th:selected="${param.status == 'SELLING'}">On Sale</option>
-                    <option value="SOLDOUT" th:selected="${param.status == 'SOLDOUT'}">Sold Out</option>
-                    <option value="LOW_STOCK" th:selected="${param.status == 'LOW_STOCK'}">Low Stock</option>
+                    <option th:each="stat : ${T(com.dsapkl.backend.entity.ItemStatus).values()}"
+                            th:value="${stat}"
+                            th:text="${stat.name()}"
+                            th:selected="${stat == selectedStatus}">
+                    </option>
                 </select>
             </div>
 
@@ -309,7 +432,6 @@
                     <thead class="bg-light">
                     <tr>
                         <th class="border-0">Product Info</th>
-                        <th class="border-0">Product Code</th>
                         <th class="border-0">Category</th>
                         <th class="border-0">Price</th>
                         <th class="border-0">Stock</th>
@@ -339,7 +461,6 @@
                             </div>
                         </td>
 
-                        <td th:text="${item.category.name() + '-' + item.itemId}">SNK-2024-001</td>
                         <td th:text="${item.category.name()}">Shoes</td>
                         <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + ' KRW'}">89,000 KRW</td>
                         <td th:text="${item.stockQuantity}">245</td>
@@ -349,7 +470,9 @@
                             <span th:if="${item.stockQuantity == 0}" class="badge bg-danger">Sold Out</span>
                         </td>
 
-                        <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
+                        <td th:text="${item.modifiedDate != null ?
+                                      #temporals.format(item.modifiedDate, 'yyyy-MM-dd') :
+                                      #temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
                         <td>
                             <div class="btn-group">
                                 <a th:href="@{~/admin/items/{itemId}/edit(itemId=${item.itemId}, redirectUrl='manage')}"
@@ -371,9 +494,9 @@
     </div>
 
     <!-- 페이지네이션 -->
-    <div class="d-flex justify-content-between align-items-center my-4">
+    <div class="d-flex position-relative my-4">
 
-        <div>
+        <div class="me-auto">
             <select class="form-select form-select-sm" style="width: 130px;"
                     onchange="changePageSize(this.value)">
                 <option value="10" th:selected="${param.size == null || param.size == 10}">10 per page</option>
@@ -381,47 +504,74 @@
                 <option value="50" th:selected="${param.size == 50}">50 per page</option>
             </select>
         </div>
-
-        <nav th:if="${totalPages > 0}">
-            <ul class="pagination mb-0">
-                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                    <a class="page-link" th:href="@{~/admin/items/manage(
-                        page=${currentPage - 1},
-                        size=${param.size},
-                        query=${param.query},
-                        category=${param.category},
-                        status=${param.status}
-                    )}">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>
-                </li>
-                <li class="page-item"
-                    th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${pageNum == currentPage ? 'active' : ''}">
-                    <a class="page-link"
-                       th:href="@{~/admin/items/manage(
-                           page=${pageNum},
-                           size=${param.size},
-                           query=${param.query},
-                           category=${param.category},
-                           status=${param.status}
-                       )}"
-                       th:text="${pageNum + 1}">1</a>
-                </li>
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                    <a class="page-link" th:href="@{~/admin/items/manage(
-                        page=${currentPage + 1},
-                        size=${param.size},
-                        query=${param.query},
-                        category=${param.category},
-                        status=${param.status}
-                    )}">
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
+        <div class="pagination-container position-absolute start-50 translate-middle-x">
+            <nav th:if="${totalPages > 0}">
+                <ul class="pagination mb-0">
+                    <!-- 처음 페이지로 -->
+                    <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{~/admin/items/manage(
+                            page=0,
+                            size=${param.size},
+                            query=${param.query},
+                            category=${param.category},
+                            status=${param.status}
+                        )}">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <!-- 이전 페이지 -->
+                    <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{~/admin/items/manage(
+                            page=${currentPage - 1},
+                            size=${param.size},
+                            query=${param.query},
+                            category=${param.category},
+                            status=${param.status}
+                        )}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <!-- 페이지 번호 -->
+                    <li class="page-item"
+                        th:each="pageNum : ${#numbers.sequence(start, end)}"
+                        th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                        <a class="page-link"
+                           th:href="@{~/admin/items/manage(
+                               page=${pageNum},
+                               size=${param.size},
+                               query=${param.query},
+                               category=${param.category},
+                               status=${param.status}
+                           )}"
+                           th:text="${pageNum + 1}">1</a>
+                    </li>
+                    <!-- 다음 페이지 -->
+                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{~/admin/items/manage(
+                            page=${currentPage + 1},
+                            size=${param.size},
+                            query=${param.query},
+                            category=${param.category},
+                            status=${param.status}
+                        )}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <!-- 마지막 페이지로 -->
+                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{~/admin/items/manage(
+                            page=${totalPages - 1},
+                            size=${param.size},
+                            query=${param.query},
+                            category=${param.category},
+                            status=${param.status}
+                        )}">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
 </div>

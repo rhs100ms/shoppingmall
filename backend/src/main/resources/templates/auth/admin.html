@@ -283,7 +283,7 @@
                 <option value="">All Categories</option>
                 <option th:each="cat : ${T(com.dsapkl.backend.entity.Category).values()}"
                         th:value="${cat}"
-                        th:text="${cat}"
+                        th:text="${cat.name()}"
                         th:selected="${cat == selectedCategory}">
                 </option>
             </select>

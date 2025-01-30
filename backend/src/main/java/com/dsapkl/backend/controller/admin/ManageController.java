@@ -36,6 +36,7 @@ public class ManageController {
             @RequestParam(required = false, defaultValue = "all") String searchType,
             @RequestParam(required = false) String searchKeyword,
             Model model) {
+
         List<Member> members;
 
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {

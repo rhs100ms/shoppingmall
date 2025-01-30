@@ -222,4 +222,13 @@ public class ItemService {
                 .limit(limit)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<Item> findAll() {
+        return itemRepository.findAll();
+    }
+
+    public long count() {
+        return itemRepository.count();  // JPA Repository의 기본 count() 메서드 사용
+    }
 }

@@ -4,10 +4,8 @@ import com.dsapkl.backend.config.AuthenticatedUser;
 import com.dsapkl.backend.dto.CategoryCode;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
-import com.dsapkl.backend.entity.Category;
-import com.dsapkl.backend.entity.Item;
-import com.dsapkl.backend.entity.ItemImage;
-import com.dsapkl.backend.entity.Member;
+import com.dsapkl.backend.dto.ItemStats;
+import com.dsapkl.backend.entity.*;
 import com.dsapkl.backend.repository.query.CartQueryDto;
 import com.dsapkl.backend.service.CartService;
 import com.dsapkl.backend.service.ItemImageService;
@@ -171,8 +169,40 @@ public class AdminItemController {
                               @RequestParam(defaultValue = "10") int size,
                               @RequestParam(required = false) String query,
                               @RequestParam(required = false) String category,
-                              @RequestParam(required = false) String status,
-                              HttpServletRequest request) {
+                              @RequestParam(required = false) String status
+                              ) {
+
+        // 전체 아이템 조회 (통계용)
+        List<Item> allItems = itemService.findAll();
+
+        // ItemStats 생성
+        ItemStats itemStats = ItemStats.builder()
+                .totalCount(itemService.count())
+                .lowStockCount(allItems.stream()
+                        .filter(item -> item.getStockQuantity() <= 10 && item.getStockQuantity() > 0)
+                        .count())
+                .onSaleCount(allItems.stream()
+                        .filter(item -> item.getStockQuantity() > 0)
+                        .count())
+                .soldOutCount(allItems.stream()
+                        .filter(item -> item.getStockQuantity() == 0)
+                        .count())
+                .build();
+
+        // 검색 파라미터 유지를 위한 모델 속성 추가
+        if (category != null && !category.trim().isEmpty()) {
+            try {
+                Category selectedCategory = Category.valueOf(category.toUpperCase());
+                model.addAttribute("selectedCategory", selectedCategory);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 카테고리 값은 무시
+            }
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            ItemStatus selectedStatus = ItemStatus.valueOf(status.toUpperCase());
+            model.addAttribute("selectedStatus", selectedStatus);
+        }
 
         Page<Item> itemPage;
         if (query != null || category != null || status != null) {
@@ -193,33 +223,20 @@ public class AdminItemController {
                 })
                 .collect(Collectors.toList());
 
-        // 통계 계산
-        long totalItems = itemForms.size();
-        long lowStockItems = itemForms.stream()
-                .filter(item -> item.getStockQuantity() <= 10 && item.getStockQuantity() > 0)
-                .count();
-        long sellingItems = itemForms.stream()
-                .filter(item -> item.getStockQuantity() > 0)
-                .count();
-        long soldOutItems = itemForms.stream()
-                .filter(item -> item.getStockQuantity() == 0)
-                .count();
+        int start = Math.max(0, Math.min(itemPage.getNumber() - 2, itemPage.getTotalPages() - 5));
+        int end = Math.min(itemPage.getTotalPages() -1 , Math.max(4, itemPage.getNumber() + 2));
+
+
 
         // 모델에 데이터 추가
         model.addAttribute("items", itemForms);
-        model.addAttribute("totalItems", totalItems);
-        model.addAttribute("lowStockItems", lowStockItems);
-        model.addAttribute("sellingItems", sellingItems);
-        model.addAttribute("soldOutItems", soldOutItems);
+        model.addAttribute("itemStats", itemStats);
         model.addAttribute("currentPage", itemPage.getNumber());
         model.addAttribute("totalPages", itemPage.getTotalPages());
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
 
-        // 카트 아이템 카운트
-        Member member = SessionUtil.getMember(request);
-        if (member != null) {
-            List<CartQueryDto> cartItemListForm = cartService.findCartItems(member.getId());
-            model.addAttribute("cartItemCount", cartItemListForm.size());
-        }
+
 
         return "item/itemManage";
     }
