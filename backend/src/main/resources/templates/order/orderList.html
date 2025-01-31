@@ -143,6 +143,7 @@
             <div th:each="order, iterStat : ${orderDetails}" class="mb-4">
                     <div class="d-flex align-items-center mb-2">
                         <span class="badge bg-secondary rounded-pill me-2"
+                              th:classappend="${order.orderStatus.name() == 'ORDER' ? 'bg-primary' : 'bg-danger'}"
                               th:text="${order.orderStatus.name() == 'ORDER' ?
                     'Order #' + (orderDetails.size() - iterStat.index) :
                     'Cancel #' + (orderDetails.size() - iterStat.index)}">
@@ -155,7 +156,8 @@
                             <div class="d-flex justify-content-between align-items-center">
 <!--                                <h5 class="mb-0 me-3" th:text="${iterStat.count}"></h5>-->
                                 <h5 class="mb-0" th:text="${order.orderDate} + ' Order'"></h5>
-                                <span class="badge bg-primary"
+                                <span class="badge"
+                                      th:classappend="${order.orderStatus.name() == 'ORDER' ? 'bg-primary' : 'bg-danger'}"
                                       th:text="${order.orderStatus.name() == 'ORDER' ? 'Processing' : 'Cancelled'}">
                                 </span>
                             </div>
