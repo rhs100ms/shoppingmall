@@ -436,7 +436,6 @@
                         <th class="border-0">Price</th>
                         <th class="border-0">Stock</th>
                         <th class="border-0">Status</th>
-                        <th class="border-0">Last Modified</th>
                         <th class="border-0">Actions</th>
                     </tr>
                     </thead>
@@ -470,9 +469,6 @@
                             <span th:if="${item.stockQuantity == 0}" class="badge bg-danger">Sold Out</span>
                         </td>
 
-                        <td th:text="${item.modifiedDate != null ?
-                                      #temporals.format(item.modifiedDate, 'yyyy-MM-dd') :
-                                      #temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-02-15</td>
                         <td>
                             <div class="btn-group">
                                 <a th:href="@{~/admin/items/{itemId}/edit(itemId=${item.itemId}, redirectUrl='manage')}"
@@ -499,9 +495,11 @@
         <div class="me-auto">
             <select class="form-select form-select-sm" style="width: 130px;"
                     onchange="changePageSize(this.value)">
-                <option value="10" th:selected="${param.size == null || param.size == 10}">10 per page</option>
-                <option value="20" th:selected="${param.size == 20}">20 per page</option>
-                <option value="50" th:selected="${param.size == 50}">50 per page</option>
+                <option th:each="pageSize : ${T(com.dsapkl.backend.entity.PageSize).values()}"
+                        th:value="${pageSize.value}"
+                        th:text="${pageSize.displayName}"
+                        th:selected="${pageSize == selectedPageSize}">
+                </option>
             </select>
         </div>
         <div class="pagination-container position-absolute start-50 translate-middle-x">

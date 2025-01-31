@@ -226,7 +226,15 @@ public class AdminItemController {
         int start = Math.max(0, Math.min(itemPage.getNumber() - 2, itemPage.getTotalPages() - 5));
         int end = Math.min(itemPage.getTotalPages() -1 , Math.max(4, itemPage.getNumber() + 2));
 
-
+        // 선택된 페이지 사이즈 설정
+        PageSize selectedPageSize = PageSize.TEN; // 기본값
+        for (PageSize pageSize : PageSize.values()) {
+            if (pageSize.getValue() == size) {
+                selectedPageSize = pageSize;
+                break;
+            }
+        }
+        model.addAttribute("selectedPageSize", selectedPageSize);
 
         // 모델에 데이터 추가
         model.addAttribute("items", itemForms);
