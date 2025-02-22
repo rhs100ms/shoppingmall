@@ -54,6 +54,9 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     implementation 'com.stripe:stripe-java:23.5.0' // 최신 버전으로 변경 가능
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.opencsv:opencsv:5.7.1'
+    implementation 'org.springframework:spring-test'
+
 }
 
 tasks.named('test') {
