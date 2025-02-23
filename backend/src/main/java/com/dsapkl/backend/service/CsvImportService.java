@@ -27,23 +27,26 @@ public class CsvImportService {
 
     private final String CSV_PATH = "C:/data/products.csv";
     private final String IMAGE_BASE_PATH = "C:/data/images/"; // 기본 이미지 경로 추가
-    private final String PROCESSED_ROWS_FILE = "C:/data/processed_rows.txt";
-    private long lastModified = 0;
+//    private final String PROCESSED_ROWS_FILE = "C:/data/processed_rows.txt";
+    private final String LAST_PROCESSED_ROW_FILE = "C:/data/last_processed_row.txt";
+
 
     public void importProductsFromCsv(String csvPath) {
 
-        Set<String> processedRows = loadProcessedRows();
+        int lastProcessedRow = loadLastProcessedRow();
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
             String[] header = reader.readNext(); // 헤더 스킵
             String[] line;
+            int currentRow = 1;
+
 
             while ((line = reader.readNext()) != null) {
                 String productName = line[0].trim();
 
                 // 이미 실행된 행이면 건너뜀
-                if (processedRows.contains(productName)) {
-                    System.out.println("이미 실행된 행 건너뛰기: " + productName);
+                if (currentRow <= lastProcessedRow) {
+                    currentRow++;
                     continue;
                 }
 
@@ -82,13 +85,15 @@ public class CsvImportService {
                         );
                         imageFiles.add(multipartFile);
                     } else {
-                        System.out.println("File not found");
+                        System.out.println("File not found: " + imageName);
                     }
                 }
                 // 상품 저장
                 itemService.saveItem(form, imageFiles);
 
-                saveProcessedRow(productName);
+                //현재 행 번호 저장
+                saveLastProcessedRow(currentRow);
+                currentRow++;
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -99,27 +104,41 @@ public class CsvImportService {
         }
     }
 
-    private Set<String> loadProcessedRows() {
-        Set<String> processedRows = new HashSet<>();
-        File file = new File(PROCESSED_ROWS_FILE);
+//    private Set<String> loadProcessedRows() {
+//        Set<String> processedRows = new HashSet<>();
+//        File file = new File(PROCESSED_ROWS_FILE);
+//
+//        if (file.exists()) {
+//            try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+//                String line;
+//                while((line = br.readLine()) != null) {
+//                    processedRows.add(line.trim());
+//                }
+//            } catch (IOException e) {
+//                System.out.println("처리된 행을 불러오는 도중 오류 발생");
+//            }
+//        }
+//        return processedRows;
+//    }
 
-        if (file.exists()) {
-            try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while((line = br.readLine()) != null) {
-                    processedRows.add(line.trim());
-                }
-            } catch (IOException e) {
-                System.out.println("처리된 행을 불러오는 도중 오류 발생");
-            }
+    private int loadLastProcessedRow() {
+        File file = new File(LAST_PROCESSED_ROW_FILE);
+        if (!file.exists()) {
+            return 0;
         }
-        return processedRows;
+        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            return line != null ? Integer.parseInt(line.trim()) : 0;
+        } catch (IOException e) {
+            System.out.println("마지막 처리된 행 번호를 불러오는 중 오류 발생");
+            return 0;
+        }
+
     }
 
-    private void saveProcessedRow(String productName) {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(PROCESSED_ROWS_FILE, true))) {
-            bw.write(productName);
-            bw.newLine();
+    private void saveLastProcessedRow(int rowNumber) {
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(LAST_PROCESSED_ROW_FILE))) {
+            bw.write(String.valueOf(rowNumber));
         } catch (IOException e) {
             System.out.println("처리된 행을 처리하는 중 오류 발생");
         }
