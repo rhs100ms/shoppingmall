@@ -19,7 +19,7 @@ public class AddService {
 
     private final ItemService itemService;
     private final GoogleSheetsService googleSheetsService;
-    private final ImageExtensionService imageExtensionService;
+    private final ImageService imageService;
 
     public void importNewProducts() {
         List<List<Object>> sheetValues = googleSheetsService.readSheet("Sheet1!A2:G");
@@ -45,7 +45,7 @@ public class AddService {
         newProduct.setStockQuantity(Integer.parseInt(row.get(4).toString()));
         newProduct.setDescription(row.get(5).toString());
         String[] imageNames = row.get(6).toString().split(",\\s*");
-        List<MultipartFile> images = imageExtensionService.processImages(imageNames);
+        List<MultipartFile> images = imageService.processImages(imageNames);
         newProduct.setItemImages(images);
         return newProduct;
     }

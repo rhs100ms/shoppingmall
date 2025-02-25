@@ -1,5 +1,6 @@
 package com.dsapkl.backend.service.sheets;
 
+import com.dsapkl.backend.entity.ItemImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +20,12 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ImageExtensionService {
+public class ImageService {
 
     @Value("${common.path.image}")
     private String IMAGE_BASE_PATH;
 
-    List<MultipartFile> processImages(String[] imageNames) throws IOException {
+    public List<MultipartFile> processImages(String[] imageNames) throws IOException {
         List<MultipartFile> imagesFiles = new ArrayList<>();
         List<String> extensions = Arrays.asList("png", "jpg", "webp");
 
@@ -53,5 +54,16 @@ public class ImageExtensionService {
             }
         }
         return imagesFiles;
+    }
+
+    public MultipartFile convertToMultipartFile(ItemImage itemImage) throws IOException {
+        String fullPath = IMAGE_BASE_PATH + itemImage.getOriginalName();
+        return new MockMultipartFile(
+
+                itemImage.getOriginalName(),
+                itemImage.getOriginalName(),
+                Files.probeContentType(Paths.get(fullPath)),
+                new FileInputStream(fullPath)
+        );
     }
 }

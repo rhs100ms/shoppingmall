@@ -8,6 +8,7 @@ import com.dsapkl.backend.repository.ItemRepository;
 import com.dsapkl.backend.dto.ItemServiceDTO;
 import com.dsapkl.backend.dto.ItemForm;
 import com.dsapkl.backend.dto.ItemImageDto;
+import com.dsapkl.backend.service.sheets.ImageService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class ItemService {
     private final ItemImageRepository itemImageRepository;
     private final FileHandler filehandler;
     private final ItemImageService itemImageService;
+    private final ImageService imageService;
 
     //상품 정보 저장
     public Long saveItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
@@ -344,5 +346,35 @@ public class ItemService {
         } catch (IOException e) {
             throw new RuntimeException("상품 저장 중 오류 발생: " + sheetProduct.getName(), e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemServiceDTO> getAllItems() {
+        List<Item> items = itemRepository.findAll();
+
+        return items.stream()
+                .map(item -> {
+                    ItemServiceDTO dto = new ItemServiceDTO();
+                    dto.setItemId(item.getId());
+                    dto.setName(item.getName());
+                    dto.setPrice(item.getPrice());
+                    dto.setStockQuantity(item.getStockQuantity());
+                    dto.setDescription(item.getDescription());
+                    dto.setCategory(item.getCategory());
+
+                    List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(item.getId(), "N");
+                    List<MultipartFile> multipartFiles = itemImages.stream()
+                            .map(img -> {
+                                try {
+                                    return imageService.convertToMultipartFile(img);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    dto.setItemImages(multipartFiles);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
