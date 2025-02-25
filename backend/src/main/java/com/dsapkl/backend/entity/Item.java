@@ -72,13 +72,16 @@ public class Item {
         return new Item(name, price, stockQuantity, description, category);
     }
 
-       public void updateItem(String name, int price, int stockQuantity, String description, Category category) {
+    public void updateItem(String name, int price, int stockQuantity, String description, Category category) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.description = description;
         this.category = category;
     }
+
+
+
 
     //== 비즈니스 메서드 ==//
 
@@ -119,4 +122,27 @@ public class Item {
     }
 
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
+
+    public void updateStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

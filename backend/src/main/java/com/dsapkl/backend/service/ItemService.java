@@ -93,6 +93,84 @@ public class ItemService {
         item.updateItem(name, price, stockQuantity, description, category);
     }
 
+    @Transactional
+    public void updateItem(Long itemId, ItemServiceDTO itemServiceDTO) {
+        // 1. 상품 조회
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("The product does not exist.: " + itemId));
+
+        // 2. 기본 정보 업데이트
+        item.updateItem(
+                itemServiceDTO.getName(),
+                itemServiceDTO.getPrice(),
+                itemServiceDTO.getStockQuantity(),
+                itemServiceDTO.getDescription(),
+                itemServiceDTO.getCategory()
+        );
+
+        // 3. 이미지 처리
+        if (itemServiceDTO.getItemImages() != null && !itemServiceDTO.getItemImages().isEmpty()) {
+            // 3-1. 기존 이미지 soft delete 처리
+            List<ItemImage> oldImages = itemImageRepository.findByItemIdAndDeleteYN(itemServiceDTO.getItemId(), "N");
+            for (ItemImage oldImage : oldImages) {
+                oldImage.deleteSet("Y");
+            }
+
+            // 3-2. 새 이미지 저장
+            try {
+                List<ItemImage> newImages = filehandler.storeImages(itemServiceDTO.getItemImages());
+
+                // 첫 번째 이미지를 대표 이미지로 설정
+                if (!newImages.isEmpty()) {
+                    newImages.get(0).isFirstImage("Y");
+                }
+
+                // 이미지와 상품 연결
+                for (ItemImage newImage : newImages) {
+                    newImage.deleteSet("N");
+                    item.addItemImage(newImage);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 저장 중 오류 발생", e);
+            }
+        }
+
+    }
+
+    @Transactional
+    public void updateItemBySheets(Long itemId, ItemServiceDTO sheetProduct) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("The product does not exist.: " + itemId));
+
+        if (!item.getName().equals(sheetProduct.getName())) {
+            item.updateName(sheetProduct.getName());
+        }
+
+        if (item.getPrice() != sheetProduct.getPrice()) {
+            item.updatePrice(sheetProduct.getPrice());
+        }
+
+        if (item.getCategory().equals(sheetProduct.getCategory())) {
+            item.updateCategory(sheetProduct.getCategory());
+        }
+
+        if (item.getStockQuantity() != sheetProduct.getStockQuantity()) {
+            item.updateStockQuantity(sheetProduct.getStockQuantity());
+        }
+
+        if (!item.getDescription().equals(sheetProduct.getDescription())) {
+            item.updateDescription(sheetProduct.getDescription());
+        }
+
+
+        List<ItemImage> existingImages = itemImageRepository.findByItemIdAndDeleteYN(itemId, "N");
+        List<String> existingImageNames = existingImages.stream()
+                .map(img -> img.getOriginalName().substring(0, img.getOriginalName().lastIndexOf('.')))
+                .sorted()
+                .collect(Collectors.toList());
+
+    }
+
     // 통합 검색 기능
     @Transactional(readOnly = true)
     public List<Item> searchItems(String name, String categoryStr) {
@@ -230,5 +308,41 @@ public class ItemService {
 
     public long count() {
         return itemRepository.count();  // JPA Repository의 기본 count() 메서드 사용
+    }
+
+    @Transactional
+    public void saveItem(ItemServiceDTO sheetProduct) {
+        try {
+            // 1. Item 엔티티 생성
+            Item item = Item.createItem(
+                sheetProduct.getName(),
+                sheetProduct.getPrice(),
+                sheetProduct.getStockQuantity(),
+                sheetProduct.getDescription(),
+                sheetProduct.getCategory()
+            );
+
+            // 2. 이미지 처리
+            if (sheetProduct.getItemImages() != null && !sheetProduct.getItemImages().isEmpty()) {
+                List<ItemImage> itemImages = filehandler.storeImages(sheetProduct.getItemImages());
+
+                // 첫 번째 이미지를 대표 이미지로 설정
+                if (!itemImages.isEmpty()) {
+                    itemImages.get(0).isFirstImage("Y");
+                }
+
+                // 모든 이미지의 deleteYN을 'N'으로 설정하고 상품과 연결
+                for (ItemImage itemImage : itemImages) {
+                    itemImage.deleteSet("N");
+                    item.addItemImage(itemImage);
+                }
+            }
+
+            // 3. 상품 저장
+            itemRepository.save(item);
+
+        } catch (IOException e) {
+            throw new RuntimeException("상품 저장 중 오류 발생: " + sheetProduct.getName(), e);
+        }
     }
 }
