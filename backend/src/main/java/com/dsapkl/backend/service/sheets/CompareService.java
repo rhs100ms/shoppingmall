@@ -34,16 +34,13 @@ public class CompareService {
         if (sheetRowCount > dbRowCount) {
             result.setStatus(CompareStatus.SHEET_MORE);
             result.setDifference(sheetRowCount - dbRowCount);
-            log.info("구글 시트에 {}개의 새로운 상품이 있습니다.", result.getDifference());
         }
         else if (sheetRowCount < dbRowCount) {
             result.setStatus(CompareStatus.DB_MORE);
             result.setDifference(dbRowCount - sheetRowCount);
-            log.info("DB에서 {}개의 상품이 삭제되었습니다.", result.getDifference());
         } else {
             result.setStatus(CompareStatus.EQUAL);
             result.setDifference(0);
-            log.info("구글 시트와 DB의 상품 수가 동일합니다.");
         }
 
         return result;
