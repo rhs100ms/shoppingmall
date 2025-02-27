@@ -37,8 +37,8 @@ public class ItemImage {
         this.item = item;
     }
 
-    public void isFirstImage(String yn) {
-        this.firstImage = yn;
+    public void isFirstImage(String fn) {
+        this.firstImage = fn;
     }
 
     public void deleteSet(String deleteYN) {

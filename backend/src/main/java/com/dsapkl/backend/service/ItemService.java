@@ -51,7 +51,7 @@ public class ItemService {
         //대표 상품 이미지 설정
 
         if (!itemImages.isEmpty()) {
-            itemImages.get(0).isFirstImage("Y");  // 첫 번째 이미지를 대표 이미지로 설정
+            itemImages.get(0).isFirstImage("F");  // 첫 번째 이미지를 대표 이미지로 설정
         }
 
         for (ItemImage itemImage : itemImages) {
@@ -84,7 +84,7 @@ public class ItemService {
 
         //대표 이미지 재설정
         List<ItemImage> itemImageList = itemImageRepository.findByItemIdAndDeleteYN(itemServiceDTO.getItemId(), "N");
-        itemImageList.get(0).isFirstImage("Y");
+        itemImageList.get(0).isFirstImage("F");
     }
 
     @Transactional
@@ -124,7 +124,7 @@ public class ItemService {
 
                 // 첫 번째 이미지를 대표 이미지로 설정
                 if (!newImages.isEmpty()) {
-                    newImages.get(0).isFirstImage("Y");
+                    newImages.get(0).isFirstImage("F");
                 }
 
                 // 이미지와 상품 연결
@@ -189,22 +189,18 @@ public class ItemService {
                 .collect(Collectors.toList());
 
 
-        // 4 모든 이미지의 firstImage를 "N"으로 초기화
-//        existingImages.forEach(img -> img.isFirstImage("N"));
+        // 8 모든 이미지의 firstImage를 "N"으로 초기화
+        allExistingImages.forEach(img -> img.isFirstImage("N"));
 
-        // 4-1 시트의 첫번째 이미지를 firstImageName에 담는다.
-//        String firstImageName = sheetImageNames.get(0);
+        // 8-1 시트의 첫번째 이미지를 firstImageName에 담는다.
+        String firstImageName = sheetImageNames.get(0);
 
-        // 4-2 첫 번째 이미지가 기존 이미지인 경우
-//        existingImages.stream()
-//                .filter(img -> img.getOriginalName().equals(firstImageName))
-//                .findFirst()
-//                .ifPresent(img -> img.isFirstImage("Y"));
+        // 8-2 첫 번째 이미지가 기존 이미지인 경우
+        allExistingImages.stream()
+                .filter(img -> img.getOriginalName().equals(firstImageName))
+                .findFirst()
+                .ifPresent(img -> img.isFirstImage("F"));
 
-//        // 5 DB의 이미지 기준 구글 sheet 이미지 비교하여 deleteYN 상태 업데이트
-//        existingImages.stream()
-//                .filter(img -> !sheetImageNames.contains(img.getOriginalName()))
-//                .forEach(img -> img.deleteSet("Y"));
 
         // 6 Sheet에만 존재하는 새로운 이미지 추가 (기존에 없는 새 이미지)
         List<MultipartFile> newImages = sheetProduct.getItemImages().stream()
@@ -216,11 +212,11 @@ public class ItemService {
             for (ItemImage newImage : addedImages) {
                 newImage.deleteSet("N");
                 // 새로 추가되는 이미지가 시트의 첫 번째 이미지인 경우
-//                if (newImage.getOriginalName().equals(firstImageName)) {
-//                    newImage.isFirstImage("Y");
-//                } else {
-//                    newImage.isFirstImage("N");
-//                }
+                if (newImage.getOriginalName().equals(firstImageName)) {
+                    newImage.isFirstImage("F");
+                } else {
+                    newImage.isFirstImage("N");
+                }
                 item.addItemImage(newImage);
             }
         }
@@ -383,7 +379,7 @@ public class ItemService {
 
                 // 첫 번째 이미지를 대표 이미지로 설정
                 if (!itemImages.isEmpty()) {
-                    itemImages.get(0).isFirstImage("Y");
+                    itemImages.get(0).isFirstImage("F");
                 }
 
                 // 모든 이미지의 deleteYN을 'N'으로 설정하고 상품과 연결
