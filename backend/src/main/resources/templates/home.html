@@ -327,7 +327,7 @@
                             <img th:if="${item.getItemImageList() != null and !item.getItemImageList().isEmpty()}"
                                  th:src="${#strings.startsWith(item.getItemImageList().get(0).getStoreName(), 'http')} ?
                                          ${item.getItemImageList().get(0).getStoreName()} :
-                                         |/images/${item.getItemImageList().get(0).getStoreName()}|"
+                                         |/images/${item.getFirstImage().getStoreName()}|"
                                  alt="Product Image"/>
                             <div th:if="${item.getItemImageList() == null or item.getItemImageList().isEmpty()}"
                                  class="d-flex align-items-center justify-content-center">

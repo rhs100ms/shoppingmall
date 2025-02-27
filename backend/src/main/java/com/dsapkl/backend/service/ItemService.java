@@ -201,7 +201,6 @@ public class ItemService {
                 .findFirst()
                 .ifPresent(img -> img.isFirstImage("F"));
 
-
         // 6 Sheet에만 존재하는 새로운 이미지 추가 (기존에 없는 새 이미지)
         List<MultipartFile> newImages = sheetProduct.getItemImages().stream()
                 .filter(file -> !allExistingImageNames.contains(file.getOriginalFilename()))

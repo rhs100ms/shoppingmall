@@ -81,7 +81,9 @@ public class Item {
     }
 
 
-
+    public ItemImage getFirstImage() {
+        return itemImageList.stream().filter(image -> "F".equals(image.getFirstImage())).findFirst().orElse(null);
+    }
 
     //== 비즈니스 메서드 ==//
 
