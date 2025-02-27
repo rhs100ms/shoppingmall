@@ -21,7 +21,7 @@ public class CompareService {
     public CompareResult compareRowCounts() {
 
         // 1. 구글 시트 데이터 가져오기
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:G");
+        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:H");
         int sheetRowCount = sheetData.size();
 
         // 2. DB 데이터 가져오기

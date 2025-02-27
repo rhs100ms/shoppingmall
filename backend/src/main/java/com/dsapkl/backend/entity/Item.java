@@ -153,4 +153,7 @@ public class Item {
     }
 
 
+    public void updateShowYn(String showYn) {
+        this.showYn = showYn;
+    }
 }

@@ -165,6 +165,10 @@ public class ItemService {
             item.updateDescription(sheetProduct.getDescription());
         }
 
+        if (!item.getShowYn().equals(sheetProduct.getShowYn())) {
+            item.updateShowYn(sheetProduct.getShowYn());
+        }
+
         // 1. 기존 이미지 가져오기
         List<ItemImage> allExistingImages = itemImageRepository.findByItemId(itemId);
 
@@ -423,6 +427,7 @@ public class ItemService {
                             })
                             .collect(Collectors.toList());
                     dto.setItemImages(multipartFiles);
+                    dto.setShowYn(item.getShowYn());
                     return dto;
                 })
                 .collect(Collectors.toList());

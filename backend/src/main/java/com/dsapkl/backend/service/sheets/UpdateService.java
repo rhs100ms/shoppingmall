@@ -27,7 +27,7 @@ public class UpdateService {
 
     public void compareColumns() throws IOException {
         // 1. 시트 데이터 → DTO 변환
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:G");
+        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:H");
         List<ItemServiceDTO> sheetDTOs = sheetData.stream()
                 .map(row -> {
                     ItemServiceDTO dto = new ItemServiceDTO();
@@ -49,7 +49,7 @@ public class UpdateService {
                         throw new RuntimeException(e);
                     }
                     dto.setItemImages(images);
-
+                    dto.setShowYn((String) row.get(7));
                     return dto;
                 })
                 .collect(Collectors.toList());

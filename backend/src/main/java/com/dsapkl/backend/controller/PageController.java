@@ -88,7 +88,9 @@ public class PageController {
         model.addAttribute("items", items);
         model.addAttribute("orderCount", orderCount);
 
-        List<Item> recommendedItems = itemService.findLatestItems(4);
+        List<Item> recommendedItems = itemService.findLatestItems(4).stream()
+                .filter(item -> "ON".equals(item.getShowYn()))
+                .collect(Collectors.toList());
         model.addAttribute("recommendedItems", recommendedItems);
 
         return "auth/admin";
@@ -141,15 +143,20 @@ public class PageController {
             if (!preferences.isEmpty()) {
                 recommendedItems = preferences.stream()
                         .map(ClusterItemPreference::getItem)
+                        .filter(item -> "ON".equals(item.getShowYn()))
                         .limit(4)
                         .collect(Collectors.toList());
                 model.addAttribute("isRecommended", true);
             } else {
-                recommendedItems = itemService.findLatestItems(4);
+                recommendedItems = itemService.findLatestItems(4).stream()
+                        .filter(item -> "ON".equals(item.getShowYn()))
+                        .collect(Collectors.toList());
                 model.addAttribute("isRecommended", false);
             }
         } else {
-            recommendedItems = itemService.findLatestItems(4);
+            recommendedItems = itemService.findLatestItems(4).stream()
+                    .filter(item -> "ON".equals(item.getShowYn()))
+                    .collect(Collectors.toList());
             model.addAttribute("isRecommended", false);
         }
 

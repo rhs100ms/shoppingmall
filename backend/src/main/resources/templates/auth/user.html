@@ -351,7 +351,7 @@
                             <img th:if="${item.getItemImageList() != null and !item.getItemImageList().isEmpty()}"
                                  th:src="${#strings.startsWith(item.getItemImageList().get(0).getStoreName(), 'http')} ?
                                          ${item.getItemImageList().get(0).getStoreName()} :
-                                         |/images/${item.getItemImageList().get(0).getStoreName()}|"
+                                         |/images/${item.getFirstImage().getStoreName()}|"
                                  alt="Product Image"/>
                             <div th:if="${item.getItemImageList() == null or item.getItemImageList().isEmpty()}"
                                  class="d-flex align-items-center justify-content-center">
@@ -425,12 +425,18 @@
 
     function displayItems(start, count) {
         const container = document.getElementById('productsContainer');
-        const itemsToShow = allItems.slice(start, start + count);
+
+        const visibleItems = allItems.filter(item => item.showYn === "ON");
+
+        const itemsToShow = visibleItems.slice(start, start + count);
 
         itemsToShow.forEach(item => {
             const itemHtml = createItemCard(item);
             container.insertAdjacentHTML('beforeend', itemHtml);
         });
+
+        // Load More 버튼 상태 업데이트 로직도 수정
+        updateLoadMoreButton(visibleItems.length);
     }
 
     function loadMore() {
@@ -453,21 +459,25 @@
         }, 500);
     }
 
-    function updateLoadMoreButton() {
+    function updateLoadMoreButton(updateLoadMoreButton) {
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         const start = (currentPage + 1) * itemsPerPage;
 
-        if (start >= allItems.length) {
+        if (start >= updateLoadMoreButton) {
             loadMoreBtn.classList.add('d-none');
         }
     }
 
     function createItemCard(item) {
+
+        const firstImage = item.itemImageListDto.find(img => img.firstImage === 'F');
+        const imageStoreName = firstImage.storeName;
+
         return `
             <div class="col-sm-6 col-lg-4 col-xl-3">
                 <div class="card h-100 product-card border-0">
                     <div class="product-image">
-                        <img src="/images/${item.itemImageListDto[0].storeName}"
+                        <img src="/images/${imageStoreName}"
                             alt="Product Image"/>
                     </div>
                     <div class="card-body p-4 text-center">
