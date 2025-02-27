@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,6 +41,10 @@ public class UpdateService {
                     List<MultipartFile> images = null;
                     try {
                         images = imageService.processImages(imageNames);
+                        log.info("이미지 이름 목록: {}", images);
+                        // 이미지 리스트의 상세 정보 출력
+                        log.info("처리된 이미지들: {}", images.stream().map(img -> img.getOriginalFilename()).collect(Collectors.joining(",")));
+
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

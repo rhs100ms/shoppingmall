@@ -20,4 +20,5 @@ public class ItemServiceDTO {
     private String description;
     private Category category;
     private List<MultipartFile> itemImages;
+    private List<String> orderedStoreNames;
 }

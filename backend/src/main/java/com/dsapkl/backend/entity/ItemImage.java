@@ -20,7 +20,7 @@ public class ItemImage {
     private String deleteYN; //이미지 파일 삭제 여부
     private String firstImage; //썸네일 이미지 설정
     private String repImgYn;
-
+//    private Integer imageOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
