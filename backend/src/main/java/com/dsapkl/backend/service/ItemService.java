@@ -44,7 +44,8 @@ public class ItemService {
                 itemServiceDTO.getPrice(),
                 itemServiceDTO.getStockQuantity(),
                 itemServiceDTO.getDescription(),
-                itemServiceDTO.getCategory());
+                itemServiceDTO.getCategory(),
+                itemServiceDTO.getShowYn());
 
         List<ItemImage> itemImages = filehandler.storeImages(multipartFileList);
 
@@ -369,7 +370,8 @@ public class ItemService {
                 sheetProduct.getPrice(),
                 sheetProduct.getStockQuantity(),
                 sheetProduct.getDescription(),
-                sheetProduct.getCategory()
+                sheetProduct.getCategory(),
+                sheetProduct.getShowYn()
             );
 
             // 2. 이미지 처리

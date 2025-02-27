@@ -45,6 +45,9 @@ public class Item {
     @Column(updatable = false)
     private LocalDateTime modifiedDate;
 
+    @Column(name = "show_yn", length = 3)
+    private String showYn;
+
     @PrePersist
     public void prePersist() {
         this.createdDate = LocalDateTime.now();
@@ -58,18 +61,19 @@ public class Item {
 
 
     @Builder
-    private Item(String name, int price, int stockQuantity, String description, Category category) {
+    private Item(String name, int price, int stockQuantity, String description, Category category, String showYn) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.description = description;
         this.category = category;
+        this.showYn = showYn;
     }
 
 
 
-    public static Item createItem(String name, int price, int stockQuantity, String description, Category category) {
-        return new Item(name, price, stockQuantity, description, category);
+    public static Item createItem(String name, int price, int stockQuantity, String description, Category category, String showYn) {
+        return new Item(name, price, stockQuantity, description, category, showYn);
     }
 
     public void updateItem(String name, int price, int stockQuantity, String description, Category category) {
@@ -147,4 +151,6 @@ public class Item {
     public void updateDescription(String description) {
         this.description = description;
     }
+
+
 }

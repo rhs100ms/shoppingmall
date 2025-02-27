@@ -43,6 +43,8 @@ public class ItemForm {
 
     private LocalDateTime modifiedDate;
 
+    private String showYn;
+
     @Builder
     public ItemForm(String name, int price, int stockQuantity, String description) {
         this.name = name;
@@ -63,6 +65,7 @@ public class ItemForm {
         form.setReviewCount(item.getReviewCount());
         form.setCreatedDate(item.getCreatedDate());
         form.setModifiedDate(item.getModifiedDate());
+        form.setShowYn(item.getShowYn());
         return form;
     }
 

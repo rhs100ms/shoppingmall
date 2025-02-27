@@ -21,4 +21,5 @@ public class ItemServiceDTO {
     private Category category;
     private List<MultipartFile> itemImages;
     private List<String> orderedStoreNames;
+    private String showYn;
 }

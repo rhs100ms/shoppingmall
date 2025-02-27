@@ -22,7 +22,7 @@ public class AddService {
     private final ImageService imageService;
 
     public void importNewProducts() {
-        List<List<Object>> sheetValues = googleSheetsService.readSheet("Sheet1!A2:G");
+        List<List<Object>> sheetValues = googleSheetsService.readSheet("Sheet1!A2:H");
 
         for (List<Object> row : sheetValues) {
             try {
@@ -47,6 +47,7 @@ public class AddService {
         String[] imageNames = row.get(6).toString().split(",\\s*");
         List<MultipartFile> images = imageService.processImages(imageNames);
         newProduct.setItemImages(images);
+        newProduct.setShowYn(row.get(7).toString());
         return newProduct;
     }
 

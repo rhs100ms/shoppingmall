@@ -203,7 +203,10 @@ public class PageController {
             }
         }
 
-        List<Item> recommendedItems = itemService.findLatestItems(4);
+        List<Item> recommendedItems = itemService.findLatestItems(4).stream()
+                .filter(item -> "ON".equals(item.getShowYn()))
+                .collect(Collectors.toList());
+
         model.addAttribute("recommendedItems", recommendedItems);
 
         model.addAttribute("items", items);
