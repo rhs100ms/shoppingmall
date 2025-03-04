@@ -18,7 +18,7 @@ public class CartQueryRepository {
                                 " from CartItem ci" +
                                 " join ci.item i" +
                                 " join i.itemImageList im" +
-                                " where ci.cart.id = :cartId and im.firstImage='Y'", CartQueryDto.class)
+                                " where ci.cart.id = :cartId and im.firstImage='F'", CartQueryDto.class)
                 .setParameter("cartId", cartId)
                 .getResultList();
 

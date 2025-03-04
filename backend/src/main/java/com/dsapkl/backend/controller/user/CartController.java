@@ -55,7 +55,7 @@ public class CartController {
         model.addAttribute("orderCount", orderCount);
 
         List<CartQueryDto> cartViews = checkoutService.cartViewDetails(null, model, user);
-        model.addAttribute("cartItemListForm", cartViews);
+        model.addAttribute("checkoutCartItems", cartViews);
 
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
         model.addAttribute("cartItemListForm", cartItemListForm);

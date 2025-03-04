@@ -80,7 +80,8 @@ public class CheckoutService {
     // 장바구니 결제 로직
     public List<CartQueryDto> cartViewDetails(@RequestParam(required = false) String sessionId, Model model, AuthenticatedUser user)
             throws JsonProcessingException {
-        Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+
+        Stripe.apiKey = secretKey;
 
         if (user == null) {
             throw new IllegalStateException("로그인이 필요합니다.");
