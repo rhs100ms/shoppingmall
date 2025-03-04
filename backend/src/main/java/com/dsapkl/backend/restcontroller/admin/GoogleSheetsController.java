@@ -8,6 +8,7 @@ import com.dsapkl.backend.service.sheets.CompareService;
 import com.dsapkl.backend.service.sheets.GoogleSheetsService;
 import com.dsapkl.backend.service.sheets.UpdateService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,27 +23,30 @@ public class GoogleSheetsController {
     private final CompareService compareService;
     private final UpdateService updateService;
 
-    @PostMapping("/import")
-    public ResponseEntity<String> importFromSheets() {
-        addService.importNewProducts();
-        return ResponseEntity.ok().body("Import successful");
-    }
+    @PostMapping("/sync")
+    public ResponseEntity<?> synchronizeSheets() {
+        try {
+            // 1. Compare rows
+            CompareResult result = compareService.compareRowCounts();
 
-    @GetMapping("/compare")
-    public ResponseEntity<CompareResult> compareSheets() {
-        CompareResult result = compareService.compareRowCounts();
-        return ResponseEntity.ok(result);
-    }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateSheets() throws IOException {
-        CompareResult result = compareService.compareRowCounts();
-        if (result.getStatus() == CompareStatus.EQUAL) {
-            // 행 수가 같을 때만 업데이트 실행
-            updateService.compareColumns();
-            return ResponseEntity.ok("Update successful");
-        } else {
-            return ResponseEntity.ok("Update failed");
+            // 2. Process based on comparison result
+            switch (result.getStatus()) {
+                case SHEET_MORE:
+                    addService.importNewProducts();
+                    return ResponseEntity.ok("New products imported successfully");
+                case EQUAL:
+                    updateService.compareColumns();
+                    return ResponseEntity.ok("Product updated successfully");
+                case DB_MORE:
+                    return ResponseEntity.badRequest().body("Database contains more records than the sheet. Manual review required.");
+                default:
+                    return ResponseEntity.internalServerError().body("Unknown comparison status" );
+            }
+
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Synchronization failed: " + e.getMessage());
         }
     }
 

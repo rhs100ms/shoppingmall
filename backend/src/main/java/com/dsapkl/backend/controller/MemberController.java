@@ -111,7 +111,7 @@ public class MemberController {
     @GetMapping("/members")
     public String loginForm(Model model){
         model.addAttribute("loginForm", new LoginForm());
-        return "members/loginForm";
+        return "members/LoginForm";
     }
 
     @PostMapping("/members")
@@ -123,7 +123,7 @@ public class MemberController {
         //이메일 또는 비밀번호를 누락시
         if (bindingResult.hasErrors()) {
             log.info("error={}", bindingResult);
-            return "members/loginForm";
+            return "members/LoginForm";
         }
 
         Member loginMember = memberService.login(form.getEmail(), form.getPassword());
@@ -131,7 +131,7 @@ public class MemberController {
 
         if (loginMember == null) {
             bindingResult.reject("loginfail", "Invalid email or password.");
-            return "members/loginForm";
+            return "members/LoginForm";
         }
     /*
     세션

@@ -10,6 +10,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -22,11 +23,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleSheetsService {
 
-    private static final String APPLICATION_NAME = "Google Sheets API";
-    private static final String SPREADSHEET_ID = "1fwWSUKKbu7t4VhGFqiNXEWkECsy0_fgHyjn4WgfsqDo";
-    private static final String CREDENTIALS_FILE_PATH = "C:/data/pkl-shop-b18126875648.json";
+    @Value("${google.sheets.application-name}")
+    private String applicationName;
 
-        private final String IMAGE_BASE_PATH = "C:/data/images/";
+    @Value("${google.sheets.spreadsheet-id}")
+    private String spreadsheetId;
+
+    @Value("${common.path.credentials}")
+    private String credentialsFilePath;
+
+    @Value("${common.path.image}")
+    private String imageBasePath;
+
+
+//    private static final String APPLICATION_NAME = "Google Sheets API";
+//    private static final String SPREADSHEET_ID = "1fwWSUKKbu7t4VhGFqiNXEWkECsy0_fgHyjn4WgfsqDo";
+//    private static final String CREDENTIALS_FILE_PATH = "C:/data/pkl-shop-b18126875648.json";
+//
+//        private final String IMAGE_BASE_PATH = "C:/data/images/";
 
     private final ItemService itemService;
 
@@ -36,7 +50,7 @@ public class GoogleSheetsService {
     public void init() throws IOException, GeneralSecurityException {
         //인증 설정
         GoogleCredentials credentials = GoogleCredentials.fromStream(
-                new FileInputStream(CREDENTIALS_FILE_PATH))
+                new FileInputStream(credentialsFilePath))
                 .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
 
         //sheets 서비스 생성
@@ -44,7 +58,7 @@ public class GoogleSheetsService {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 GsonFactory.getDefaultInstance(),
                 new HttpCredentialsAdapter(credentials))
-                .setApplicationName(APPLICATION_NAME)
+                .setApplicationName(applicationName)
                 .build();
 
     }
@@ -53,7 +67,7 @@ public class GoogleSheetsService {
     public List<List<Object>> readSheet(String range) {
         try {
             ValueRange response = sheetsService.spreadsheets().values()
-                    .get(SPREADSHEET_ID, range)
+                    .get(spreadsheetId, range)
                     .execute();
             return response.getValues();
         } catch (IOException e) {
