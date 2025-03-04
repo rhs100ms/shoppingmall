@@ -15,6 +15,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -28,13 +29,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class CheckoutService {
+    @Value("${stripe.secret.key}")
+    private String secretKey;
 
     private final OrderService orderService;
     private final CartService cartService;
 
     // 단일 상품 주문 결제 로직
     public List<OrderDto> getOrderDetails(String sessionId, OrderStatus status, Model model, @AuthenticationPrincipal AuthenticatedUser user) {
-        Stripe.apiKey = "sk_test_51QclmbPPwZvRdRPfWv7wXxklQBavqLzNsxg3hsnaErdkjaZSvWCncfJXaQ9yUbvxCaUPRfEMsp2GXGwvSd2QHcHn00XH6z4sld";
+
+        Stripe.apiKey = secretKey;
         List<OrderDto> findOrders = Collections.emptyList();
 
         if (sessionId != null) {

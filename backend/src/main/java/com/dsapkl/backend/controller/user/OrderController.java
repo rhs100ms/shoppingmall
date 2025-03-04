@@ -55,7 +55,13 @@ public class OrderController {
         List<OrderDto> findOrders = checkoutService.getOrderDetails(null, status, model, user);
         model.addAttribute("orderDetails", findOrders);
 
+//        log.info("findOrders: {}", findOrders);
+
         List<OrderDto> orderDetail = orderService.findOrdersDetail(user.getId(), status);
+//        model.addAttribute("orderDetail", orderDetail);
+//
+//        log.info("orderDetail: {}", orderDetail);
+
         long orderCount = orderDetail.stream()
                 .filter(order -> order.getOrderStatus() == OrderStatus.ORDER)
                 .count();

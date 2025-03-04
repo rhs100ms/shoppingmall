@@ -71,7 +71,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 .join(orderItem.item, item)
                 .join(item.itemImageList, itemImage)
                 .where(orderItem.order.id.eq(orderId),
-                        itemImage.firstImage.eq("Y")  //대표 상품 이미지만 고르기!
+                        itemImage.firstImage.eq("F")  //대표 상품 이미지만 고르기!
                 )
                 .fetch();
     }

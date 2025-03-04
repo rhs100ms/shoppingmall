@@ -432,4 +432,33 @@ public class ItemService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public ItemServiceDTO getItemById(Long existingId) {
+        Item item = itemRepository.findById(existingId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + existingId));
+
+        ItemServiceDTO dto = new ItemServiceDTO();
+        dto.setItemId(item.getId());
+        dto.setName(item.getName());
+        dto.setPrice(item.getPrice());
+        dto.setStockQuantity(item.getStockQuantity());
+        dto.setDescription(item.getDescription());
+        dto.setCategory(item.getCategory());
+
+        List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(item.getId(), "N");
+        List<MultipartFile> multipartFiles = itemImages.stream()
+                .map(img -> {
+                    try {
+                        return imageService.convertToMultipartFile(img);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        dto.setItemImages(multipartFiles);
+        dto.setShowYn(item.getShowYn());
+
+        return dto;
+    }
 }

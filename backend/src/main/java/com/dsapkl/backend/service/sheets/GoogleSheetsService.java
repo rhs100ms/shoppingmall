@@ -10,6 +10,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleSheetsService {
 
     @Value("${google.sheets.application-name}")
@@ -48,29 +50,43 @@ public class GoogleSheetsService {
 
     @PostConstruct
     public void init() throws IOException, GeneralSecurityException {
-        //인증 설정
-        GoogleCredentials credentials = GoogleCredentials.fromStream(
-                new FileInputStream(credentialsFilePath))
-                .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
+        try {
+            log.info("Initializing Google Sheets service");
+            log.info("Credentials file path: {}", credentialsFilePath);
+            log.info("Spreadsheet ID: {}", spreadsheetId);
+            //인증 설정
+            GoogleCredentials credentials = GoogleCredentials.fromStream(
+                            new FileInputStream(credentialsFilePath))
+                    .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
 
-        //sheets 서비스 생성
-        sheetsService = new Sheets.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                new HttpCredentialsAdapter(credentials))
-                .setApplicationName(applicationName)
-                .build();
+            //sheets 서비스 생성
+            sheetsService = new Sheets.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    new HttpCredentialsAdapter(credentials))
+                    .setApplicationName(applicationName)
+                    .build();
+            log.info("Google Sheets service initialized successfully");
+        } catch (Exception e) {
+            log.error("Failed to initialize Google Sheets service", e);
+            throw e;
+        }
+
 
     }
 
     // 시트 데이터 읽기
     public List<List<Object>> readSheet(String range) {
         try {
+            log.info("Reading sheet data from range: {}", range);
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
+            log.info("Successfully read {} rows from sheet",
+                    response.getValues() != null ? response.getValues().size() : 0);
             return response.getValues();
         } catch (IOException e) {
+            log.error("Failed to read Google Sheet", e);
             throw new RuntimeException("구글 시트 읽기 실패", e);
         }
     }
