@@ -33,19 +33,6 @@ public class GoogleSheetsService {
 
     @Value("${common.path.credentials}")
     private String credentialsFilePath;
-
-    @Value("${common.path.image}")
-    private String imageBasePath;
-
-
-//    private static final String APPLICATION_NAME = "Google Sheets API";
-//    private static final String SPREADSHEET_ID = "1fwWSUKKbu7t4VhGFqiNXEWkECsy0_fgHyjn4WgfsqDo";
-//    private static final String CREDENTIALS_FILE_PATH = "C:/data/pkl-shop-b18126875648.json";
-//
-//        private final String IMAGE_BASE_PATH = "C:/data/images/";
-
-    private final ItemService itemService;
-
     private Sheets sheetsService;
 
     @PostConstruct

@@ -9,11 +9,12 @@ import com.dsapkl.backend.service.ItemImageService;
 import com.dsapkl.backend.service.ItemService;
 import com.dsapkl.backend.service.sheets.GoogleSheetsService;
 import com.dsapkl.backend.service.sheets.ImageService;
-import com.dsapkl.backend.util.SessionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin/items")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminItemController {
 
     private final ItemService itemService;
@@ -39,6 +41,9 @@ public class AdminItemController {
     private final CartService cartService;
     private final GoogleSheetsService googleSheetsService;
     private final ImageService imageService;
+
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
 
     @GetMapping("/new")
     public String createItemForm(Model model) {
@@ -101,10 +106,12 @@ public class AdminItemController {
         ItemForm itemForm = ItemForm.from(item);
         itemForm.setItemImageListDto(itemImageDtoList);
         model.addAttribute("item", itemForm);
+        log.info("itemForm : {}", itemForm);
+
 
         // 구글 시트 이미지 순서로 이미지 띄우기
         // 1. 시트 데이터 → DTO 변환
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:G");
+        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
         List<ItemServiceDTO> sheetDTOs = sheetData.stream()
                 .map(row -> {
                     ItemServiceDTO dto = new ItemServiceDTO();
@@ -117,7 +124,7 @@ public class AdminItemController {
                     String[] imageNames = row.get(6).toString().split(",\\s*");
                     List<MultipartFile> images = null;
                     try {
-                        images = imageService.processImages(imageNames);
+                        images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -146,7 +153,7 @@ public class AdminItemController {
         matchedSheet.setOrderedStoreNames(orderedStoreNames);
 
         model.addAttribute("sheetImage", matchedSheet);
-
+        log.info("matchedSheet : {}", matchedSheet);
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 

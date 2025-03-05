@@ -16,6 +16,7 @@ import com.dsapkl.backend.service.sheets.ImageService;
 import com.dsapkl.backend.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +42,8 @@ public class UserItemController {
     private final GoogleSheetsService googleSheetsService;
     private final ImageService imageService;
 
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
 
     /**
      * 상품 상세 조회
@@ -65,7 +68,7 @@ public class UserItemController {
 
         // 구글 시트 이미지 순서로 이미지 띄우기
         // 1. 시트 데이터 → DTO 변환
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:G");
+        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
         List<ItemServiceDTO> sheetDTOs = sheetData.stream()
                 .map(row -> {
                     ItemServiceDTO dto = new ItemServiceDTO();
@@ -78,7 +81,7 @@ public class UserItemController {
                     String[] imageNames = row.get(6).toString().split(",\\s*");
                     List<MultipartFile> images = null;
                     try {
-                        images = imageService.processImages(imageNames);
+                        images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

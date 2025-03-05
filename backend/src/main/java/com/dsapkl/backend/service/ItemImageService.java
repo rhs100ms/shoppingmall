@@ -39,7 +39,7 @@ public class ItemImageService {
         itemImage.deleteSet("Y");
 
         //대표 상품 이미지 삭제
-        itemImage.isFirstImage("F");
+        itemImage.isFirstImage("N");
     }
 
     //상품 이미지 추가

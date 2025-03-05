@@ -77,7 +77,7 @@ public class GuestItemController {
                     String[] imageNames = row.get(6).toString().split(",\\s*");
                     List<MultipartFile> images = null;
                     try {
-                        images = imageService.processImages(imageNames);
+                        images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

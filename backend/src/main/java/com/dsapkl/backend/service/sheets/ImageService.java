@@ -1,5 +1,6 @@
 package com.dsapkl.backend.service.sheets;
 
+import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.entity.ItemImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class ImageService {
     @Value("${common.path.image}")
     private String IMAGE_BASE_PATH;
 
-    public List<MultipartFile> processImages(String[] imageNames) throws IOException {
+    public List<MultipartFile> processImages(String[] imageNames, Category category) throws IOException {
         List<MultipartFile> imagesFiles = new ArrayList<>();
         List<String> extensions = Arrays.asList("png", "jpg", "webp");
 
@@ -34,7 +35,7 @@ public class ImageService {
             File foundFile = null;
 
             for (String ext : extensions) {
-                File file = new File(IMAGE_BASE_PATH + imageName + "." + ext);
+                File file = new File(IMAGE_BASE_PATH + category + "/" + imageName + "." + ext);
                 if (file.exists()) {
                     foundFile = file;
                     break;

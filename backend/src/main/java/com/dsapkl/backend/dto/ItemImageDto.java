@@ -3,9 +3,11 @@ package com.dsapkl.backend.dto;
 import com.dsapkl.backend.entity.ItemImage;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class ItemImageDto {
 
     private Long id;

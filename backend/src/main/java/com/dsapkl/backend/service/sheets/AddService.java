@@ -102,7 +102,7 @@ public class AddService {
         newProduct.setStockQuantity(Integer.parseInt(row.get(4).toString()));
         newProduct.setDescription(row.get(5).toString());
         String[] imageNames = row.get(6).toString().split(",\\s*");
-        List<MultipartFile> images = imageService.processImages(imageNames);
+        List<MultipartFile> images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
         newProduct.setItemImages(images);
         newProduct.setShowYn(row.get(7).toString());
         return newProduct;
