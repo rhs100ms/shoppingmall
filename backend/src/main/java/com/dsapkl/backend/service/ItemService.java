@@ -283,6 +283,7 @@ public class ItemService {
 
         // 상품 삭제
         itemRepository.delete(item);
+
     }
 
     public Page<Item> findItemsPage(Pageable pageable) {
@@ -420,7 +421,7 @@ public class ItemService {
                     List<MultipartFile> multipartFiles = itemImages.stream()
                             .map(img -> {
                                 try {
-                                    return imageService.convertToMultipartFile(img);
+                                    return imageService.convertToMultipartFile(img, item.getCategory());
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -449,7 +450,7 @@ public class ItemService {
         List<MultipartFile> multipartFiles = itemImages.stream()
                 .map(img -> {
                     try {
-                        return imageService.convertToMultipartFile(img);
+                        return imageService.convertToMultipartFile(img, item.getCategory());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -460,5 +461,13 @@ public class ItemService {
         dto.setShowYn(item.getShowYn());
 
         return dto;
+    }
+
+    public void updateShowStatus(Long itemId, String showYn) {
+        // 삭제 전 존재 여부 확인
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found with ID: " + itemId));
+
+        item.setShowYn(showYn);
+        itemRepository.saveAndFlush(item);
     }
 }

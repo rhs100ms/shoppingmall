@@ -437,6 +437,7 @@
                         <th class="border-0">Stock</th>
                         <th class="border-0">Status</th>
                         <th class="border-0">Actions</th>
+                        <th class="border-0">ON/OFF</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -475,11 +476,29 @@
                                    class="btn btn-outline-dark btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <!-- show ON 버튼 -->
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        th:if="${item.showYn == 'OFF'}"
+                                        th:onclick="updateShowStatus([[${item.itemId}]] ,'ON')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <!-- show OFF 버튼 -->
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        th:if="${item.showYn == 'ON'}"
+                                        th:onclick="updateShowStatus([[${item.itemId}]] ,'OFF')">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
                                 <button type="button" class="btn btn-outline-dark btn-sm"
                                         th:onclick="'deleteItem(' + ${item.itemId} + ')'">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
+                        </td>
+                        <td>
+                            <span th:if="${item.showYn == 'ON'}" class="badge bg-success">ON</span>
+                            <span th:if="${item.showYn == 'OFF'}" class="badge bg-danger">OFF</span>
                         </td>
                     </tr>
                     </tbody>
@@ -619,7 +638,27 @@ function deleteItem(itemId) {
 
 }
 
-
+function updateShowStatus(itemId, status) {
+    if (confirm(`Are you sure you want to set this product's visibility to ${status}?`)) {
+        fetch(`/admin/items/${itemId}/update-show-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ showYn: status })
+        }).then(response => {
+            if (response.ok) {
+                alert(`Product visibility has been set to ${status}.`);
+                location.reload();
+            } else {
+                alert('Failed to update product visibility.');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating product visibility.');
+        });
+    }
+}
 
 function changePageSize(size) {
 

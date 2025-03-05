@@ -57,8 +57,8 @@ public class ImageService {
         return imagesFiles;
     }
 
-    public MultipartFile convertToMultipartFile(ItemImage itemImage) throws IOException {
-        String fullPath = IMAGE_BASE_PATH + itemImage.getOriginalName();
+    public MultipartFile convertToMultipartFile(ItemImage itemImage, Category category) throws IOException {
+        String fullPath = IMAGE_BASE_PATH + category + "/" + itemImage.getOriginalName();
         return new MockMultipartFile(
 
                 itemImage.getOriginalName(),

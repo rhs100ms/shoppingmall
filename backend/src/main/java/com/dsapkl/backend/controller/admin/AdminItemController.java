@@ -171,6 +171,16 @@ public class AdminItemController {
 
 
 
+    @PostMapping("/{itemId}/update-show-status")
+    public String updateShowStatus(@PathVariable(name = "itemId") Long itemId,
+                                   @RequestBody Map<String, String> body) {
+        System.out.println(body);
+        String showStatus = body.get("showYn");
+
+        itemService.updateShowStatus(itemId, showStatus);
+        return "redirect:/admin";
+    }
+
     /**
      * 상품 삭제
      */
