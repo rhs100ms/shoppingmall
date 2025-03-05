@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,6 +48,9 @@ public class CartController {
     private final CartService cartService;
     private final OrderService orderService;
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @GetMapping("/cart")
     public String cartView(Model model, @AuthenticationPrincipal AuthenticatedUser user) throws JsonProcessingException {
 
@@ -60,6 +64,8 @@ public class CartController {
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
         model.addAttribute("cartItemListForm", cartItemListForm);
         model.addAttribute("cartItemCount", cartItemListForm.size());
+
+        model.addAttribute("frontendUrl", frontendUrl);
 
         return "cart/cartView";
     }

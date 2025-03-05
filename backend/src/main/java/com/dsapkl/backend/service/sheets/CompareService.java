@@ -6,6 +6,7 @@ import com.dsapkl.backend.entity.CompareStatus;
 import com.dsapkl.backend.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +18,13 @@ public class CompareService {
 
     private final GoogleSheetsService googleSheetsService;
     private final ItemService itemService;
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
 
     public CompareResult compareRowCounts() {
 
         // 1. 구글 시트 데이터 가져오기
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:H");
+        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
         int sheetRowCount = sheetData.size();
 
         // 2. DB 데이터 가져오기

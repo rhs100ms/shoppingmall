@@ -185,7 +185,7 @@
             dataDto.cartQueryDto = list;
             console.log("JSON.stringify(dataDto):", JSON.stringify(dataDto));
 
-        fetch('http://localhost:8888/user/api/checkout/create-checkout-session-multi', {
+        fetch([[${frontendUrl}]] + '/user/api/checkout/create-checkout-session-multi', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

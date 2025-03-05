@@ -5,6 +5,7 @@ import com.dsapkl.backend.entity.Category;
 import com.dsapkl.backend.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +26,12 @@ public class UpdateService {
     private final ItemService itemService;
     private final ImageService imageService;
 
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
+
     public void compareColumns() throws IOException {
         // 1. 시트 데이터 → DTO 변환
-        List<List<Object>> sheetData = googleSheetsService.readSheet("Sheet1!A2:H");
+        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
         List<ItemServiceDTO> sheetDTOs = sheetData.stream()
                 .map(row -> {
                     ItemServiceDTO dto = new ItemServiceDTO();

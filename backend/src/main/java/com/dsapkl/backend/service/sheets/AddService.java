@@ -7,6 +7,7 @@ import com.dsapkl.backend.repository.ItemRepository;
 import com.dsapkl.backend.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,9 +30,11 @@ public class AddService {
     private final ItemRepository itemRepository;
     private final UpdateService updateService;
 
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
 
     public void importNewProducts() throws IOException {
-        List<List<Object>> sheetValues = googleSheetsService.readSheet("Sheet1!A2:H");
+        List<List<Object>> sheetValues = googleSheetsService.readSheet(dataRange);
 
         // DB에서 현재 모든 아이템 ID 가져오기
         List<Long> existingItemIds = itemRepository.findAll().stream()

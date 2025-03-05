@@ -91,4 +91,56 @@ public class GoogleSheetsService {
         }
     }
 
+
+//    // 시트 데이터 업데이트
+//    public void udpateSheet(String range, List<List<Object>> values) {
+//        try {
+//            log.info("Updating sheet data from range: {}", range);
+//            ValueRange body = new ValueRange().setValues(values);
+//
+//            sheetsService.spreadsheets().values()
+//                    .update(spreadsheetId, range, body)
+//                    .setValueInputOption("RAW")
+//                    .execute();
+//
+//            log.info("Successfully updated {} rows in sheet", values.size());
+//        } catch (IOException e) {
+//            log.error("Failed to update Google Sheet", e);
+//            throw new RuntimeException("구글 시트 업데이트 실패", e);
+//        }
+//    }
+//
+//    // 특정 셀 업데이트
+//    public void updateCell(String range, Object value) {
+//        try {
+//            log.info("Updating cell data from range: {}", range);
+//            ValueRange body = new ValueRange()
+//                    .setValues(List.of(List.of(value)));
+//
+//            sheetsService.spreadsheets().values()
+//                    .update(spreadsheetId, range, body)
+//                    .setValueInputOption("RAW")
+//                    .execute();
+//            log.info("Successfully updated Cell at {}", range);
+//        } catch (IOException e) {
+//            log.error("Failed to update Google Sheet", e);
+//            throw new RuntimeException("구글 시트 셀 업데이트 실패", e);
+//        }
+//    }
+
+    // 시트 데이터 업데이트
+    public void updateSheet(String dataRange, List<List<Object>> newSheetData) {
+        try {
+            log.info("Updating sheet data from range: {}", dataRange);
+            ValueRange body = new ValueRange().setValues(newSheetData);
+            sheetsService.spreadsheets().values()
+                    .update(spreadsheetId, dataRange, body)
+                    .setValueInputOption("RAW")
+                    .execute();
+            log.info("Successfully updated {} rows in sheet", newSheetData.size());
+        } catch (IOException e) {
+            log.error("Failed to update Google Sheet", e);
+            throw new RuntimeException("구글 시트 업데이트 실패" ,e);
+        }
+    }
 }
