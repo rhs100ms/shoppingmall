@@ -1,15 +1,13 @@
 package com.dsapkl.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Table(name = "item_image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class ItemImage {
     @Id
     @Column(name = "item_image_id")

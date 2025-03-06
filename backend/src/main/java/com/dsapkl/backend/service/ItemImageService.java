@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,21 +57,59 @@ public class ItemImageService {
     @Transactional
     public void updateItemImages(Long itemId, List<MultipartFile> itemImageFiles) throws IOException {
         // 기존 이미지 삭제
-        List<ItemImage> existingImages = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
+        List<ItemImage> existingImages = itemImageRepository.findByItemIdAndDeleteYN(itemId, "N");
         for (ItemImage image : existingImages) {
-            fileHandler.deleteImage(image.getStoreName());
-            itemImageRepository.delete(image);
+            image.deleteSet("Y");
+            image.isFirstImage("N");
         }
 
-        // 새 이미지 저장
-        List<ItemImage> newImages = fileHandler.storeImages(itemImageFiles);
-        Item item = itemRepository.findById(itemId).orElseThrow();
-        for (int i = 0; i < newImages.size(); i++) {
-            ItemImage image = newImages.get(i);
-            image.changeItem(item);
-            image.setRepImgYn(i == 0 ? "Y" : "N");
+        // 기존 이미지 랑 중복 확인
+        Map<String, ItemImage> existingImageMap = existingImages.stream()
+                .collect(Collectors.toMap(ItemImage::getOriginalName, image -> image));
+
+        Item item =itemRepository.findById(itemId).orElseThrow();
+        List<ItemImage> imagesToSave = new ArrayList<>();
+
+        // 이미지 처리
+        for (int i = 0; i < itemImageFiles.size(); i++) {
+            MultipartFile file = itemImageFiles.get(i);
+            String originalFilename = file.getOriginalFilename();
+
+            // 이미 존재하는 이미지인지 확인
+            if (existingImageMap.containsKey(originalFilename)) {
+                // 기존 이미지 활용
+                ItemImage existingImage = existingImageMap.get(originalFilename);
+                existingImage.deleteSet("N");
+                existingImage.isFirstImage(i == 0 ? "Y" : "N");
+                imagesToSave.add(existingImage);
+            } else {
+                // 진짜 새로운 이미지 저장
+                List<ItemImage> newImages = fileHandler.storeImages(List.of(file));
+                if (!newImages.isEmpty()) {
+                    ItemImage newImage = newImages.get(0);
+                    newImage.changeItem(item);
+                    newImage.isFirstImage(i == 0 ? "Y" : "N");
+                    imagesToSave.add(newImage);
+                }
+            }
+
+        }
+
+        for (ItemImage image : imagesToSave) {
             itemImageRepository.save(image);
         }
+
+
+
+//        List<ItemImage> newImages = fileHandler.storeImages(itemImageFiles);
+//        Item item = itemRepository.findById(itemId).orElseThrow();
+//        for (int i = 0; i < newImages.size(); i++) {
+//            ItemImage image = newImages.get(i);
+//            image.changeItem(item);
+//            image.setRepImgYn(i == 0 ? "Y" : "N");
+//            itemImageRepository.save(image);
+//        }
+
     }
 
     @Transactional(readOnly = true)

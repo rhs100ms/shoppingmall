@@ -49,6 +49,8 @@ public class ImageService {
                         Files.probeContentType(Paths.get(foundFile.getAbsolutePath())),
                         new FileInputStream(foundFile)
                 );
+//                //  로그 추가
+                log.info("MockMultipartFile 정보 → 이름: {}", multipartFile.getOriginalFilename());
                 imagesFiles.add(multipartFile);
             } else {
                 log.warn("이미지를 찾을 수 없음: " + imageName);

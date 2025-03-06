@@ -154,6 +154,10 @@ public class AdminItemController {
 
         model.addAttribute("sheetImage", matchedSheet);
         log.info("matchedSheet : {}", matchedSheet);
+        // 👇 추가 (실제 MultipartFile 내부 확인용)
+        for (MultipartFile file : matchedSheet.getItemImages()) {
+            log.info("파일명: {}", file.getOriginalFilename());
+        }
         // 카트 숫자 // th:text="${cartItemCount}" 쓰기 위함
 
 
@@ -213,6 +217,7 @@ public class AdminItemController {
 
         // 이미지가 있다면 이미지도 수정
         if (itemImages != null && !itemImages.isEmpty() && !itemImages.get(0).isEmpty()) {
+            log.info("itemImages : {}", itemImages);
             itemImageService.updateItemImages(itemId, itemImages);
         }
 
