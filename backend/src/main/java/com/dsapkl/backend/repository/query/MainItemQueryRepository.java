@@ -37,7 +37,7 @@ public class MainItemQueryRepository {
                 ))
                 .from(item)
                 .join(item.itemImageList, itemImage)
-                .where(itemImage.firstImage.eq("Y"),
+                .where(itemImage.firstImage.eq("F"),
                         itemNameContain(condition.getItemName()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -56,7 +56,7 @@ public class MainItemQueryRepository {
          * SELECT COUNT(I.ITEM_ID) FROM ITEM I
          * JOIN ITEM_IMAGE IM
          * ON I.ITEM_ID = IM.ITEM_ID
-         * WHERE IM.FIRST_IMAGE='Y';
+         * WHERE IM.FIRST_IMAGE='F';
          *
          * SELECT COUNT(I.ITEM_ID) FROM ITEM I;
          *

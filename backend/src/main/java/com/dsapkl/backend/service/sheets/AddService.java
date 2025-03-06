@@ -59,11 +59,16 @@ public class AddService {
             if (sheetItemsMap.containsKey(existingId)) {
                 try {
                     List<Object> row = sheetItemsMap.get(existingId);
+                    // sheet의 아이템 정보
                     ItemServiceDTO sheetDTO = convertToDTO(row);
 
                     // DB에서 현재 아이템 정보 가져오기
                     ItemServiceDTO dbDTO = itemService.getItemById(existingId);
 
+                    // DTO 전체 내용 비교를 위해 로그로 찍기
+//                    log.info("✅ DB DTO (ID={}): {}", existingId, dbDTO);
+//                    log.info("📌 Sheet DTO (ID={}): {}", existingId, sheetDTO);
+                    
                     // 변경사항이 있는 경우에만 업데이트
                     if (!Objects.equals(sheetDTO, dbDTO)) {
                         itemService.updateItemBySheets(existingId, sheetDTO);
@@ -90,6 +95,8 @@ public class AddService {
                 log.error("새 상품 저장 중 오류 발생: " + row, e);
             }
         }
+
+
     }
 
     private ItemServiceDTO convertToDTO(List<Object> row) throws IOException {

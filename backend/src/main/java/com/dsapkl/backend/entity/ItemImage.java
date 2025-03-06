@@ -8,6 +8,7 @@ import lombok.*;
 @Table(name = "item_image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@Setter
 public class ItemImage {
     @Id
     @Column(name = "item_image_id")
@@ -18,6 +19,8 @@ public class ItemImage {
     private String deleteYN; //이미지 파일 삭제 여부
     private String firstImage; //썸네일 이미지 설정
     private String repImgYn;
+    private Integer imageOrder;
+
 //    private Integer imageOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)

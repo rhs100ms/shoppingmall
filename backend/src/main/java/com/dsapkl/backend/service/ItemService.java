@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -171,59 +173,98 @@ public class ItemService {
 
         // 1. 기존 이미지 가져오기
         List<ItemImage> allExistingImages = itemImageRepository.findByItemId(itemId);
+        Map<String, ItemImage> existingImagesMap = allExistingImages.stream()
+                .collect(Collectors.toMap(ItemImage::getOriginalName, img -> img));
 
         // 2. 시트의 이미지 이름 목록 (확장자 포함)
         List<String> sheetImageNames = sheetProduct.getItemImages().stream()
                 .map(MultipartFile::getOriginalFilename)
                 .collect(Collectors.toList());
 
-        // 3. 이미지 상태 업데이트
-        allExistingImages.forEach(img -> {
-            if (sheetImageNames.contains(img.getOriginalName())) {
-                // 시트에 있는 이미지는 복구 또는 유지
-                img.deleteSet("N");
-            } else {
-                // 시트에 없는 이미지는 삭제 처리
-                img.deleteSet("Y");
-            }
-        });
-
-        // 4. 기존 이미지 이름 목록 (확장자 포함)
-        List<String> allExistingImageNames = allExistingImages.stream()
-                .map(ItemImage::getOriginalName)
-                .collect(Collectors.toList());
-
-
         // 8 모든 이미지의 firstImage를 "N"으로 초기화
         allExistingImages.forEach(img -> img.isFirstImage("N"));
 
-        // 8-1 시트의 첫번째 이미지를 firstImageName에 담는다.
-        String firstImageName = sheetImageNames.get(0);
+        for (int i = 0; i < sheetImageNames.size(); i++) {
+            String sheetImageName = sheetImageNames.get(i);
+            ItemImage existingImage = existingImagesMap.get(sheetImageName);
 
-        // 8-2 첫 번째 이미지가 기존 이미지인 경우
-        allExistingImages.stream()
-                .filter(img -> img.getOriginalName().equals(firstImageName))
-                .findFirst()
-                .ifPresent(img -> img.isFirstImage("F"));
+            if (existingImage != null) {
+                existingImage.deleteSet("N");
+                existingImage.setImageOrder(i + 1);
+                existingImage.isFirstImage(i == 0 ? "F" : "N");
+            } else {
+                MultipartFile newFile = sheetProduct.getItemImages().stream()
+                        .filter(f -> sheetImageName.equals(f.getOriginalFilename()))
+                        .findFirst().orElse(null);
 
-        // 6 Sheet에만 존재하는 새로운 이미지 추가 (기존에 없는 새 이미지)
-        List<MultipartFile> newImages = sheetProduct.getItemImages().stream()
-                .filter(file -> !allExistingImageNames.contains(file.getOriginalFilename()))
-                .collect(Collectors.toList());
-
-        if (!newImages.isEmpty()) {
-            List<ItemImage> addedImages = filehandler.storeImages(newImages);
-            for (ItemImage newImage : addedImages) {
-                newImage.deleteSet("N");
-                // 새로 추가되는 이미지가 시트의 첫 번째 이미지인 경우
-                if (newImage.getOriginalName().equals(firstImageName)) {
-                    newImage.isFirstImage("F");
-                } else {
-                    newImage.isFirstImage("N");
+                List<ItemImage> newImages = filehandler.storeImages(List.of(newFile));
+                if (!newImages.isEmpty()) {
+                    ItemImage newImage = newImages.get(0);
+                    newImage.deleteSet("N");
+                    newImage.setImageOrder(i + 1);
+                    newImage.isFirstImage(i == 0 ? "F" : "N");
+                    item.addItemImage(newImage);
                 }
-                item.addItemImage(newImage);
             }
         }
+
+        // 시트에 없는 기존 이미지는 삭제 처리
+        allExistingImages.stream()
+                .filter(img -> !sheetImageNames.contains(img.getOriginalName()))
+                .forEach(img -> {
+                    img.deleteSet("Y");
+                    img.setImageOrder(0);
+                    img.isFirstImage("N");
+                });
+
+//        // 3. 이미지 상태 업데이트
+//        allExistingImages.forEach(img -> {
+//            if (sheetImageNames.contains(img.getOriginalName())) {
+//                // 시트에 있는 이미지는 복구 또는 유지
+//                img.deleteSet("N");
+//            } else {
+//                // 시트에 없는 이미지는 삭제 처리
+//                img.deleteSet("Y");
+//                img.setImageOrder(0);
+//            }
+//        });
+
+
+//        // 4. 기존 이미지 이름 목록 (확장자 포함)
+//        List<String> allExistingImageNames = allExistingImages.stream()
+//                .map(ItemImage::getOriginalName)
+//                .collect(Collectors.toList());
+//
+//
+//
+//
+//        // 8-1 시트의 첫번째 이미지를 firstImageName에 담는다.
+//        String firstImageName = sheetImageNames.get(0);
+//
+//        // 8-2 첫 번째 이미지가 기존 이미지인 경우
+//        allExistingImages.stream()
+//                .filter(img -> img.getOriginalName().equals(firstImageName))
+//                .findFirst()
+//                .ifPresent(img -> img.isFirstImage("F"));
+//
+//        // 6 Sheet에만 존재하는 새로운 이미지 추가 (기존에 없는 새 이미지)
+//        List<MultipartFile> newImages = sheetProduct.getItemImages().stream()
+//                .filter(file -> !allExistingImageNames.contains(file.getOriginalFilename()))
+//                .collect(Collectors.toList());
+//
+//        if (!newImages.isEmpty()) {
+//            List<ItemImage> addedImages = filehandler.storeImages(newImages);
+//            for (ItemImage newImage : addedImages) {
+//                newImage.deleteSet("N");
+//                // 새로 추가되는 이미지가 시트의 첫 번째 이미지인 경우
+//                if (newImage.getOriginalName().equals(firstImageName)) {
+//                    newImage.isFirstImage("F");
+//                } else {
+//                    newImage.isFirstImage("N");
+//                }
+//                item.addItemImage(newImage);
+//            }
+//        }
     }
 
     // 통합 검색 기능

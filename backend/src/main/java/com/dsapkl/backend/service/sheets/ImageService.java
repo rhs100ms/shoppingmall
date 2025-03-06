@@ -50,10 +50,10 @@ public class ImageService {
                         new FileInputStream(foundFile)
                 );
 //                //  로그 추가
-                log.info("MockMultipartFile 정보 → 이름: {}", multipartFile.getOriginalFilename());
+//                log.info("MockMultipartFile 정보 → 이름: {}", multipartFile.getOriginalFilename());
                 imagesFiles.add(multipartFile);
             } else {
-                log.warn("이미지를 찾을 수 없음: " + imageName);
+//                log.warn("이미지를 찾을 수 없음: " + imageName);
             }
         }
         return imagesFiles;

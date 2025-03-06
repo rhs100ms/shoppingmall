@@ -57,7 +57,7 @@ public class ItemImageService {
     @Transactional
     public void updateItemImages(Long itemId, List<MultipartFile> itemImageFiles) throws IOException {
         // 기존 이미지 삭제
-        List<ItemImage> existingImages = itemImageRepository.findByItemIdAndDeleteYN(itemId, "N");
+        List<ItemImage> existingImages = itemImageRepository.findByItemId(itemId);
         for (ItemImage image : existingImages) {
             image.deleteSet("Y");
             image.isFirstImage("N");
@@ -80,7 +80,7 @@ public class ItemImageService {
                 // 기존 이미지 활용
                 ItemImage existingImage = existingImageMap.get(originalFilename);
                 existingImage.deleteSet("N");
-                existingImage.isFirstImage(i == 0 ? "Y" : "N");
+                existingImage.isFirstImage(i == 0 ? "F" : "N");
                 imagesToSave.add(existingImage);
             } else {
                 // 진짜 새로운 이미지 저장
@@ -88,7 +88,7 @@ public class ItemImageService {
                 if (!newImages.isEmpty()) {
                     ItemImage newImage = newImages.get(0);
                     newImage.changeItem(item);
-                    newImage.isFirstImage(i == 0 ? "Y" : "N");
+                    newImage.isFirstImage(i == 0 ? "F" : "N");
                     imagesToSave.add(newImage);
                 }
             }
@@ -123,5 +123,9 @@ public class ItemImageService {
 
     public List<ItemImage> uploadItemImages(List<MultipartFile> itemImageFiles) throws IOException {
         return fileHandler.storeImages(itemImageFiles);
+    }
+
+    public List<ItemImage> findItemImageDetailOrderByImageOrderAsc(Long itemId, String deleteYN) {
+        return itemImageRepository.findByItemIdAndDeleteYNOrderByImageOrderAsc(itemId, deleteYN);
     }
 }

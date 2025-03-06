@@ -45,9 +45,9 @@ public class UpdateService {
                     List<MultipartFile> images = null;
                     try {
                         images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
-                        log.info("이미지 이름 목록: {}", images);
+//                        log.info("이미지 이름 목록: {}", images);
                         // 이미지 리스트의 상세 정보 출력
-                        log.info("처리된 이미지들: {}", images.stream().map(img -> img.getOriginalFilename()).collect(Collectors.joining(",")));
+//                        log.info("처리된 이미지들: {}", images.stream().map(img -> img.getOriginalFilename()).collect(Collectors.joining(",")));
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -67,7 +67,12 @@ public class UpdateService {
         for (int i = 0; i < sheetDTOs.size(); i++) {
             ItemServiceDTO sheetDTO = sheetDTOs.get(i);
             ItemServiceDTO dbDTO = dbDTOs.get(i);
-
+            if (i == 0) {
+//                log.info("🔹 Sheet DTO ({}): {}", i, sheetDTO);
+                log.info("Sheet 이미지: {}", sheetDTO.getItemImages().stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList()));
+//                log.info("🔸 DB DTO ({}): {}", i, dbDTO);
+                log.info("DB 이미지: {}", dbDTO.getItemImages().stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList()));
+            }
             if (!Objects.equals(sheetDTO, dbDTO)) {
                 // 2. 실제 업데이트 수행
                 itemService.updateItemBySheets(dbDTO.getItemId(), sheetDTO);
