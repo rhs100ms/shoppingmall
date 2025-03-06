@@ -1,6 +1,7 @@
 package com.dsapkl.backend.dto;
 
 import com.dsapkl.backend.entity.Category;
+import com.dsapkl.backend.entity.Item;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,4 +24,6 @@ public class ItemServiceDTO {
     private List<MultipartFile> itemImages;
     private List<String> orderedStoreNames;
     private String showYn;
+
+
 }

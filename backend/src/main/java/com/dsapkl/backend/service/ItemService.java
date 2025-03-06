@@ -41,6 +41,7 @@ public class ItemService {
 
     //상품 정보 저장
     public Long saveItem(ItemServiceDTO itemServiceDTO, List<MultipartFile> multipartFileList) throws IOException {
+
         Item item = Item.createItem(
                 itemServiceDTO.getName(),
                 itemServiceDTO.getPrice(),
@@ -424,16 +425,24 @@ public class ItemService {
             if (sheetProduct.getItemImages() != null && !sheetProduct.getItemImages().isEmpty()) {
                 List<ItemImage> itemImages = filehandler.storeImages(sheetProduct.getItemImages());
 
-                // 첫 번째 이미지를 대표 이미지로 설정
-                if (!itemImages.isEmpty()) {
-                    itemImages.get(0).isFirstImage("F");
+                for (int i = 0; i < itemImages.size(); i++) {
+                    ItemImage image = itemImages.get(i);
+                    image.setImageOrder(i + 1);
+                    image.deleteSet("N");
+                    image.isFirstImage(i == 0 ? "F" : "N");
+                    item.addItemImage(image);
                 }
 
+                // 첫 번째 이미지를 대표 이미지로 설정
+//                if (!itemImages.isEmpty()) {
+//                    itemImages.get(0).isFirstImage("F");
+//                }
+
                 // 모든 이미지의 deleteYN을 'N'으로 설정하고 상품과 연결
-                for (ItemImage itemImage : itemImages) {
-                    itemImage.deleteSet("N");
-                    item.addItemImage(itemImage);
-                }
+//                for (ItemImage itemImage : itemImages) {
+//                    itemImage.deleteSet("N");
+//                    item.addItemImage(itemImage);
+//                }
             }
 
             // 3. 상품 저장

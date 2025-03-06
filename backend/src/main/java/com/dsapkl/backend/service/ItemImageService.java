@@ -56,10 +56,12 @@ public class ItemImageService {
 
     @Transactional
     public void updateItemImages(Long itemId, List<MultipartFile> itemImageFiles) throws IOException {
-        // 기존 이미지 삭제
+        // 기존 이미지 가져오기
         List<ItemImage> existingImages = itemImageRepository.findByItemId(itemId);
+        // 기존 이미지 삭제 처리 (임시)
         for (ItemImage image : existingImages) {
             image.deleteSet("Y");
+            image.setImageOrder(0);
             image.isFirstImage("N");
         }
 
@@ -70,35 +72,40 @@ public class ItemImageService {
         Item item =itemRepository.findById(itemId).orElseThrow();
         List<ItemImage> imagesToSave = new ArrayList<>();
 
-        // 이미지 처리
+        // 새로 받은 이미지 처리 (순서대로)
         for (int i = 0; i < itemImageFiles.size(); i++) {
             MultipartFile file = itemImageFiles.get(i);
             String originalFilename = file.getOriginalFilename();
 
+            ItemImage image;
+
             // 이미 존재하는 이미지인지 확인
             if (existingImageMap.containsKey(originalFilename)) {
                 // 기존 이미지 활용
-                ItemImage existingImage = existingImageMap.get(originalFilename);
-                existingImage.deleteSet("N");
-                existingImage.isFirstImage(i == 0 ? "F" : "N");
-                imagesToSave.add(existingImage);
+                image = existingImageMap.get(originalFilename);
+                image.deleteSet("N");
+//                existingImage.isFirstImage(i == 0 ? "F" : "N");
+//                imagesToSave.add(existingImage);
             } else {
                 // 진짜 새로운 이미지 저장
                 List<ItemImage> newImages = fileHandler.storeImages(List.of(file));
-                if (!newImages.isEmpty()) {
-                    ItemImage newImage = newImages.get(0);
-                    newImage.changeItem(item);
-                    newImage.isFirstImage(i == 0 ? "F" : "N");
-                    imagesToSave.add(newImage);
-                }
+                image = newImages.get(0);
+                image.changeItem(item);
+                image.deleteSet("N");
+//                if (!newImages.isEmpty()) {
+//                    ItemImage newImage = newImages.get(0);
+//                    newImage.changeItem(item);
+//                    newImage.isFirstImage(i == 0 ? "F" : "N");
+//                    imagesToSave.add(newImage);
+//                }
             }
-
+            // 이미지 순서 설정
+            image.setImageOrder(i + 1);
+            image.isFirstImage(i == 0 ? "F" : "N");
+            imagesToSave.add(image);
         }
 
-        for (ItemImage image : imagesToSave) {
-            itemImageRepository.save(image);
-        }
-
+    itemImageRepository.saveAll(imagesToSave);
 
 
 //        List<ItemImage> newImages = fileHandler.storeImages(itemImageFiles);
