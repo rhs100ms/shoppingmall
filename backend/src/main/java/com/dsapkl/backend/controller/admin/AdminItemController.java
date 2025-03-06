@@ -99,14 +99,15 @@ public class AdminItemController {
         }
 
         List<ItemImage> itemImageList = itemImageService.findItemImageDetailOrderByImageOrderAsc(itemId, "N");
+//        log.info("itemImageList: {}", itemImageList);
         List<ItemImageDto> itemImageDtoList = itemImageList.stream()
                 .map(ItemImageDto::new)
                 .collect(Collectors.toList());
-
+//        log.info("itemImageDtoList: {}", itemImageDtoList);
         ItemForm itemForm = ItemForm.from(item);
         itemForm.setItemImageListDto(itemImageDtoList);
         model.addAttribute("item", itemForm);
-//        log.info("itemForm : {}", itemForm);
+//        log.info("itemForm: {}", itemForm);
 
 
         // 구글 시트 이미지 순서로 이미지 띄우기

@@ -57,7 +57,7 @@ public class UserItemController {
             return "redirect:/user";
         }
 
-        List<ItemImage> itemImageList = itemImageService.findItemImageDetail(itemId, "N");
+        List<ItemImage> itemImageList = itemImageService.findItemImageDetailOrderByImageOrderAsc(itemId, "N");
         List<ItemImageDto> itemImageDtoList = itemImageList.stream()
                 .map(ItemImageDto::new)
                 .collect(Collectors.toList());
@@ -68,48 +68,48 @@ public class UserItemController {
 
         // 구글 시트 이미지 순서로 이미지 띄우기
         // 1. 시트 데이터 → DTO 변환
-        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
-        List<ItemServiceDTO> sheetDTOs = sheetData.stream()
-                .map(row -> {
-                    ItemServiceDTO dto = new ItemServiceDTO();
-                    dto.setItemId(Long.parseLong(row.get(0).toString()));
-                    dto.setName((String) row.get(1));      // 시트 순서에 맞게
-                    dto.setPrice(Integer.parseInt(row.get(3).toString()));
-                    dto.setStockQuantity(Integer.parseInt(row.get(4).toString()) );
-                    dto.setDescription((String) row.get(5));
-                    dto.setCategory(Category.valueOf((String) row.get(2)));
-                    String[] imageNames = row.get(6).toString().split(",\\s*");
-                    List<MultipartFile> images = null;
-                    try {
-                        images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    dto.setItemImages(images);
-
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-        ItemServiceDTO matchedSheet = sheetDTOs.stream()
-                .filter(dto -> dto.getItemId().equals(itemId))
-                .findFirst()
-                .orElse(null);
-
-        Map<String, String> imageNameMap = itemImageList.stream()
-                .collect(Collectors.toMap(
-                        ItemImage::getOriginalName,
-                        ItemImage::getStoreName
-                ));
-
-        List<String> orderedStoreNames = matchedSheet.getItemImages().stream()
-                .map(MultipartFile::getOriginalFilename)
-                .map(imageNameMap::get)
-                .collect(Collectors.toList());
-
-        matchedSheet.setOrderedStoreNames(orderedStoreNames);
-
-        model.addAttribute("sheetImage", matchedSheet);
+//        List<List<Object>> sheetData = googleSheetsService.readSheet(dataRange);
+//        List<ItemServiceDTO> sheetDTOs = sheetData.stream()
+//                .map(row -> {
+//                    ItemServiceDTO dto = new ItemServiceDTO();
+//                    dto.setItemId(Long.parseLong(row.get(0).toString()));
+//                    dto.setName((String) row.get(1));      // 시트 순서에 맞게
+//                    dto.setPrice(Integer.parseInt(row.get(3).toString()));
+//                    dto.setStockQuantity(Integer.parseInt(row.get(4).toString()) );
+//                    dto.setDescription((String) row.get(5));
+//                    dto.setCategory(Category.valueOf((String) row.get(2)));
+//                    String[] imageNames = row.get(6).toString().split(",\\s*");
+//                    List<MultipartFile> images = null;
+//                    try {
+//                        images = imageService.processImages(imageNames, Category.valueOf((String) row.get(2)));
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    dto.setItemImages(images);
+//
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//
+//        ItemServiceDTO matchedSheet = sheetDTOs.stream()
+//                .filter(dto -> dto.getItemId().equals(itemId))
+//                .findFirst()
+//                .orElse(null);
+//
+//        Map<String, String> imageNameMap = itemImageList.stream()
+//                .collect(Collectors.toMap(
+//                        ItemImage::getOriginalName,
+//                        ItemImage::getStoreName
+//                ));
+//
+//        List<String> orderedStoreNames = matchedSheet.getItemImages().stream()
+//                .map(MultipartFile::getOriginalFilename)
+//                .map(imageNameMap::get)
+//                .collect(Collectors.toList());
+//
+//        matchedSheet.setOrderedStoreNames(orderedStoreNames);
+//
+//        model.addAttribute("sheetImage", matchedSheet);
 
 
         List<CartQueryDto> cartItemListForm = cartService.findCartItems(user.getId());
