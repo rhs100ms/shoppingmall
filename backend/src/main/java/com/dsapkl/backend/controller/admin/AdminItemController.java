@@ -309,6 +309,7 @@ public class AdminItemController {
 
         // 모델에 데이터 추가
         model.addAttribute("items", itemForms);
+        log.info("itemForms {}: ", itemForms);
         model.addAttribute("itemStats", itemStats);
         model.addAttribute("currentPage", itemPage.getNumber());
         model.addAttribute("totalPages", itemPage.getTotalPages());

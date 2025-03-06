@@ -444,14 +444,9 @@
                     <tr th:each="item : ${items}">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img th:if="${!item.getItemImageListDto().isEmpty()}"
-                                     th:src="|/images/${item.getItemImageListDto().get(0).getStoreName()}|"
-                                     class="rounded"
-                                     alt="Product Image">
-                                <img th:unless="${!item.getItemImageListDto().isEmpty()}"
-                                     src="https://dummyimage.com/40x40/dee2e6/6c757d.jpg"
-                                     class="rounded"
-                                     alt="Default Image">
+                                <th:block th:each="imgDto : ${item.itemImageListDto}" th:if="${imgDto.firstImage == 'F'}">
+                                    <img th:src="|/images/${imgDto.storeName}|" class="rounded" alt="Product Image">
+                                </th:block>
                                 <div class="ms-3">
                                     <a th:href="@{~/admin/items/{id}(id=${item.itemId})}"
                                        class="product-link">

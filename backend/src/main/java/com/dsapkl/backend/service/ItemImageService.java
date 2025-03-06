@@ -84,20 +84,14 @@ public class ItemImageService {
                 // 기존 이미지 활용
                 image = existingImageMap.get(originalFilename);
                 image.deleteSet("N");
-//                existingImage.isFirstImage(i == 0 ? "F" : "N");
-//                imagesToSave.add(existingImage);
+
             } else {
                 // 진짜 새로운 이미지 저장
                 List<ItemImage> newImages = fileHandler.storeImages(List.of(file));
                 image = newImages.get(0);
                 image.changeItem(item);
                 image.deleteSet("N");
-//                if (!newImages.isEmpty()) {
-//                    ItemImage newImage = newImages.get(0);
-//                    newImage.changeItem(item);
-//                    newImage.isFirstImage(i == 0 ? "F" : "N");
-//                    imagesToSave.add(newImage);
-//                }
+
             }
             // 이미지 순서 설정
             image.setImageOrder(i + 1);
@@ -106,16 +100,6 @@ public class ItemImageService {
         }
 
     itemImageRepository.saveAll(imagesToSave);
-
-
-//        List<ItemImage> newImages = fileHandler.storeImages(itemImageFiles);
-//        Item item = itemRepository.findById(itemId).orElseThrow();
-//        for (int i = 0; i < newImages.size(); i++) {
-//            ItemImage image = newImages.get(i);
-//            image.changeItem(item);
-//            image.setRepImgYn(i == 0 ? "Y" : "N");
-//            itemImageRepository.save(image);
-//        }
 
     }
 

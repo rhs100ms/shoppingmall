@@ -156,7 +156,8 @@
                         </div>
 
                         <form th:action="${itemForm.itemId != null ? '/admin/items/' + itemForm.itemId + '/edit' : '/admin/items/new'}"
-                              th:object="${itemForm}" method="post" enctype="multipart/form-data">
+                              th:object="${itemForm}" method="post" enctype="multipart/form-data"
+                        id="itemForm">
 
                             <!-- Error Messages -->
                             <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
@@ -230,7 +231,7 @@
                                        th:text="${itemForm.itemId == null ? 'Upload Product Images' : 'Upload Additional Images'}">
                                 </label>
                                 <input class="form-control" type="file" id="formFileMultiple" name="itemImages" multiple>
-                                <div class="preview-images mt-3"></div>
+                                <div id="preview-images" class="preview-images mt-3"></div>
                             </div>
 
                             <!-- Submit Button -->
@@ -327,30 +328,116 @@
         background-color: var(--primary-color) !important;
     }
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script th:inline="javascript">
+    console.log("스크립ㅌ 로드됨");
+
     document.getElementById("formFileMultiple").addEventListener("change", function(event) {
+        console.log("파일 이벤트 됨.")
         const fileInput = event.target;
-        const previewContainer = document.querySelector(".preview-images");
+        const previewContainer = document.getElementById("preview-images");
 
         // 미리보기 섹션 제목 추가
         previewContainer.innerHTML = "<h6 class='w-100 mb-3'>New Image Preview</h6>";
 
-        Array.from(fileInput.files).forEach(file => {
+        Array.from(fileInput.files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
+                const imgWrapper = document.createElement("div");
+                imgWrapper.className = "image-item";
+                imgWrapper.setAttribute("data-file-index", index);
+                imgWrapper.setAttribute("data-file-name", file.name);
+
                 const img = document.createElement("img");
                 img.src = e.target.result;
                 img.style.width = "200px";
                 img.style.height = "200px";
                 img.style.objectFit = "contain";
-                img.style.marginRight = "10px";
-                img.style.marginBottom = "10px";
                 img.classList.add("border", "rounded", "p-1");
-                previewContainer.appendChild(img);
+
+                imgWrapper.appendChild(img);
+                previewContainer.appendChild(imgWrapper);
             };
             reader.readAsDataURL(file);
         });
+
+        new Sortable(previewContainer, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM 로드 완료");
+        const form = document.querySelector('#itemForm');
+        if (!form) {
+            console.error("폼 요소를 찾을 수 없습니다.");
+            return;
+        }
+
+        form.addEventListener("submit", function (e) {
+            console.log("제출 버튼 클릭됨");
+
+            e.preventDefault();
+
+            // const form = e.target;
+            const previewContainer = document.getElementById('preview-images');
+            const sortedElements = previewContainer.querySelectorAll('.image-item');
+            const fileInput = document.getElementById('formFileMultiple');
+            console.log("정렬된 요소 수:", sortedElements.length); // 디버깅용
+
+            const originalFiles = Array.from(fileInput.files);
+            // 정렬된 파일 배열 생성
+            const sortedFiles = [];
+
+            sortedElements.forEach(el => {
+                const index = el.getAttribute('data-file-index');
+                console.log("파일 인덱스:",index);
+                sortedFiles.push(originalFiles[index]);
+            });
+
+            // FormData 생성 및 파일 추가
+            const formData = new FormData(form);
+            console.log("formData: ", formData)
+            // 삭제 전
+            for (let [key, value] of formData.entries()) {
+                console.log("Before delete ->", key, value);
+            }
+            formData.delete('itemImages');
+
+// 삭제 후
+            for (let [key, value] of formData.entries()) {
+                console.log("After delete ->", key, value);
+            }
+
+            // 정렬된 순서대로 파일 추가
+            sortedFiles.forEach(file => {
+                formData.append("itemImages", file);
+                console.log("추가된 파일:", file.name);
+            });
+
+            // FormData의 모든 항목 출력
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+
+            }).then(response => {
+                if (response.redirected) {
+                    location.href = response.url;
+                } else {
+                    console.log(response);
+                }
+            }).catch(error => {
+                console.error("Error:",error);
+            });
+
+        });
+
     });
 
     var error = [[${errorMessage}]];
