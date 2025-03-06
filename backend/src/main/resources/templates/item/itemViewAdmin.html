@@ -884,14 +884,22 @@
 </style>
 
 <script>
+    console.log("스크립트 로드됨")
+
     document.querySelector('input[name="itemImages"]').addEventListener("change", function(event) {
+        console.log("파일 이벤트 됨.")
         const fileInput = event.target;
         const previewContainer = document.querySelector(".preview-images");
         previewContainer.innerHTML = ""; // 이전 미리보기 초기화
 
-        Array.from(fileInput.files).forEach(file => {
+        Array.from(fileInput.files).forEach(((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
+                const imgWrapper = document.createElement("div");
+                imgWrapper.className = "image-item";
+                imgWrapper.setAttribute("data-file-index", index);
+                imgWrapper.setAttribute("data-file-name", file.name);
+
                 const img = document.createElement("img");
                 img.src = e.target.result;
                 img.style.width = '200px';
@@ -899,7 +907,18 @@
                 img.style.objectFit = 'contain';
                 img.style.border = '1px solid #dee2e6';
                 img.style.borderRadius = '0.25rem';
-                previewContainer.appendChild(img);
+
+                imgWrapper.appendChild(img);
+                previewContainer.appendChild(imgWrapper);
+
+                // 모든 이미지가 로드된 후 Sortable 초기화
+                if (previewContainer.children.length === fileInput.files.length) {
+                    new Sortable(previewContainer, {
+                        animation: 150,
+                        ghostClass: 'sortable-ghost'
+                    });
+                }
+
             };
             reader.readAsDataURL(file);
         });
