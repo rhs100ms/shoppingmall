@@ -316,7 +316,7 @@
                     </span>
             </h3>
 
-            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <div class="row g-4 justify-content-center">
 
                 <!-- 빈 상품 리스트 -->
                 <div th:if="${#lists.isEmpty(items)}" class="col-12 text-center">
@@ -468,7 +468,7 @@
         return `
             <div class="col-sm-6 col-lg-4 col-xl-3">
                 <div class="card h-100 product-card border-0">
-                    <div class="product-image">
+                    <div class="product-image bg-gradient" >
                         <img src="/images/${imageStoreName}"
                             alt="Product Image"/>
                     </div>
