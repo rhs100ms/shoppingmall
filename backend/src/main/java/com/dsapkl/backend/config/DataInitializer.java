@@ -33,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
             Member admin = new Member();
             admin.setName("Admin");
             admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("1231234"));
+            admin.setPassword(passwordEncoder.encode("250301"));
             admin.setAddress(address);
             admin.setRole(Role.ADMIN);
             admin.setBirthDate("19800101");

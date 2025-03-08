@@ -70,18 +70,4 @@ public class GoogleSheetsController {
     }
 
 
-//    @PostMapping("/sync-to-sheet")
-//    public ResponseEntity<?> syncDbToSheet() {
-//        try {
-//            log.info("DB에서 시트로 데이터 동기화 요청 받음");
-//            syncToSheetService.syncDbToSheet();
-//            return ResponseEntity.ok("DB 데이터가 구글 시트에 성공적으로 동기화되었습니다.");
-//        } catch (Exception e) {
-//            log.error("데이터 동기화 실패", e);
-//            return ResponseEntity.internalServerError().body("Sync failed: " + e.getMessage());
-//        }
-//    }
-
-
-
 }

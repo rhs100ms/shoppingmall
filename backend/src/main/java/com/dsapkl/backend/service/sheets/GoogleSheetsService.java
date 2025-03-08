@@ -114,6 +114,7 @@ public class GoogleSheetsService {
         // 이미지 파일명 추출 및 쉼표로 구분된 문자열로 변환
         String imageNames = dbDTO.getItemImages().stream()
                 .map(file -> file.getOriginalFilename())
+                .map(name -> name.replaceAll("\\.(png|jpg|webp)$",""))
                 .collect(Collectors.joining(", "));
         rowData.add(imageNames);
         rowData.add(dbDTO.getShowYn());

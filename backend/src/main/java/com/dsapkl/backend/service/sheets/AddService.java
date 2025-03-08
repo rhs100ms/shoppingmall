@@ -26,6 +26,7 @@ public class AddService {
     private final ImageService imageService;
     private final ItemRepository itemRepository;
     private final UpdateService updateService;
+    private final SheetUpdateService sheetUpdateService;
 
     @Value("${google.sheets.data-range}")
     private String dataRange;
@@ -139,7 +140,7 @@ public class AddService {
                 ItemServiceDTO dbDTO = itemService.getItemById(sheetId);
 
                 if (!Objects.equals(dbDTO, sheetDTO)) {
-                    updateService.updateSheetRow(sheetId, dbDTO);
+                    sheetUpdateService.compareDTO(sheetDTO, dbDTO, (int) (long) sheetId + 1);
                     log.info("시트 상품 업데이트 완료: ID={}, 이름={}", sheetId, dbDTO.getName());
                 } else {
                     log.info("상품 ID={} 변경사항 없음, 업데이트 건너뜀", sheetId);

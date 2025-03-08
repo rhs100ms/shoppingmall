@@ -126,11 +126,11 @@ public class UpdateService {
 //            }
             if (!Objects.equals(sheetDTO, dbDTO)) {
                 // 2. 실제 업데이트 수행
-                sheetUpdateService.compareDTO(sheetDTO, dbDTO, i+1);
+                sheetUpdateService.compareDTO(sheetDTO, dbDTO, i+2);
             }
         }
     }
 
-    public void updateSheetRow(Long sheetId, ItemServiceDTO dbDTO) {
-    }
+//    public void updateSheetRow(Long sheetId, ItemServiceDTO dbDTO) {
+//    }
 }

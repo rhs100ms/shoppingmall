@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -54,7 +55,8 @@ public class MemberController {
                                BindingResult bindingResult, Model model,
                                @RequestParam("role") String role,
                                @RequestParam("gender") String gender,
-                               @RequestParam("interests") String interests) {
+                               @RequestParam("interests") String interests,
+                               RedirectAttributes redirectAttributes) {
 
         //memberForm 객체에 binding 했을 때 에러
         if(bindingResult.hasErrors()) {
@@ -98,6 +100,7 @@ public class MemberController {
 
             memberInfoService.updateMemberInfo(savedMember, memberInfoDto);
 
+            redirectAttributes.addFlashAttribute("signupSuccess", true);
         } catch (IllegalStateException e){
             model.addAttribute("errorMessage", e.getMessage());
             return "members/createMemberForm";

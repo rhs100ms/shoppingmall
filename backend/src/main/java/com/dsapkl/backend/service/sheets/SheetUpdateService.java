@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SheetUpdateService {
 
-    private GoogleSheetsService googleSheetsService;
+    private final GoogleSheetsService googleSheetsService;
 
     public void compareDTO(ItemServiceDTO sheetDTO, ItemServiceDTO dbDTO, int rowIndex) {
 
@@ -52,7 +52,10 @@ public class SheetUpdateService {
                 .collect(Collectors.toList());
 
         if (!Objects.equals(sheetImages, dbImages)) {
-            updates.add(new CellUpdate(rowIndex, "G", dbDTO.getItemImages()));
+            String imageNames = dbImages.stream()
+                    .map(name -> name.replaceAll("\\.(png|jpg|webp)$",""))
+                    .collect(Collectors.joining(", "));
+            updates.add(new CellUpdate(rowIndex, "G", imageNames));
         }
 
         if (!Objects.equals(sheetDTO.getShowYn(), dbDTO.getShowYn())) {
