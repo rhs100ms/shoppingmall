@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -115,4 +112,49 @@ public class AddService {
         return newProduct;
     }
 
+    public void importNewProductsFromDb() throws IOException {
+
+        List<List<Object>> sheetValues = googleSheetsService.readSheet(dataRange);
+
+        List<Item> dbItems = itemRepository.findAll();
+        List<Long> dbItemIds = dbItems.stream().map(Item::getId).collect(Collectors.toList());
+
+        log.info("dbItemIds: {}", dbItemIds);
+
+        Map<Long, List<Object>> sheetItemsMap = new HashMap<>();
+        for (List<Object> row : sheetValues) {
+            if (row.size() >= 1 && row.get(0) != null) {
+                Long itemId = Long.parseLong(row.get(0).toString());
+                sheetItemsMap.put(itemId, row);
+            }
+        }
+
+        log.info("sheetItemIds: {}", sheetItemsMap.keySet());
+
+        for (Long sheetId : new HashSet<>(sheetItemsMap.keySet())) {
+            if (dbItemIds.contains(sheetId)) {
+                List<Object> row = sheetItemsMap.get(sheetId);
+                ItemServiceDTO sheetDTO = convertToDTO(row);
+
+                ItemServiceDTO dbDTO = itemService.getItemById(sheetId);
+
+                if (!Objects.equals(dbDTO, sheetDTO)) {
+                    updateService.updateSheetRow(sheetId, dbDTO);
+                    log.info("시트 상품 업데이트 완료: ID={}, 이름={}", sheetId, dbDTO.getName());
+                } else {
+                    log.info("상품 ID={} 변경사항 없음, 업데이트 건너뜀", sheetId);
+                }
+            }
+        }
+
+        for (Item dbItem : dbItems) {
+            if (!sheetItemsMap.containsKey(dbItem.getId())) {
+                ItemServiceDTO dbDTO = itemService.getItemById(dbItem.getId());
+
+                // 시트에 새 행 추가
+                googleSheetsService.appendRow(dbDTO);
+                log.info("시트에 새 상품 추가 완료: ID={}, 이름={}", dbItem.getId(), dbItem.getName());
+            }
+        }
+    }
 }

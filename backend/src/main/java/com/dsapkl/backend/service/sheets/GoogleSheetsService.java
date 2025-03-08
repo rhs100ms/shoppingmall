@@ -1,5 +1,6 @@
 package com.dsapkl.backend.service.sheets;
 
+import com.dsapkl.backend.dto.ItemServiceDTO;
 import com.dsapkl.backend.service.ItemService;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -17,8 +18,11 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +38,9 @@ public class GoogleSheetsService {
     @Value("${common.path.credentials}")
     private String credentialsFilePath;
     private Sheets sheetsService;
+
+    @Value("${google.sheets.data-range}")
+    private String dataRange;
 
     @PostConstruct
     public void init() throws IOException, GeneralSecurityException {
@@ -79,43 +86,7 @@ public class GoogleSheetsService {
     }
 
 
-//    // 시트 데이터 업데이트
-//    public void udpateSheet(String range, List<List<Object>> values) {
-//        try {
-//            log.info("Updating sheet data from range: {}", range);
-//            ValueRange body = new ValueRange().setValues(values);
-//
-//            sheetsService.spreadsheets().values()
-//                    .update(spreadsheetId, range, body)
-//                    .setValueInputOption("RAW")
-//                    .execute();
-//
-//            log.info("Successfully updated {} rows in sheet", values.size());
-//        } catch (IOException e) {
-//            log.error("Failed to update Google Sheet", e);
-//            throw new RuntimeException("구글 시트 업데이트 실패", e);
-//        }
-//    }
-//
-//    // 특정 셀 업데이트
-//    public void updateCell(String range, Object value) {
-//        try {
-//            log.info("Updating cell data from range: {}", range);
-//            ValueRange body = new ValueRange()
-//                    .setValues(List.of(List.of(value)));
-//
-//            sheetsService.spreadsheets().values()
-//                    .update(spreadsheetId, range, body)
-//                    .setValueInputOption("RAW")
-//                    .execute();
-//            log.info("Successfully updated Cell at {}", range);
-//        } catch (IOException e) {
-//            log.error("Failed to update Google Sheet", e);
-//            throw new RuntimeException("구글 시트 셀 업데이트 실패", e);
-//        }
-//    }
-
-    // 시트 데이터 업데이트
+    // DB 내용을 => 시트 데이터 업데이트
     public void updateSheet(String dataRange, List<List<Object>> newSheetData) {
         try {
             log.info("Updating sheet data from range: {}", dataRange);
@@ -129,5 +100,53 @@ public class GoogleSheetsService {
             log.error("Failed to update Google Sheet", e);
             throw new RuntimeException("구글 시트 업데이트 실패" ,e);
         }
+    }
+
+    public void appendRow(ItemServiceDTO dbDTO) {
+        List<Object> rowData = new ArrayList<>();
+        rowData.add(dbDTO.getItemId());
+        rowData.add(dbDTO.getName());
+        rowData.add(dbDTO.getCategory().toString());
+        rowData.add(dbDTO.getPrice());
+        rowData.add(dbDTO.getStockQuantity());
+        rowData.add(dbDTO.getDescription());
+
+        // 이미지 파일명 추출 및 쉼표로 구분된 문자열로 변환
+        String imageNames = dbDTO.getItemImages().stream()
+                .map(file -> file.getOriginalFilename())
+                .collect(Collectors.joining(", "));
+        rowData.add(imageNames);
+        rowData.add(dbDTO.getShowYn());
+
+        appendValues(Arrays.asList(rowData));
+    }
+
+    private void appendValues(List<List<Object>> list) {
+        try {
+            ValueRange body = new ValueRange().setValues(list);
+            sheetsService.spreadsheets().values()
+                    .append(spreadsheetId, dataRange, body)
+                    .setValueInputOption("RAW")
+                    .execute();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to append values", e);
+        }
+
+    }
+
+
+    public void updateCell(String cellRange, Object value) {
+        try {
+            ValueRange body = new ValueRange()
+                    .setValues(Arrays.asList(Arrays.asList(value)));
+
+            sheetsService.spreadsheets().values()
+                    .update(spreadsheetId, cellRange, body)
+                    .setValueInputOption("RAW")
+                    .execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

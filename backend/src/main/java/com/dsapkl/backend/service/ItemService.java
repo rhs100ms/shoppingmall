@@ -52,14 +52,13 @@ public class ItemService {
 
         List<ItemImage> itemImages = filehandler.storeImages(multipartFileList);
 
-        //대표 상품 이미지 설정
-
         if (!itemImages.isEmpty()) {
-            itemImages.get(0).isFirstImage("F");  // 첫 번째 이미지를 대표 이미지로 설정
-        }
-
-        for (ItemImage itemImage : itemImages) {
-            item.addItemImage(itemImage);  // 연관 관계 설정
+            for (int i = 0; i < itemImages.size(); i++) {
+                ItemImage itemImage = itemImages.get(i);
+                itemImage.setFirstImage(i == 0 ? "F" : "N");
+                itemImage.setImageOrder(i + 1);
+                item.addItemImage(itemImage);
+            }
         }
 
         itemRepository.save(item);
@@ -218,54 +217,6 @@ public class ItemService {
                     img.isFirstImage("N");
                 });
 
-//        // 3. 이미지 상태 업데이트
-//        allExistingImages.forEach(img -> {
-//            if (sheetImageNames.contains(img.getOriginalName())) {
-//                // 시트에 있는 이미지는 복구 또는 유지
-//                img.deleteSet("N");
-//            } else {
-//                // 시트에 없는 이미지는 삭제 처리
-//                img.deleteSet("Y");
-//                img.setImageOrder(0);
-//            }
-//        });
-
-
-//        // 4. 기존 이미지 이름 목록 (확장자 포함)
-//        List<String> allExistingImageNames = allExistingImages.stream()
-//                .map(ItemImage::getOriginalName)
-//                .collect(Collectors.toList());
-//
-//
-//
-//
-//        // 8-1 시트의 첫번째 이미지를 firstImageName에 담는다.
-//        String firstImageName = sheetImageNames.get(0);
-//
-//        // 8-2 첫 번째 이미지가 기존 이미지인 경우
-//        allExistingImages.stream()
-//                .filter(img -> img.getOriginalName().equals(firstImageName))
-//                .findFirst()
-//                .ifPresent(img -> img.isFirstImage("F"));
-//
-//        // 6 Sheet에만 존재하는 새로운 이미지 추가 (기존에 없는 새 이미지)
-//        List<MultipartFile> newImages = sheetProduct.getItemImages().stream()
-//                .filter(file -> !allExistingImageNames.contains(file.getOriginalFilename()))
-//                .collect(Collectors.toList());
-//
-//        if (!newImages.isEmpty()) {
-//            List<ItemImage> addedImages = filehandler.storeImages(newImages);
-//            for (ItemImage newImage : addedImages) {
-//                newImage.deleteSet("N");
-//                // 새로 추가되는 이미지가 시트의 첫 번째 이미지인 경우
-//                if (newImage.getOriginalName().equals(firstImageName)) {
-//                    newImage.isFirstImage("F");
-//                } else {
-//                    newImage.isFirstImage("N");
-//                }
-//                item.addItemImage(newImage);
-//            }
-//        }
     }
 
     // 통합 검색 기능
@@ -467,7 +418,7 @@ public class ItemService {
                     dto.setDescription(item.getDescription());
                     dto.setCategory(item.getCategory());
 
-                    List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(item.getId(), "N");
+                    List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYNOrderByImageOrderAsc(item.getId(), "N");
                     List<MultipartFile> multipartFiles = itemImages.stream()
                             .map(img -> {
                                 try {
@@ -495,7 +446,6 @@ public class ItemService {
         dto.setStockQuantity(item.getStockQuantity());
         dto.setDescription(item.getDescription());
         dto.setCategory(item.getCategory());
-
         List<ItemImage> itemImages = itemImageRepository.findByItemIdAndDeleteYN(item.getId(), "N");
         List<MultipartFile> multipartFiles = itemImages.stream()
                 .map(img -> {
@@ -506,7 +456,6 @@ public class ItemService {
                     }
                 })
                 .collect(Collectors.toList());
-
         dto.setItemImages(multipartFiles);
         dto.setShowYn(item.getShowYn());
 

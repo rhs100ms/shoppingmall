@@ -70,7 +70,7 @@ public class ItemForm {
         return form;
     }
 
-    public ItemServiceDTO toServiceDTO() {
+    public ItemServiceDTO   toServiceDTO() {
         return ItemServiceDTO.builder()
                 .itemId(itemId)
                 .name(name)
@@ -78,6 +78,7 @@ public class ItemForm {
                 .price(price)
                 .stockQuantity(stockQuantity)
                 .description(description)
+                .showYn(showYn != null ? showYn : "ON")
                 .build();
     }
 
