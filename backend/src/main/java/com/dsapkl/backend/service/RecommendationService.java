@@ -7,6 +7,7 @@ import com.dsapkl.backend.repository.ClusterRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,7 +25,9 @@ public class RecommendationService {
     private final MemberInfoRepository memberInfoRepository;
     private final ClusterRepository clusterRepository;
     private final ObjectMapper objectMapper;
-    private static final String FLASK_URL = "http://localhost:5000/api/data";
+
+    @Value("${flask.server.url}")
+    private String FLASK_URL;
 
     public Integer getClusterPrediction(Long memberId) {
         // MemberInfo 조회

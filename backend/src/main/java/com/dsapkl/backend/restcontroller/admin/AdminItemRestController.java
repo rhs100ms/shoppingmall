@@ -34,26 +34,25 @@ public class AdminItemRestController {
         return ResponseEntity.ok(response);
     }
 
-//    /**
-//     * 상품 표시 상태 업데이트 (Show ON/OFF)
-//     */
-//    @PostMapping("/items/{itemId}/update-show-status")
-//    @ResponseBody
-//    public ResponseEntity<?> updateShowStatus(@PathVariable Long itemId, @RequestBody Map<String, String> payload) {
-//        try {
-//            String showYn = payload.get("showYn");
-//            if (showYn == null || (!showYn.equals("Y") && !showYn.equals("N"))) {
-//                return ResponseEntity.badRequest().body("Invalid show status value. Must be 'Y' or 'N'.");
-//            }
-//
-//            itemService.updateShowStatus(itemId, showYn);
-//            return ResponseEntity.ok().build();
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.notFound().build();
-//        } catch (Exception e) {
-//            log.error("Error updating show status for item {}: {}", itemId, e.getMessage(), e);
-//            return ResponseEntity.internalServerError().body("Failed to update show status: " + e.getMessage());
-//        }
-//    }
+    /**
+     * 상품 표시 상태 업데이트 (Show ON/OFF)
+     */
+    @PostMapping("/items/{itemId}/update-show-status")
+    public ResponseEntity<?> updateShowStatus(@PathVariable Long itemId, @RequestBody Map<String, String> payload) {
+        try {
+            String showYn = payload.get("showYn");
+            if (showYn == null || (!showYn.equals("ON") && !showYn.equals("OFF"))) {
+                return ResponseEntity.badRequest().body("Invalid show status value. Must be 'Y' or 'N'.");
+            }
+
+            itemService.updateShowStatus(itemId, showYn);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error updating show status for item {}: {}", itemId, e.getMessage(), e);
+            return ResponseEntity.internalServerError().body("Failed to update show status: " + e.getMessage());
+        }
+    }
 
 }
