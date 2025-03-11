@@ -16,269 +16,153 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <th:block th:replace="~{members/common-styles :: memberStyles}"></th:block>
+
+    <style>
+
+        /* navbar-toggler 커스텀 스타일 */
+        .navbar-toggler {
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background-color: #f8f9fa !important;
+            padding: 0.25rem 0.75rem !important;
+            border-radius: 0.25rem !important;
+        }
+
+        .navbar-toggler:hover {
+            background-color: #6c757d !important; /* hover 시 더 어두운 배경색으로 변경 */
+            border-color: #6c757d !important;
+            transform: none; !important;
+        }
+
+        .navbar-toggler .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+
+        /* hover 시 3선 아이콘 색상을 흰색으로 변경 */
+        .navbar-toggler:hover .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none !important;
+        }
+
+        .preview-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-images img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .rating > input {
+            display: none;
+        }
+
+        .rating > label {
+            position: relative;
+            width: 1.1em;
+            font-size: 2em;
+            color: #FFD700;
+            cursor: pointer;
+        }
+
+        .rating > label::before {
+            content: "★";
+            position: absolute;
+            opacity: 0;
+        }
+
+        .rating > label:hover:before,
+        .rating > label:hover ~ label:before {
+            opacity: 1 !important;
+        }
+
+        .rating > input:checked ~ label:before {
+            opacity: 1;
+        }
+
+        .review-item {
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .star-rating {
+            color: #FFD700;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        #productImageSlider:hover .carousel-control-prev,
+        #productImageSlider:hover .carousel-control-next {
+            opacity: 0.8;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1 !important;
+        }
+
+        .thumbnail-preview {
+            margin-top: 20px;
+        }
+
+        .thumbnail-item img {
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: all 0.2s ease-in-out;
+            padding: 2px;
+        }
+
+        .thumbnail-item img:hover {
+            border-color: #666;
+        }
+
+        .thumbnail-item img.active {
+            border-color: #0d6efd;
+        }
+    </style>
+
 </head>
 
 
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    var currentMemberId = /*[[${currentMemberId}]]*/ null;
-    var itemId = /*[[${item.itemId}]]*/ null;
 
-    $(document).ready(function() {
-        loadReviews();
-
-        $("#reviewForm").on("submit", function(e) {
-            e.preventDefault();
-            submitReview();
-        });
-
-        calculateTotalPrice();
-
-        $("#orderCount").on('input change', function() {
-            calculateTotalPrice();
-        });
-
-        // 캐네일 클릭 이벤트 처리
-        $('.thumbnail-item').click(function() {
-            const slideIndex = $(this).data('slide-index');
-            $('#productImageSlider').carousel(slideIndex);
-
-            // 활성 썸네일 표시 업데이트
-            $('.thumbnail-item img').removeClass('active');
-            $(this).find('img').addClass('active');
-        });
-
-        // 캐러셀 슬라이드 이벤트 처리
-        $('#productImageSlider').on('slide.bs.carousel', function (e) {
-            // 활성 썸네일 업데이트
-            $('.thumbnail-item img').removeClass('active');
-            $('.thumbnail-item').eq(e.to).find('img').addClass('active');
-        });
-
-        // 캐러셀 초기화 (자동 슬라이드 비활성화)
-        var carousel = new bootstrap.Carousel(document.getElementById('productImageSlider'), {
-            interval: false
-        });
-    });
-
-    function submitReview() {
-        if ($("#reviewForm").data("submitting")) {
-            return;
-        }
-        $("#reviewForm").data("submitting", true);
-
-        const rating = $("input[name='rating']:checked").val();
-        const content = $("#reviewContent").val().trim();
-        const formData = new FormData();
-        const files = $("#reviewImages")[0].files;
-
-        if (!rating) {
-            alert("Please select a rating.");
-            return;
-        }
-
-        if (!content) {
-            alert("Please enter review content.");
-            return;
-        }
-
-        formData.append("itemId", itemId);
-        formData.append("content", content);
-        formData.append("rating", rating);
-
-        if (files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-                formData.append("images", files[i]);
-            }
-        }
-
-        $.ajax({
-            url: "/review/api/reviews",
-            method: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                alert("Review has been registered.");
-                $("#reviewContent").val("");
-                $("input[name='rating']").prop("checked", false);
-                $("#reviewImages").val("");
-                $("#imagePreview").empty();
-                loadReviews();
-                updateItemRating();
-            },
-            error: function(xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    }
-
-    function loadReviews() {
-        console.log("Loading reviews for item:", itemId);
-        $.ajax({
-            url: `/review/api/items/${itemId}/reviews`,
-            method: "GET",
-            success: function(reviews) {
-                console.log("Received reviews:", reviews);
-                displayReviews(reviews);
-            },
-            error: function(xhr) {
-                console.error("Failed to load reviews:", xhr);
-            }
-        });
-    }
-
-    function calculateTotalPrice() {
-        var quantity = $("#orderStockQuantity").val() * 1;
-        var count = parseInt($("#orderCount").val()) || 1;
-        var price = parseInt($("#orderPrice").val()) || 0;
-
-        if (count < 1) {
-            $("#orderCount").val(1);
-            count = 1;
-        }
-
-        if (quantity < count) {
-            alert("Stock quantity is insufficient. Stock: " + quantity + " units");
-            $("#orderCount").val(1);
-            count = 1;
-        }
-
-        var totalPrice = price * count;
-        $("#totalPrice").html(totalPrice.toLocaleString() + ' KRW');
-    }
-
-    function addCart() {
-        const count = parseInt($("#orderCount").val());
-        const itemId = parseInt($("#orderItemId").val());
-
-        var cartForm = {
-            itemId: itemId,
-            count: count
-        };
-
-        $.ajax({
-            url: "/user/cart",
-            data: cartForm,
-            type: 'POST',
-            dataType: 'json',
-            success: function (response) {
-                alert("Product added to cart.");
-                $(".badge.bg-dark.text-white.ms-1.rounded-pill").text(response.count);
-            },
-            error: function (jqXHR) {
-                if (jqXHR.status === 401) {
-                    alert("Login is required.");
-                    location.href = "/members";
-                } else {
-                    alert(jqXHR.responseText);
-                }
-            }
-        });
-    }
-
-    function initiateCheckout() {
-        const stripe = Stripe('pk_test_51QclmbPPwZvRdRPft9sFx9zsufQlSONBFumadXCRUH00AnFSd05QYS1jcjUczdO5u0IR10pgjM36COA7DvmI6iSR00KsLTQ9s2');
-
-        const count = $("#orderCount").val();
-        const itemId = $("#orderItemId").val();
-        const itemName = $(".display-5.fw-bolder").text();
-        const price = $("#orderPrice").val();
-
-        console.log({
-            itemId: itemId,
-            count: count,
-            price: price,
-            itemName: itemName
-        })
-
-        const checkoutData = {
-            itemId: itemId,
-            count: count,
-            price: price,
-            itemName: itemName
-        };
-
-        fetch('/user/api/checkout/create-checkout-session-single', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(checkoutData)
-        })
-            .then(response => response.json())
-            .then(data => {
-                return stripe.redirectToCheckout({ sessionId: data.sessionId})
-                    .then(result => {if (result.error) {alert(result.error.message);}})
-                    .catch(error => {console.error('Error:', error);
-                        alert('Payment processing failed.');})
-            });
-    }
-
-    function toggleEditMode() {
-        const viewElements = document.querySelectorAll('.view-mode');
-        const editElements = document.querySelectorAll('.edit-mode');
-
-        viewElements.forEach(el => {
-            el.style.display = el.style.display === 'none' ? '' : 'none';
-        });
-
-        editElements.forEach(el => {
-            el.style.display = el.style.display === 'none' ? '' : 'none';
-        });
-    }
-
-    function updateAverageRating(averageRating, reviewCount) {
-        const stars = '★'.repeat(Math.floor(averageRating)) + '☆'.repeat(5 - Math.floor(averageRating));
-        $('.star-rating').first().text(stars);
-        $('.text-muted').first().text(`(${averageRating.toFixed(1)}) (${reviewCount} reviews)`);
-    }
-
-    function saveReview(reviewId) {
-        const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
-        const content = reviewItem.find('.edit-content').val();
-        const rating = reviewItem.find(`input[name="edit-rating-${reviewId}"]:checked`).val();
-        const formData = new FormData();
-        const files = reviewItem.find('.edit-images')[0].files;
-
-        if (!rating) {
-            alert("Please select a rating.");
-            return;
-        }
-
-        if (!content || content.trim() === '') {
-            alert("Please enter review content.");
-            return;
-        }
-
-        formData.append("itemId", itemId);
-        formData.append("content", content.trim());
-        formData.append("rating", rating);
-
-        if (files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-                formData.append("images", files[i]);
-            }
-        }
-
-        $.ajax({
-            url: `/review/api/reviews/${reviewId}`,
-            method: "PUT",
-            processData: false,
-            contentType: false,
-            data: formData,
-            success: function() {
-                alert("Review has been updated.");
-                loadReviews();
-                updateItemRating();
-            },
-            error: function(xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    }
-
-    /*]]>*/
 </script>
 
 <body>
@@ -545,168 +429,252 @@
 <!-- Core theme JS-->
 <!--<script src="js/scripts.js"></script>-->
 
-<style>
 
-    /* navbar-toggler 커스텀 스타일 */
-    .navbar-toggler {
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        background-color: #f8f9fa !important;
-        padding: 0.25rem 0.75rem !important;
-        border-radius: 0.25rem !important;
-    }
 
-    .navbar-toggler:hover {
-        background-color: #6c757d !important; /* hover 시 더 어두운 배경색으로 변경 */
-        border-color: #6c757d !important;
-        transform: none; !important;
-    }
+<script th:inline="javascript">
 
-    .navbar-toggler .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
-    }
+    /*<![CDATA[*/
+    var currentMemberId = /*[[${currentMemberId}]]*/ null;
+    var itemId = /*[[${item.itemId}]]*/ null;
 
-    /* hover 시 3선 아이콘 색상을 흰색으로 변경 */
-    .navbar-toggler:hover .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
-    }
+    $(document).ready(function() {
+        loadReviews();
 
-    .navbar-toggler:focus {
-        box-shadow: none !important;
-    }
-
-    .preview-images {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .preview-images img {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 5px;
-        width: 200px;
-        height: 200px;
-        object-fit: contain;
-    }
-
-    .rating {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-    }
-
-    .rating > input {
-        display: none;
-    }
-
-    .rating > label {
-        position: relative;
-        width: 1.1em;
-        font-size: 2em;
-        color: #FFD700;
-        cursor: pointer;
-    }
-
-    .rating > label::before {
-        content: "★";
-        position: absolute;
-        opacity: 0;
-    }
-
-    .rating > label:hover:before,
-    .rating > label:hover ~ label:before {
-        opacity: 1 !important;
-    }
-
-    .rating > input:checked ~ label:before {
-        opacity: 1;
-    }
-
-    .review-item {
-        border-bottom: 1px solid #dee2e6;
-        padding: 1rem 0;
-    }
-
-    .review-item:last-child {
-        border-bottom: none;
-    }
-
-    .star-rating {
-        color: #FFD700;
-    }
-
-    .carousel-control-prev,
-    .carousel-control-next {
-        background-color: rgba(0, 0, 0, 0.3);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .carousel-control-prev {
-        left: 10px;
-    }
-
-    .carousel-control-next {
-        right: 10px;
-    }
-
-    #productImageSlider:hover .carousel-control-prev,
-    #productImageSlider:hover .carousel-control-next {
-        opacity: 0.8;
-    }
-
-    .carousel-control-prev:hover,
-    .carousel-control-next:hover {
-        opacity: 1 !important;
-    }
-
-    .thumbnail-preview {
-        margin-top: 20px;
-    }
-
-    .thumbnail-item img {
-        border: 2px solid transparent;
-        border-radius: 4px;
-        transition: all 0.2s ease-in-out;
-        padding: 2px;
-    }
-
-    .thumbnail-item img:hover {
-        border-color: #666;
-    }
-
-    .thumbnail-item img.active {
-        border-color: #0d6efd;
-    }
-</style>
-
-<script>
-    document.querySelector('input[name="itemImages"]').addEventListener("change", function(event) {
-        const fileInput = event.target;
-        const previewContainer = document.querySelector(".preview-images");
-        previewContainer.innerHTML = ""; // 이전 미리보기 초기화
-
-        Array.from(fileInput.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.width = '200px';
-                img.style.height = '200px';
-                img.style.objectFit = 'contain';
-                img.style.border = '1px solid #dee2e6';
-                img.style.borderRadius = '0.25rem';
-                previewContainer.appendChild(img);
-            };
-            reader.readAsDataURL(file);
+        $("#reviewForm").on("submit", function(e) {
+            e.preventDefault();
+            submitReview();
         });
+
+        calculateTotalPrice();
+
+        $("#orderCount").on('input change', function() {
+            calculateTotalPrice();
+        });
+
+        // 캐네일 클릭 이벤트 처리
+        $('.thumbnail-item').click(function() {
+            const slideIndex = $(this).data('slide-index');
+            $('#productImageSlider').carousel(slideIndex);
+
+            // 활성 썸네일 표시 업데이트
+            $('.thumbnail-item img').removeClass('active');
+            $(this).find('img').addClass('active');
+        });
+
+        // 캐러셀 슬라이드 이벤트 처리
+        $('#productImageSlider').on('slide.bs.carousel', function (e) {
+            // 활성 썸네일 업데이트
+            $('.thumbnail-item img').removeClass('active');
+            $('.thumbnail-item').eq(e.to).find('img').addClass('active');
+        });
+
+        // 캐러셀 초기화 (자동 슬라이드 비활성화)
+        var carousel = new bootstrap.Carousel(document.getElementById('productImageSlider'), {
+            interval: false
+        });
+
+        // // 리뷰 이미지 미리보기
+        // $("#reviewImages").on('change', function(e) {
+        //     const preview = $("#imagePreview");
+        //     preview.empty();
+        //
+        //     Array.from(e.target.files).forEach(file => {
+        //         const reader = new FileReader();
+        //         reader.onload = function(e) {
+        //             const img = $('<img>')
+        //                 .attr('src', e.target.result)
+        //                 .css({
+        //                     'width': '200px',
+        //                     'height': '200px',
+        //                     'object-fit': 'contain',
+        //                     'margin': '10px',
+        //                     'border': '1px solid #dee2e6',
+        //                     'border-radius': '4px',
+        //                     'background-color': '#f8f9fa'
+        //                 });
+        //             preview.append(img);
+        //         }
+        //         reader.readAsDataURL(file);
+        //     });
+        // });
+
     });
+
+    function submitReview() {
+        if ($("#reviewForm").data("submitting")) {
+            return;
+        }
+        $("#reviewForm").data("submitting", true);
+
+        const rating = $("input[name='rating']:checked").val();
+        const content = $("#reviewContent").val().trim();
+        const formData = new FormData();
+        const files = $("#reviewImages")[0].files;
+
+        if (!rating) {
+            alert("Please select a rating.");
+            return;
+        }
+
+        if (!content) {
+            alert("Please enter review content.");
+            return;
+        }
+
+        formData.append("itemId", itemId);
+        formData.append("content", content);
+        formData.append("rating", rating);
+
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append("images", files[i]);
+            }
+        }
+
+        $.ajax({
+            url: "/review/api/reviews",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                alert("Review has been registered.");
+                $("#reviewContent").val("");
+                $("input[name='rating']").prop("checked", false);
+                $("#reviewImages").val("");
+                $("#imagePreview").empty();
+                loadReviews();
+                updateItemRating();
+            },
+            error: function(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function loadReviews() {
+        console.log("Loading reviews for item:", itemId);
+        $.ajax({
+            url: `/review/api/items/${itemId}/reviews`,
+            method: "GET",
+            success: function(reviews) {
+                console.log("Received reviews:", reviews);
+                displayReviews(reviews);
+            },
+            error: function(xhr) {
+                console.error("Failed to load reviews:", xhr);
+            }
+        });
+    }
+
+    function calculateTotalPrice() {
+        var quantity = $("#orderStockQuantity").val() * 1;
+        var count = parseInt($("#orderCount").val()) || 1;
+        var price = parseInt($("#orderPrice").val()) || 0;
+
+        if (count < 1) {
+            $("#orderCount").val(1);
+            count = 1;
+        }
+
+        if (quantity < count) {
+            alert("Stock quantity is insufficient. Stock: " + quantity + " units");
+            $("#orderCount").val(1);
+            count = 1;
+        }
+
+        var totalPrice = price * count;
+        $("#totalPrice").html(totalPrice.toLocaleString() + ' KRW');
+    }
+
+
+    function toggleEditMode() {
+        const viewElements = document.querySelectorAll('.view-mode');
+        const editElements = document.querySelectorAll('.edit-mode');
+
+        viewElements.forEach(el => {
+            el.style.display = el.style.display === 'none' ? '' : 'none';
+        });
+
+        editElements.forEach(el => {
+            el.style.display = el.style.display === 'none' ? '' : 'none';
+        });
+    }
+
+    function updateAverageRating(averageRating, reviewCount) {
+        const stars = '★'.repeat(Math.floor(averageRating)) + '☆'.repeat(5 - Math.floor(averageRating));
+        $('.star-rating').first().text(stars);
+        $('.text-muted').first().text(`(${averageRating.toFixed(1)}) (${reviewCount} reviews)`);
+    }
+
+    function saveReview(reviewId) {
+        const reviewItem = $(`.review-item[data-review-id="${reviewId}"]`);
+        const content = reviewItem.find('.edit-content').val();
+        const rating = reviewItem.find(`input[name="edit-rating-${reviewId}"]:checked`).val();
+        const formData = new FormData();
+        const files = reviewItem.find('.edit-images')[0].files;
+
+        if (!rating) {
+            alert("Please select a rating.");
+            return;
+        }
+
+        if (!content || content.trim() === '') {
+            alert("Please enter review content.");
+            return;
+        }
+
+        formData.append("itemId", itemId);
+        formData.append("content", content.trim());
+        formData.append("rating", rating);
+
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append("images", files[i]);
+            }
+        }
+
+        $.ajax({
+            url: `/review/api/reviews/${reviewId}`,
+            method: "PUT",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function() {
+                alert("Review has been updated.");
+                loadReviews();
+                updateItemRating();
+            },
+            error: function(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    /*]]>*/
+
+
+
+    // document.querySelector('input[name="itemImages"]').addEventListener("change", function(event) {
+    //     const fileInput = event.target;
+    //     const previewContainer = document.querySelector(".preview-images");
+    //     previewContainer.innerHTML = ""; // 이전 미리보기 초기화
+    //
+    //     Array.from(fileInput.files).forEach(file => {
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             const img = document.createElement("img");
+    //             img.src = e.target.result;
+    //             img.style.width = '200px';
+    //             img.style.height = '200px';
+    //             img.style.objectFit = 'contain';
+    //             img.style.border = '1px solid #dee2e6';
+    //             img.style.borderRadius = '0.25rem';
+    //             previewContainer.appendChild(img);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     });
+    // });
 
     function displayReviews(reviews) {
         const reviewsList = $("#reviewsList");
@@ -743,7 +711,7 @@
                     <p class="review-content mt-2">${review.content}</p>
                     <div class="review-images d-flex gap-2 mt-2">
                         ${review.reviewImages ? review.reviewImages.map(img => `
-                            <img src="/images/${img.storeFileName}"
+                            <img src="/review-images/${img.storeFileName}"
                                  alt="리뷰 이미지"
                                  style="width: 200px; height: 200px; object-fit: contain;"
                                  class="rounded border">
@@ -775,7 +743,7 @@
                                 <div class="current-images mb-2">
                                     ${review.reviewImages ? review.reviewImages.map(img => `
                                         <div class="position-relative d-inline-block">
-                                            <img src="/images/${img.storeFileName}"
+                                            <img src="/review-images/${img.storeFileName}"
                                                  alt="현재 이미지"
                                                  style="width: 100px; height: 100px; object-fit: contain;"
                                                  class="rounded border">
@@ -845,26 +813,26 @@
         });
     }
 
-    // 이미지 미리보기
-    document.getElementById('reviewImages').addEventListener('change', function(e) {
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = '';
-
-        Array.from(e.target.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.width = '200px';
-                img.style.height = '200px';
-                img.style.objectFit = 'contain';
-                img.style.border = '1px solid #dee2e6';
-                img.style.borderRadius = '0.25rem';
-                preview.appendChild(img);
-            }
-            reader.readAsDataURL(file);
-        });
-    });
+    // // 이미지 미리보기
+    // document.getElementById('reviewImages').addEventListener('change', function(e) {
+    //     const preview = document.getElementById('imagePreview');
+    //     preview.innerHTML = '';
+    //
+    //     Array.from(e.target.files).forEach(file => {
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             const img = document.createElement('img');
+    //             img.src = e.target.result;
+    //             img.style.width = '200px';
+    //             img.style.height = '200px';
+    //             img.style.objectFit = 'contain';
+    //             img.style.border = '1px solid #dee2e6';
+    //             img.style.borderRadius = '0.25rem';
+    //             preview.appendChild(img);
+    //         }
+    //         reader.readAsDataURL(file);
+    //     });
+    // });
 </script>
 </body>
 </html>

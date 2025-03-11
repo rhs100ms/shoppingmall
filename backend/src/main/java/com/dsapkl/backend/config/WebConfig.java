@@ -10,10 +10,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${file.dir}")
     private String fileDir;
 
+    @Value("${reviewFile.dir}")
+    private String reviewFileDir;
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:///" + fileDir);
+
+        registry.addResourceHandler("/review-images/**")
+                .addResourceLocations("file:///" + reviewFileDir);
     }
 }

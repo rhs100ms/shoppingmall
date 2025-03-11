@@ -25,6 +25,7 @@ public class WebSecurityConfig {
     private static final String[] PUBLIC_URLS = {
             "/"                     //root
             , "/images/**"          //이미지 경로
+            , "/review-images/**"
             , "/css/**"             //CSS파일들
             , "/js/**"              //JavaSCript 파일들
             , "/members/**"        //회원가입

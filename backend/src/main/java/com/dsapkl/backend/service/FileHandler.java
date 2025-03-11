@@ -19,12 +19,18 @@ public class FileHandler {
 
     @Value("${file.dir}")
     private String fileDir;
+    @Value("${reviewFile.dir}")
+    private String reviewFileDir;
 
     //파일 경로명
     public String getFullPath(String filename) {
         return fileDir + filename;
     }
 
+    //User review 파일 경로명
+    public String userFullPath(String filename) {
+        return reviewFileDir + filename;
+    }
 
     private String createStoreImageName(String oriImageName) {
         String ext = extractExt(oriImageName);  //jpeg
@@ -87,7 +93,7 @@ public class FileHandler {
             if (!file.isEmpty()) {
                 String originalFilename = file.getOriginalFilename();
                 String storeFileName = createStoreImageName(originalFilename);
-                file.transferTo(new File(getFullPath(storeFileName)));
+                file.transferTo(new File(userFullPath(storeFileName)));
                 reviewImages.add(ReviewImage.builder()
                         .originalFileName(originalFilename)
                         .storeFileName(storeFileName)

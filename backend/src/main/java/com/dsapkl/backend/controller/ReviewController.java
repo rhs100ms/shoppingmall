@@ -69,6 +69,7 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
+
     @GetMapping("/api/items/{itemId}/reviews")
     @ResponseBody
     public ResponseEntity<List<ReviewResponseDto>> getItemReviews(@PathVariable Long itemId) {
